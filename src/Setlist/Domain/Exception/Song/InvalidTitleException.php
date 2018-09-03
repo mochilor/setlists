@@ -2,6 +2,6 @@
 
 namespace Setlist\Domain\Exception\Song;
 
-class InvalidNameException extends \Exception
+class InvalidTitleException extends \Exception
 {
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Setlist\Domain\Value;
+namespace Tests\Unit\Setlist\Domain\Value;
 
 use Setlist\Domain\Value\Uuid;
 use PHPUnit\Framework\TestCase;

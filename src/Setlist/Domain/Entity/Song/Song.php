@@ -2,22 +2,22 @@
 
 namespace Setlist\Domain\Entity\Song;
 
-use Setlist\Domain\Exception\Song\InvalidNameException;
+use Setlist\Domain\Exception\Song\InvalidTitleException;
 use Setlist\Domain\Value\Uuid;
 
 class Song
 {
     private $id;
-    private $name;
+    private $title;
 
-    const MIN_NAME_LENGTH = 3;
-    const MAX_NAME_LENGTH = 30;
+    const MIN_TITLE_LENGTH = 3;
+    const MAX_TITLE_LENGTH = 30;
 
-    public static function create(Uuid $id, string $name)
+    public static function create(Uuid $id, string $title)
     {
         $song = new self();
         $song->setId($id);
-        $song->setName($name);
+        $song->setTitle($title);
 
         // Event! NewSongCreated
         return $song;
@@ -28,16 +28,16 @@ class Song
         $this->id = $id;
     }
 
-    private function setName(string $name)
+    private function setTitle(string $title)
     {
-        $this->guardName($name);
-        $this->name = $name;
+        $this->guardTitle($title);
+        $this->title = $title;
     }
 
-    private function guardName(string $name)
+    private function guardTitle(string $title)
     {
-        if (empty($name) || strlen($name) < self::MIN_NAME_LENGTH || strlen($name) > self::MAX_NAME_LENGTH) {
-            throw new InvalidNameException();
+        if (empty($title) || strlen($title) < self::MIN_TITLE_LENGTH || strlen($title) > self::MAX_TITLE_LENGTH) {
+            throw new InvalidTitleException();
         }
     }
 
@@ -46,15 +46,15 @@ class Song
         return $this->id;
     }
 
-    public function name(): string
+    public function title(): string
     {
-        return $this->name;
+        return $this->title;
     }
 
-    public function changeName(string $name)
+    public function changeTitle(string $title)
     {
-        $this->guardName($name);
-        $this->name = $name;
-        // Event! SongChangedItsName
+        $this->guardTitle($title);
+        $this->title = $title;
+        // Event! SongChangedItsTitle
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Setlist\Domain\Entity\Song;
+namespace Tests\Unit\Setlist\Domain\Entity\Song;
 
 use Setlist\Domain\Entity\Song\Song;
 use PHPUnit\Framework\TestCase;
@@ -8,7 +8,7 @@ use Setlist\Domain\Value\Uuid;
 
 class SongTest extends TestCase
 {
-    const SONG_NAME = 'Song title';
+    const SONG_TITLE = 'Song title';
 
     /**
      * @test
@@ -25,20 +25,20 @@ class SongTest extends TestCase
     {
         return Song::create(
             Uuid::random(),
-            self::SONG_NAME
+            self::SONG_TITLE
         );
     }
 
     /**
      * @test
-     * @expectedException \Setlist\Domain\Exception\Song\InvalidNameException
+     * @expectedException \Setlist\Domain\Exception\Song\InvalidTitleException
      */
-    public function badNameThrowsException()
+    public function badTitleThrowsException()
     {
         $uuid = Uuid::random();
-        $name = 'A';
+        $title = 'A';
 
-        Song::create($uuid, $name);
+        Song::create($uuid, $title);
     }
 
     /**
@@ -62,8 +62,8 @@ class SongTest extends TestCase
         $song = $this->getSong();
 
         $this->assertEquals(
-            self::SONG_NAME,
-            $song->name()
+            self::SONG_TITLE,
+            $song->title()
         );
     }
 
@@ -75,11 +75,11 @@ class SongTest extends TestCase
         $song = $this->getSong();
 
         $newName = 'New song name';
-        $song->changeName($newName);
+        $song->changeTitle($newName);
 
         $this->assertEquals(
             $newName,
-            $song->name()
+            $song->title()
         );
     }
 }
