@@ -2,7 +2,7 @@
 
 namespace Setlist\Domain\Entity\Song;
 
-use Setlist\Domain\Exception\Song\InvalidTitleException;
+use Setlist\Domain\Exception\Song\InvalidSongTitleException;
 use Setlist\Domain\Value\Uuid;
 
 class Song
@@ -13,7 +13,7 @@ class Song
     const MIN_TITLE_LENGTH = 3;
     const MAX_TITLE_LENGTH = 30;
 
-    public static function create(Uuid $id, string $title)
+    public static function create(Uuid $id, string $title): self
     {
         $song = new self();
         $song->setId($id);
@@ -37,7 +37,7 @@ class Song
     private function guardTitle(string $title)
     {
         if (empty($title) || strlen($title) < self::MIN_TITLE_LENGTH || strlen($title) > self::MAX_TITLE_LENGTH) {
-            throw new InvalidTitleException();
+            throw new InvalidSongTitleException();
         }
     }
 
@@ -53,8 +53,18 @@ class Song
 
     public function changeTitle(string $title)
     {
-        $this->guardTitle($title);
-        $this->title = $title;
-        // Event! SongChangedItsTitle
+        if ($title != $this->title()) {
+            $this->setTitle($title);
+            // Event! SongChangedItsTitle
+        }
+    }
+
+    public function isEqual(Song $song)
+    {
+        if ($this->title() != $song->title()) {
+            return false;
+        }
+
+        return true;
     }
 }

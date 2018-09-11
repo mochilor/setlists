@@ -31,7 +31,7 @@ class SongTest extends TestCase
 
     /**
      * @test
-     * @expectedException \Setlist\Domain\Exception\Song\InvalidTitleException
+     * @expectedException \Setlist\Domain\Exception\Song\InvalidSongTitleException
      */
     public function badTitleThrowsException()
     {
@@ -80,6 +80,40 @@ class SongTest extends TestCase
         $this->assertEquals(
             $newName,
             $song->title()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function songsCanBeEquals()
+    {
+        $aSong = $this->getSong();
+        $anotherSong = $this->getSong();
+
+        $this->assertTrue(
+            $aSong->isEqual($anotherSong)
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function songsCanBeDifferent()
+    {
+        $aSong = $this->getSong();
+        $anotherSong = $this->getAnotherSong();
+
+        $this->assertTrue(
+            !$aSong->isEqual($anotherSong)
+        );
+    }
+
+    private function getAnotherSong(): Song
+    {
+        return Song::create(
+            Uuid::random(),
+            'Another song title'
         );
     }
 }
