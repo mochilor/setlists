@@ -3,10 +3,10 @@
 namespace Tests\Unit\Setlist\Domain\Entity\Song;
 
 use DateTime;
+use Setlist\Domain\Entity\Setlist\Act;
 use Setlist\Domain\Entity\Setlist\Setlist;
 use Setlist\Domain\Entity\Setlist\SetlistFactory;
-use Setlist\Domain\Entity\Setlist\SongCollection;
-use Setlist\Domain\Entity\Song\Song;
+use Setlist\Domain\Entity\Setlist\ActCollection;
 use PHPUnit\Framework\TestCase;
 use Setlist\Domain\Value\Uuid;
 
@@ -20,11 +20,11 @@ class SetlistFactoryTest extends TestCase
     {
         $uuid = Uuid::random();
         $songs = [
-            $this->getSong(),
-            $this->getSong(),
-            $this->getSong(),
+            $this->getAct(),
+            $this->getAct(),
+            $this->getAct(),
         ];
-        $songCollection = SongCollection::create(...$songs);
+        $songCollection = ActCollection::create(...$songs);
         $name = 'Name';
         $date = DateTime::createFromFormat('Y-m-d H:i:s', '2017-08-30 00:00:00');
 
@@ -36,8 +36,8 @@ class SetlistFactoryTest extends TestCase
         );
     }
 
-    protected function getSong()
+    protected function getAct()
     {
-        return $this->getMockBuilder(Song::class)->getMock();
+        return $this->getMockBuilder(Act::class)->getMock();
     }
 }

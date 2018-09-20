@@ -2,18 +2,51 @@
 
 namespace Setlist\Domain\Entity\Setlist;
 
+use Setlist\Domain\Exception\Setlist\InvalidSongCollectionException;
+
 // VO of Setlist?
 class Act
 {
-    private $songCollections;
+    private $songCollection;
 
-    public function __construct(SongCollection ...$songCollections)
+    public static function create(SongCollection $songCollection): self
     {
-        $this->songCollections = $songCollections;
+        $act = new self();
+        $act->setSongCollection($songCollection);
+
+        return $act;
     }
 
-    public function songCollections(): array
+    private function setSongCollection(SongCollection $songCollection)
     {
-        return $this->songCollections;
+        $this->guardSongCollection($songCollection);
+        $this->songCollection = $songCollection;
+    }
+
+    private function guardSongCollection(SongCollection $songCollection)
+    {
+        if ($songCollection->count() == 0) {
+            throw new InvalidSongcollectionException();
+        }
+    }
+
+    public function songCollection(): SongCollection
+    {
+        return $this->songCollection;
+    }
+
+    public function isEqual(Act $act): bool
+    {
+        if ($act->songCollection()->count() != $this->songCollection()->count()) {
+            return false;
+        }
+
+        foreach ($act->songCollection() as $key => $song) {
+            if (!$song->isEqual($this->songCollection()[$key])) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

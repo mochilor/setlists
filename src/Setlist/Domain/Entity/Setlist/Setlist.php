@@ -3,25 +3,26 @@
 namespace Setlist\Domain\Entity\Setlist;
 
 use DateTime;
-use Setlist\Domain\Exception\Song\InvalidSetlistNameException;
+use Setlist\Domain\Exception\Setlist\InvalidActCollectionException;
+use Setlist\Domain\Exception\Setlist\InvalidSetlistNameException;
 use Setlist\Domain\Value\Uuid;
 
 class Setlist
 {
     private $id;
-    private $songCollection;
+    protected $actCollection;
     private $name;
     private $date;
 
     const MIN_NAME_LENGTH = 3;
     const MAX_NAME_LENGTH = 30;
 
-    public static function create(Uuid $id, SongCollection $songCollection, string $name, DateTime $date): self
+    public static function create(Uuid $id, ActCollection $actCollection, string $name, DateTime $date): self
     {
-        $setlist = new self();
+        $setlist = new static();
 
         $setlist->setId($id);
-        $setlist->setSongCollection($songCollection);
+        $setlist->setActCollection($actCollection);
         $setlist->setName($name);
         $setlist->setDatetime($date);
 
@@ -33,9 +34,13 @@ class Setlist
         $this->id = $id;
     }
 
-    private function setSongCollection(SongCollection $songCollection)
+    protected function setActCollection(ActCollection $actCollection)
     {
-        $this->songCollection = $songCollection;
+        if ($actCollection->count() == 0) {
+            throw new InvalidActCollectionException;
+        }
+
+        $this->actCollection = $actCollection;
     }
 
     private function setName(string $name)
@@ -56,9 +61,9 @@ class Setlist
         $this->date = $date;
     }
 
-    public function songCollection(): SongCollection
+    public function actCollection(): ActCollection
     {
-        return $this->songCollection;
+        return $this->actCollection;
     }
 
     public function name(): string
@@ -97,14 +102,24 @@ class Setlist
         }
     }
 
-    public function changeSongCollection(SongCollection $songCollection)
+    public function changeActCollection(ActCollection $actCollection)
     {
-        foreach ($songCollection as $key => $song) {
-            if (!isset($this->songCollection()[$key]) || !$song->isEqual($this->songCollection()[$key])) {
-                $this->setSongCollection($songCollection);
+        $canChange = false;
+
+        if ($actCollection->count() != $this->actCollection()->count()) {
+            $canChange = true;
+        }
+
+        foreach ($actCollection as $key => $act) {
+            if (!$act->isEqual($this->actCollection()[$key])) {
+                $canChange = true;
                 // Event
                 break;
             }
+        }
+
+        if ($canChange) {
+            $this->setActCollection($actCollection);
         }
     }
 }

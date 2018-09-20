@@ -2,6 +2,6 @@
 
 namespace Setlist\Domain\Exception\Setlist;
 
-class InvalidSetlistNameException extends \Exception
+class InvalidActCollectionException extends \Exception
 {
 }

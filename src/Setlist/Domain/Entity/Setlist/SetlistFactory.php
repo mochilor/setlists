@@ -7,9 +7,9 @@ use Setlist\Domain\Value\Uuid;
 
 class SetlistFactory
 {
-    public function make(Uuid $id, array $songs, string $name, DateTime $date): Setlist
+    public function make(Uuid $id, array $acts, string $name, DateTime $date): Setlist
     {
-        $songCollection = SongCollection::create(...$songs);
-        return Setlist::create($id, $songCollection, $name, $date);
+        $actCollection = ActCollection::create(...$acts);
+        return Setlist::create($id, $actCollection, $name, $date);
     }
 }

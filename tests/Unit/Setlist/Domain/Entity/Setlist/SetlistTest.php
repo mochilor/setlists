@@ -4,9 +4,9 @@ namespace Tests\Unit\Setlist\Domain\Entity\Setlist;
 
 use DateTime;
 use PHPUnit\Framework\TestCase;
+use Setlist\Domain\Entity\Setlist\Act;
 use Setlist\Domain\Entity\Setlist\Setlist;
-use Setlist\Domain\Entity\Setlist\SongCollection;
-use Setlist\Domain\Entity\Song\Song;
+use Setlist\Domain\Entity\Setlist\ActCollection;
 use Setlist\Domain\Value\Uuid;
 
 class SetlistTest extends TestCase
@@ -17,9 +17,15 @@ class SetlistTest extends TestCase
     const FULL_DATETIME = '2017-08-31 00:00:00';
     const FORMATTED_DATE = '2017-08-31';
 
-    protected function getSong()
+    protected function getAct($isEqual = false)
     {
-        return $this->getMockBuilder(Song::class)->getMock();
+        $act = $this->getMockBuilder(Act::class)->getMock();
+
+        $act->expects($this->any())
+            ->method('isEqual')
+            ->willReturn($isEqual);
+
+        return $act;
     }
 
     /**
@@ -27,7 +33,7 @@ class SetlistTest extends TestCase
      */
     public function setlistCanBeCreated()
     {
-        $setList = $this->getSetlist([$this->getSong()], self::SETLIST_NAME);
+        $setList = $this->getSetlist([$this->getAct()], self::SETLIST_NAME);
 
         $this->assertInstanceOf(
             Setlist::class,
@@ -35,21 +41,34 @@ class SetlistTest extends TestCase
         );
     }
 
-    private function getSetlist(array $songs, string $name): Setlist
+    private function getSetlist(array $acts, string $name, $dummy = false): Setlist
     {
         $id = $this->getMockBuilder(Uuid::class)->getMock();
-        $songCollection = SongCollection::create(...$songs);
+        $actCollection = ActCollection::create(...$acts);
         $date = DateTime::createFromFormat(self::DATE_FORMAT, self::FULL_DATETIME);
-        return Setlist::create($id, $songCollection, $name, $date);
+        if (!$dummy) {
+            return Setlist::create($id, $actCollection, $name, $date);
+        }
+
+        return DummySetList::create($id, $actCollection, $name, $date);
     }
 
     /**
      * @test
-     * @expectedException \Setlist\Domain\Exception\Song\InvalidSetlistNameException
+     * @expectedException \Setlist\Domain\Exception\Setlist\InvalidSetlistNameException
      */
     public function setlistWithWrongNameThrowsException()
     {
-        $this->getSetlist([$this->getSong()], self::BAD_SETLIST_NAME);
+        $this->getSetlist([$this->getAct()], self::BAD_SETLIST_NAME);
+    }
+
+    /**
+     * @test
+     * @expectedException \Setlist\Domain\Exception\Setlist\InvalidActCollectionException
+     */
+    public function setlistWithEmptyActCollectionThrowsException()
+    {
+        $this->getSetlist([], self::SETLIST_NAME);
     }
 
     /**
@@ -57,7 +76,7 @@ class SetlistTest extends TestCase
      */
     public function setlistHasName()
     {
-        $setList = $this->getSetlist([$this->getSong()], self::SETLIST_NAME);
+        $setList = $this->getSetlist([$this->getAct()], self::SETLIST_NAME);
 
         $this->assertEquals(
             self::SETLIST_NAME,
@@ -70,7 +89,7 @@ class SetlistTest extends TestCase
      */
     public function setlistHasFullName()
     {
-        $setList = $this->getSetlist([$this->getSong()], self::SETLIST_NAME);
+        $setList = $this->getSetlist([$this->getAct()], self::SETLIST_NAME);
 
         $this->assertEquals(
             sprintf('%s - %s', self::FORMATTED_DATE, self::SETLIST_NAME),
@@ -83,11 +102,11 @@ class SetlistTest extends TestCase
      */
     public function setlistHasSongCollection()
     {
-        $setList = $this->getSetlist([$this->getSong()], self::SETLIST_NAME);
+        $setList = $this->getSetlist([$this->getAct()], self::SETLIST_NAME);
 
         $this->assertInstanceOf(
-            SongCollection::class,
-            $setList->songCollection()
+            ActCollection::class,
+            $setList->actCollection()
         );
     }
 
@@ -96,7 +115,7 @@ class SetlistTest extends TestCase
      */
     public function setlistHasDate()
     {
-        $setList = $this->getSetlist([$this->getSong()], self::SETLIST_NAME);
+        $setList = $this->getSetlist([$this->getAct()], self::SETLIST_NAME);
 
         $this->assertInstanceOf(
             DateTime::class,
@@ -109,7 +128,7 @@ class SetlistTest extends TestCase
      */
     public function setlistHasFormattedDate()
     {
-        $setList = $this->getSetlist([$this->getSong()], self::SETLIST_NAME);
+        $setList = $this->getSetlist([$this->getAct()], self::SETLIST_NAME);
 
         $this->assertEquals(
             self::FORMATTED_DATE,
@@ -122,7 +141,7 @@ class SetlistTest extends TestCase
      */
     public function setlistCanChangeItsName()
     {
-        $setList = $this->getSetlist([$this->getSong()], self::SETLIST_NAME);
+        $setList = $this->getSetlist([$this->getAct()], self::SETLIST_NAME);
 
         $newName = "New name";
         $setList->changeName($newName);
@@ -138,7 +157,7 @@ class SetlistTest extends TestCase
      */
     public function setlistCanChangeItsDate()
     {
-        $setList = $this->getSetlist([$this->getSong()], self::SETLIST_NAME);
+        $setList = $this->getSetlist([$this->getAct()], self::SETLIST_NAME);
 
         $newDate = DateTime::createFromFormat(self::DATE_FORMAT, '2017-08-30 00:00:00');
         $setList->changeDate($newDate);
@@ -151,33 +170,61 @@ class SetlistTest extends TestCase
 
     /**
      * @test
+     * @dataProvider isEqualDataProvider
      */
-    public function setlistCanChangeItsSongCollection()
+    public function setlistCanChangeItsActCollection($actArray1, $actArray2, $result, $message)
     {
-        $oldSongs = [
-            $this->getSong(),
-            $this->getSong(),
-        ];
-        $setList = $this->getSetlist($oldSongs, self::SETLIST_NAME);
+        $newActCollection = ActCollection::create(...$actArray2);
 
-        $newSongs = [
-            $this->getSong(),
-            $this->getSong(),
-            $this->getSong(),
-        ];
+        $setList = $this->getSetlist($actArray1, self::SETLIST_NAME, true);
 
-        foreach ($newSongs as $key => $song) {
-            $song->expects($this->any())
-                ->method("isEqual")
-                ->willReturn(true);
-        }
-
-        $songCollection = SongCollection::create(...$newSongs);
-        $setList->changeSongCollection($songCollection);
+        $setList->changeActCollection($newActCollection);
 
         $this->assertEquals(
-            $songCollection,
-            $setList->songCollection()
+            $result,
+            $setList->setActCollectionWasCalled,
+            $message
         );
+    }
+
+    public function isEqualDataProvider()
+    {
+        return [
+            [
+                [$this->getAct(true)],
+                [$this->getAct(true)],
+                1,
+                'Same number of acts and equal acts'
+            ],
+            [
+                [$this->getAct(true)],
+                [$this->getAct(false)],
+                2,
+                'Same number of acts and different acts'
+            ],
+            [
+                [$this->getAct(true), $this->getAct(true)],
+                [$this->getAct(true)],
+                2,
+                'Different number of acts and equal acts'
+            ],
+            [
+                [$this->getAct(false), $this->getAct(false)],
+                [$this->getAct(false)],
+                2,
+                'Different number of acts and different acts'
+            ],
+        ];
+    }
+}
+
+class DummySetList extends Setlist
+{
+    public $setActCollectionWasCalled = 0;
+
+    protected function setActCollection(ActCollection $actCollection)
+    {
+        $this->actCollection = $actCollection;
+        $this->setActCollectionWasCalled++;
     }
 }
