@@ -15,9 +15,15 @@ class SongTest extends TestCase
      */
     public function songCanBeCreated()
     {
+        $song = $this->getSong();
         $this->assertInstanceOf(
             Song::class,
-            $this->getSong()
+            $song
+        );
+
+        $this->assertCount(
+            1,
+            $song->events()
         );
     }
 
@@ -81,6 +87,32 @@ class SongTest extends TestCase
             $newName,
             $song->title()
         );
+
+        $this->assertCount(
+            2,
+            $song->events()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function sameTitleDoesNotTriggerEvent()
+    {
+        $song = $this->getSong();
+
+        $newName = self::SONG_TITLE;
+        $song->changeTitle($newName);
+
+        $this->assertEquals(
+            $newName,
+            $song->title()
+        );
+
+        $this->assertCount(
+            1,
+            $song->events()
+        );
     }
 
     /**
@@ -114,6 +146,20 @@ class SongTest extends TestCase
         return Song::create(
             Uuid::random(),
             'Another song title'
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function songCanBeDeleted()
+    {
+        $song = $this->getSong();
+        $song->delete();
+
+        $this->assertCount(
+            2,
+            $song->events()
         );
     }
 }

@@ -2,11 +2,17 @@
 
 namespace Setlist\Domain\Entity\Song;
 
+use Setlist\Domain\Entity\Song\Event\SongChangedItsTitle;
+use Setlist\Domain\Entity\Song\Event\SongWasCreated;
+use Setlist\Domain\Entity\Song\Event\SongWasDeleted;
+use Setlist\Domain\Entity\TriggerEventsTrait;
 use Setlist\Domain\Exception\Song\InvalidSongTitleException;
 use Setlist\Domain\Value\Uuid;
 
 class Song
 {
+    use TriggerEventsTrait;
+
     private $id;
     private $title;
 
@@ -19,7 +25,8 @@ class Song
         $song->setId($id);
         $song->setTitle($title);
 
-        // Event! NewSongCreated
+        $song->trigger(SongWasCreated::create($id, $title));
+
         return $song;
     }
 
@@ -55,7 +62,7 @@ class Song
     {
         if ($title != $this->title()) {
             $this->setTitle($title);
-            // Event! SongChangedItsTitle
+            $this->trigger(SongChangedItsTitle::create($this->id(), $title));
         }
     }
 
@@ -66,5 +73,10 @@ class Song
         }
 
         return true;
+    }
+
+    public function delete()
+    {
+        $this->trigger(SongWasDeleted::create($this->id()));
     }
 }

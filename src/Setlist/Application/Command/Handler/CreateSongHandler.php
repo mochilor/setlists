@@ -7,7 +7,7 @@ use Setlist\Application\Command\CreateSong;
 use Setlist\Application\Persistence\Song\ApplicationSongRepository;
 use Setlist\Domain\Entity\Song\SongFactory;
 use Setlist\Domain\Entity\Song\SongRepository;
-use Setlist\Domain\Validator\Song\SongTitleValidator;
+use Setlist\Domain\Service\Song\SongTitleValidator;
 
 class CreateSongHandler
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Setlist\Domain\Validator\Song;
+namespace Setlist\Domain\Service\Song;
 
 class SongTitleValidator
 {
@@ -11,7 +11,7 @@ class SongTitleValidator
         $this->titles = $titles;
     }
 
-    public static function create(array $titles): SongTitleValidator
+    public static function create(array $titles): self
     {
         return new self($titles);
     }

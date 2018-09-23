@@ -2,7 +2,7 @@
 
 namespace Tests\Unit\Setlist\Domain\Validator\Song;
 
-use Setlist\Domain\Validator\Song\SongTitleValidator;
+use Setlist\Domain\Service\Song\SongTitleValidator;
 use PHPUnit\Framework\TestCase;
 
 class SongTitleValidatorTest extends TestCase

@@ -7,9 +7,6 @@ use Setlist\Domain\Exception\InvalidUuidException;
 
 class Uuid
 {
-    /**
-     * @var string
-     */
     private $uuid;
 
     public static function create(string $uuid): Uuid
