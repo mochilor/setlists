@@ -25,9 +25,7 @@ class UpdateSongHandler
             throw new SongDoesNotExistException('Song not found');
         }
 
-        if (!empty($command->title())) {
-            $song->changeTitle($command->title());
-        }
+        $song->changeTitle($command->title());
 
         $this->songRepository->save($song);
     }

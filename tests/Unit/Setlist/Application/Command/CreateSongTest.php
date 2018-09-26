@@ -7,7 +7,9 @@ use PHPUnit\Framework\TestCase;
 
 class CreateSongTest extends TestCase
 {
-    const TITLE = 'A title';
+    const PAYLOAD = [
+        'title' => 'A title'
+    ];
 
     /**
      * @test
@@ -24,7 +26,7 @@ class CreateSongTest extends TestCase
 
     private function getCommand()
     {
-        return CreateSong::create(self::TITLE);
+        return new CreateSong(self::PAYLOAD);
     }
 
     /**
@@ -34,7 +36,7 @@ class CreateSongTest extends TestCase
     {
         $command = $this->getCommand();
         $this->assertEquals(
-            self::TITLE,
+            self::PAYLOAD['title'],
             $command->title()
         );
     }

@@ -4,12 +4,13 @@ namespace Tests\Unit\Setlist\Application\Command;
 
 use PHPUnit\Framework\TestCase;
 use Setlist\Application\Command\UpdateSong;
-use Setlist\Domain\Value\Uuid;
 
 class UpdateSongTest extends TestCase
 {
-    const TITLE = 'A title';
-    const UUID = '550e8400-e29b-41d4-a716-446655440000';
+    const PAYLOAD = [
+        'uuid' => '550e8400-e29b-41d4-a716-446655440000',
+        'title' => 'A title',
+    ];
 
     /**
      * @test
@@ -26,7 +27,7 @@ class UpdateSongTest extends TestCase
 
     private function getCommand()
     {
-        return UpdateSong::create(self::UUID, self::TITLE);
+        return new UpdateSong(self::PAYLOAD);
     }
 
     /**
@@ -36,7 +37,7 @@ class UpdateSongTest extends TestCase
     {
         $command = $this->getCommand();
         $this->assertEquals(
-            self::UUID,
+            self::PAYLOAD['uuid'],
             $command->uuid()
         );
     }
@@ -48,7 +49,7 @@ class UpdateSongTest extends TestCase
     {
         $command = $this->getCommand();
         $this->assertEquals(
-            self::TITLE,
+            self::PAYLOAD['title'],
             $command->title()
         );
     }

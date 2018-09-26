@@ -60,36 +60,14 @@ class UpdateSongHandlerTest extends TestCase
         ($this->commandHandler)($command);
     }
 
-    /**
-     * @test
-     */
-    public function commandWithEmptyTitleWillNotUpdateSong()
-    {
-        $title = '';
-        $uuid = '550e8400-e29b-41d4-a716-446655440000';
-        $command = UpdateSong::create($uuid, $title);
-        $song = $this->getMockBuilder(Song::class)->getMock();
-
-        $this->songRepository
-            ->expects($this->once())
-            ->method('get')
-            ->willReturn($song);
-
-        $song->expects($this->never())
-            ->method('changeTitle')
-            ->with($command->title());
-
-        $this->songRepository
-            ->expects($this->once())
-            ->method('save');
-
-        ($this->commandHandler)($command);
-    }
-
     private function getCommand(): UpdateSong
     {
-        $title = 'New Title';
-        $uuid = '550e8400-e29b-41d4-a716-446655440000';
-        return UpdateSong::create($uuid, $title);
+        $payload = [
+            'title' => 'New Title',
+            'uuid' => '550e8400-e29b-41d4-a716-446655440000',
+        ];
+        $command = new UpdateSong($payload);
+
+        return $command;
     }
 }

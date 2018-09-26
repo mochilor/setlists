@@ -41,8 +41,10 @@ class CreateSongHandlerTest extends TestCase
      */
     public function commandHandlerCanBeInvoked()
     {
-        $title = 'New Title';
-        $command = CreateSong::create($title);
+        $payload = [
+            'title' => 'New Title'
+        ];
+        $command = new CreateSong($payload);
         $uuid = Uuid::random();
         $song = $this->getMockBuilder(Song::class)->getMock();
 
@@ -54,7 +56,7 @@ class CreateSongHandlerTest extends TestCase
         $this->songFactory
             ->expects($this->once())
             ->method('make')
-            ->with($uuid, $title)
+            ->with($uuid, $payload['title'])
             ->willReturn($song);
 
         $this->songRepository
@@ -75,8 +77,10 @@ class CreateSongHandlerTest extends TestCase
      */
     public function repeatedTitleThrowsException()
     {
-        $title = self::ALL_TITLES[0];
-        $command = CreateSong::create($title);
+        $payload = [
+            'title' => self::ALL_TITLES[0]
+        ];
+        $command = new CreateSong($payload);
 
         $this->applicationSongRepository
             ->expects($this->once())

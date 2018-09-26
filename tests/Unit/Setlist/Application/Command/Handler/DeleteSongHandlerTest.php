@@ -5,7 +5,6 @@ namespace Tests\Unit\Setlist\Application\Command\Handler;
 use PHPUnit\Framework\TestCase;
 use Setlist\Application\Command\DeleteSong;
 use Setlist\Application\Command\Handler\DeleteSongHandler;
-use Setlist\Application\Command\UpdateSong;
 use Setlist\Domain\Entity\Song\Song;
 use Setlist\Domain\Entity\Song\SongRepository;
 
@@ -62,7 +61,9 @@ class DeleteSongHandlerTest extends TestCase
 
     private function getCommand(): DeleteSong
     {
-        $uuid = '550e8400-e29b-41d4-a716-446655440000';
-        return DeleteSong::create($uuid);
+        $payload = [
+            'uuid' => '550e8400-e29b-41d4-a716-446655440000'
+        ];
+        return new DeleteSong($payload);
     }
 }
