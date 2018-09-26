@@ -2,7 +2,7 @@
 
 namespace Tests\Unit\Setlist\Domain\Entity\Song;
 
-use DateTime;
+use DateTimeImmutable;
 use Setlist\Domain\Entity\Setlist\Act;
 use Setlist\Domain\Entity\Setlist\Setlist;
 use Setlist\Domain\Entity\Setlist\SetlistFactory;
@@ -26,7 +26,7 @@ class SetlistFactoryTest extends TestCase
         ];
         $songCollection = ActCollection::create(...$songs);
         $name = 'Name';
-        $date = DateTime::createFromFormat('Y-m-d H:i:s', '2017-08-30 00:00:00');
+        $date = DateTimeImmutable::createFromFormat('Y-m-d H:i:s', '2017-08-30 00:00:00');
 
         $factory = new SetlistFactory();
 

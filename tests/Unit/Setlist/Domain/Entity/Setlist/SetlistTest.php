@@ -2,7 +2,7 @@
 
 namespace Tests\Unit\Setlist\Domain\Entity\Setlist;
 
-use DateTime;
+use DateTimeImmutable;
 use PHPUnit\Framework\TestCase;
 use Setlist\Domain\Entity\Setlist\Act;
 use Setlist\Domain\Entity\Setlist\Setlist;
@@ -45,7 +45,7 @@ class SetlistTest extends TestCase
     {
         $id = $this->getMockBuilder(Uuid::class)->getMock();
         $actCollection = ActCollection::create(...$acts);
-        $date = DateTime::createFromFormat(self::DATE_FORMAT, self::FULL_DATETIME);
+        $date = DateTimeImmutable::createFromFormat(self::DATE_FORMAT, self::FULL_DATETIME);
         if (!$dummy) {
             return Setlist::create($id, $actCollection, $name, $date);
         }
@@ -118,7 +118,7 @@ class SetlistTest extends TestCase
         $setList = $this->getSetlist([$this->getAct()], self::SETLIST_NAME);
 
         $this->assertInstanceOf(
-            DateTime::class,
+            DateTimeImmutable::class,
             $setList->date()
         );
     }
@@ -159,7 +159,7 @@ class SetlistTest extends TestCase
     {
         $setList = $this->getSetlist([$this->getAct()], self::SETLIST_NAME);
 
-        $newDate = DateTime::createFromFormat(self::DATE_FORMAT, '2017-08-30 00:00:00');
+        $newDate = DateTimeImmutable::createFromFormat(self::DATE_FORMAT, '2017-08-30 00:00:00');
         $setList->changeDate($newDate);
 
         $this->assertEquals(

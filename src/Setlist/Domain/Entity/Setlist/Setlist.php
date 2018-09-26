@@ -2,7 +2,7 @@
 
 namespace Setlist\Domain\Entity\Setlist;
 
-use DateTime;
+use DateTimeImmutable;
 use Setlist\Domain\Exception\Setlist\InvalidActCollectionException;
 use Setlist\Domain\Exception\Setlist\InvalidSetlistNameException;
 use Setlist\Domain\Value\Uuid;
@@ -17,7 +17,7 @@ class Setlist
     const MIN_NAME_LENGTH = 3;
     const MAX_NAME_LENGTH = 30;
 
-    public static function create(Uuid $id, ActCollection $actCollection, string $name, DateTime $date): self
+    public static function create(Uuid $id, ActCollection $actCollection, string $name, DateTimeImmutable $date): self
     {
         $setlist = new static();
 
@@ -56,7 +56,7 @@ class Setlist
         }
     }
 
-    private function setDatetime(DateTime $date)
+    private function setDatetime(DateTimeImmutable $date)
     {
         $this->date = $date;
     }
@@ -76,7 +76,7 @@ class Setlist
         return sprintf('%s - %s', $this->formattedDate(), $this->name());
     }
 
-    public function date(): DateTime
+    public function date(): DateTimeImmutable
     {
         return $this->date;
     }
@@ -94,9 +94,9 @@ class Setlist
         }
     }
 
-    public function changeDate(DateTime $date)
+    public function changeDate(DateTimeImmutable $date)
     {
-        if ($date != $this->date()) {
+        if ($date !== $this->date()) {
             $this->setDatetime($date);
             // Event
         }
