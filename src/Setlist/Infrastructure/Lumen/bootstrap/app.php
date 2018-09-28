@@ -78,7 +78,7 @@ $app->singleton(
 |
 */
 
-// $app->register(App\Providers\AppServiceProvider::class);
+$app->register(Setlist\Infrastructure\Lumen\Providers\AppServiceProvider::class);
 // $app->register(App\Providers\AuthServiceProvider::class);
 // $app->register(App\Providers\EventServiceProvider::class);
 
@@ -98,5 +98,8 @@ $app->router->group([
 ], function ($router) {
     require __DIR__.'/../routes/web.php';
 });
+
+// Route commands, queries and events
+$app->make(\Setlist\Infrastructure\Lumen\Service\RoutingInitializer::class)->handle();
 
 return $app;

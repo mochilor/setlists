@@ -8,6 +8,6 @@ class ApplicationSongRepository implements ApplicationSongRepositoryInterface
 {
     public function getAllTitles(): array
     {
-        // TODO: Implement getAllTitles() method.
+        return [];
     }
 }

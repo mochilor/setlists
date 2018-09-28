@@ -12,13 +12,11 @@ services:
             - .:/var/www/application
             - ./docker/php.ini.override.ini:/etc/php/7.2/fpm/conf.d/99-overrides.ini
         environment:
-            - "DB_PORT=3306"
-            - "DB_HOST=database"
             - PHP_IDE_CONFIG=serverName=docker
 
     # The Web Server
     web:
-        image: nginx:1.10
+        image: nginx:alpine
         container_name: docker-repertorios-webserver
         working_dir: /var/www/application
         volumes:
@@ -36,7 +34,7 @@ services:
         - .:/var/www/application
         environment:
         - MYSQL_ROOT_PASSWORD=dbrootpw
-        - MYSQL_DATABASE=repertorios
+        - MYSQL_DATABASE=setlists
         - MYSQL_USER=dbuser
         - MYSQL_PASSWORD=dbpw
         ports:

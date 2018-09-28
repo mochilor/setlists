@@ -3,20 +3,26 @@
 namespace Setlist\Infrastructure\Lumen\Http\Controllers;
 
 use Laravel\Lumen\Routing\Controller as BaseController;
+use Setlist\Infrastructure\Messaging\CommandBus;
 use Setlist\Infrastructure\Messaging\MessageFactory;
 
 class Controller extends BaseController
 {
     protected $messageFactory;
+    private $commandBus;
 
-    public function __construct(MessageFactory $messageFactory)
+    public function __construct(MessageFactory $messageFactory, CommandBus $commandBus)
     {
         $this->messageFactory = $messageFactory;
+        $this->commandBus = $commandBus;
     }
 
-    protected function dispatchCommand($command, string $string)
+    protected function dispatchCommand($command, string $message)
     {
-        echo $string . "\n\n";
-        die(var_dump($command));
+        try {
+            $this->commandBus->handle($command);
+        } catch (\Exception $e) {
+            echo 'Oh, no! ' . $e->getMessage();
+        }
     }
 }

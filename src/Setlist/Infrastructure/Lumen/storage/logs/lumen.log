@@ -564,3 +564,63 @@ Stack trace:
 #10 /opt/project/vendor/phpunit/phpunit/phpunit(53): PHPUnit\\TextUI\\Command::main()
 #11 {main}
 "} 
+[2018-09-28 21:09:01] production.ERROR: ReflectionException: Class Nextgen\Blog\Infrastructure\Laravel\Service\RoutingInitializer does not exist in /var/www/application/vendor/illuminate/container/Container.php:767
+Stack trace:
+#0 /var/www/application/vendor/illuminate/container/Container.php(767): ReflectionClass->__construct('Nextgen\\Blog\\In...')
+#1 /var/www/application/vendor/illuminate/container/Container.php(646): Illuminate\Container\Container->build('Nextgen\\Blog\\In...')
+#2 /var/www/application/vendor/illuminate/container/Container.php(601): Illuminate\Container\Container->resolve('Nextgen\\Blog\\In...', Array)
+#3 /var/www/application/vendor/laravel/lumen-framework/src/Application.php(259): Illuminate\Container\Container->make('Nextgen\\Blog\\In...', Array)
+#4 /var/www/application/src/Setlist/Infrastructure/Lumen/bootstrap/app.php(103): Laravel\Lumen\Application->make('Nextgen\\Blog\\In...')
+#5 /var/www/application/artisan(18): require('/var/www/applic...')
+#6 {main} {"exception":"[object] (ReflectionException(code: -1): Class Nextgen\\Blog\\Infrastructure\\Laravel\\Service\\RoutingInitializer does not exist at /var/www/application/vendor/illuminate/container/Container.php:767)
+[stacktrace]
+#0 /var/www/application/vendor/illuminate/container/Container.php(767): ReflectionClass->__construct('Nextgen\\\\Blog\\\\In...')
+#1 /var/www/application/vendor/illuminate/container/Container.php(646): Illuminate\\Container\\Container->build('Nextgen\\\\Blog\\\\In...')
+#2 /var/www/application/vendor/illuminate/container/Container.php(601): Illuminate\\Container\\Container->resolve('Nextgen\\\\Blog\\\\In...', Array)
+#3 /var/www/application/vendor/laravel/lumen-framework/src/Application.php(259): Illuminate\\Container\\Container->make('Nextgen\\\\Blog\\\\In...', Array)
+#4 /var/www/application/src/Setlist/Infrastructure/Lumen/bootstrap/app.php(103): Laravel\\Lumen\\Application->make('Nextgen\\\\Blog\\\\In...')
+#5 /var/www/application/artisan(18): require('/var/www/applic...')
+#6 {main}
+"} 
+[2018-09-28 21:09:39] production.ERROR: Symfony\Component\Debug\Exception\FatalThrowableError: Call to undefined method Setlist\Infrastructure\Lumen\Service\RoutingInitializer::handle() in /var/www/application/src/Setlist/Infrastructure/Lumen/bootstrap/app.php:103
+Stack trace:
+#0 /var/www/application/artisan(18): require()
+#1 {main} {"exception":"[object] (Symfony\\Component\\Debug\\Exception\\FatalThrowableError(code: 0): Call to undefined method Setlist\\Infrastructure\\Lumen\\Service\\RoutingInitializer::handle() at /var/www/application/src/Setlist/Infrastructure/Lumen/bootstrap/app.php:103)
+[stacktrace]
+#0 /var/www/application/artisan(18): require()
+#1 {main}
+"} 
+[2018-09-28 21:09:52] production.ERROR: Symfony\Component\Console\Exception\NamespaceNotFoundException: There are no commands defined in the "key" namespace. in /var/www/application/vendor/symfony/console/Application.php:578
+Stack trace:
+#0 /var/www/application/vendor/symfony/console/Application.php(618): Symfony\Component\Console\Application->findNamespace('key')
+#1 /var/www/application/vendor/symfony/console/Application.php(226): Symfony\Component\Console\Application->find('key:generate')
+#2 /var/www/application/vendor/symfony/console/Application.php(145): Symfony\Component\Console\Application->doRun(Object(Symfony\Component\Console\Input\ArgvInput), Object(Symfony\Component\Console\Output\ConsoleOutput))
+#3 /var/www/application/vendor/illuminate/console/Application.php(89): Symfony\Component\Console\Application->run(Object(Symfony\Component\Console\Input\ArgvInput), Object(Symfony\Component\Console\Output\ConsoleOutput))
+#4 /var/www/application/vendor/laravel/lumen-framework/src/Console/Kernel.php(116): Illuminate\Console\Application->run(Object(Symfony\Component\Console\Input\ArgvInput), Object(Symfony\Component\Console\Output\ConsoleOutput))
+#5 /var/www/application/artisan(35): Laravel\Lumen\Console\Kernel->handle(Object(Symfony\Component\Console\Input\ArgvInput), Object(Symfony\Component\Console\Output\ConsoleOutput))
+#6 {main} {"exception":"[object] (Symfony\\Component\\Console\\Exception\\NamespaceNotFoundException(code: 0): There are no commands defined in the \"key\" namespace. at /var/www/application/vendor/symfony/console/Application.php:578)
+[stacktrace]
+#0 /var/www/application/vendor/symfony/console/Application.php(618): Symfony\\Component\\Console\\Application->findNamespace('key')
+#1 /var/www/application/vendor/symfony/console/Application.php(226): Symfony\\Component\\Console\\Application->find('key:generate')
+#2 /var/www/application/vendor/symfony/console/Application.php(145): Symfony\\Component\\Console\\Application->doRun(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#3 /var/www/application/vendor/illuminate/console/Application.php(89): Symfony\\Component\\Console\\Application->run(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#4 /var/www/application/vendor/laravel/lumen-framework/src/Console/Kernel.php(116): Illuminate\\Console\\Application->run(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#5 /var/www/application/artisan(35): Laravel\\Lumen\\Console\\Kernel->handle(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#6 {main}
+"} 
+[2018-09-28 21:11:29] production.ERROR: Symfony\Component\Console\Exception\CommandNotFoundException: Command "tinker" is not defined. in /var/www/application/vendor/symfony/console/Application.php:632
+Stack trace:
+#0 /var/www/application/vendor/symfony/console/Application.php(226): Symfony\Component\Console\Application->find('tinker')
+#1 /var/www/application/vendor/symfony/console/Application.php(145): Symfony\Component\Console\Application->doRun(Object(Symfony\Component\Console\Input\ArgvInput), Object(Symfony\Component\Console\Output\ConsoleOutput))
+#2 /var/www/application/vendor/illuminate/console/Application.php(89): Symfony\Component\Console\Application->run(Object(Symfony\Component\Console\Input\ArgvInput), Object(Symfony\Component\Console\Output\ConsoleOutput))
+#3 /var/www/application/vendor/laravel/lumen-framework/src/Console/Kernel.php(116): Illuminate\Console\Application->run(Object(Symfony\Component\Console\Input\ArgvInput), Object(Symfony\Component\Console\Output\ConsoleOutput))
+#4 /var/www/application/artisan(35): Laravel\Lumen\Console\Kernel->handle(Object(Symfony\Component\Console\Input\ArgvInput), Object(Symfony\Component\Console\Output\ConsoleOutput))
+#5 {main} {"exception":"[object] (Symfony\\Component\\Console\\Exception\\CommandNotFoundException(code: 0): Command \"tinker\" is not defined. at /var/www/application/vendor/symfony/console/Application.php:632)
+[stacktrace]
+#0 /var/www/application/vendor/symfony/console/Application.php(226): Symfony\\Component\\Console\\Application->find('tinker')
+#1 /var/www/application/vendor/symfony/console/Application.php(145): Symfony\\Component\\Console\\Application->doRun(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#2 /var/www/application/vendor/illuminate/console/Application.php(89): Symfony\\Component\\Console\\Application->run(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#3 /var/www/application/vendor/laravel/lumen-framework/src/Console/Kernel.php(116): Illuminate\\Console\\Application->run(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#4 /var/www/application/artisan(35): Laravel\\Lumen\\Console\\Kernel->handle(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
+#5 {main}
+"} 
