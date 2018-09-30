@@ -1,6 +1,5 @@
 <?php
 
-
 /*
 |--------------------------------------------------------------------------
 | Create The Application
@@ -12,7 +11,7 @@
 |
 */
 
-$app = require __DIR__.'/../src/Setlist/Infrastructure/Lumen/bootstrap/app.php';
+$app = require __DIR__.'/../bootstrap/app.php';
 
 /*
 |--------------------------------------------------------------------------
