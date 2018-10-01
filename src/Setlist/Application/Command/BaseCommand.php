@@ -4,7 +4,7 @@ namespace Setlist\Application\Command;
 
 abstract class BaseCommand
 {
-    private $payload;
+    protected $payload;
 
     public function __construct(array $payload)
     {

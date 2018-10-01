@@ -21,11 +21,17 @@ class Song
 
     public static function create(Uuid $id, string $title): self
     {
+        $song = self::restore($id, $title);
+        $song->trigger(SongWasCreated::create($id, $title));
+
+        return $song;
+    }
+
+    public static function restore(Uuid $id, string $title): self
+    {
         $song = new self();
         $song->setId($id);
         $song->setTitle($title);
-
-        $song->trigger(SongWasCreated::create($id, $title));
 
         return $song;
     }

@@ -10,4 +10,9 @@ class SongFactory
     {
         return Song::create($uuid, $title);
     }
+
+    public function restore(Uuid $uuid, string $title): Song
+    {
+        return Song::restore($uuid, $title);
+    }
 }

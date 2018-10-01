@@ -16,7 +16,7 @@ $router->get('/', function () use ($router) {
 });
 
 $router->group(['prefix' => 'api'], function () use ($router) {
-    $router->get('example',  ['uses' => 'SongController@createSong']);
+    $router->post('song',  ['uses' => 'SongController@createSong']);
 
 //    $router->get('authors/{id}', ['uses' => 'AuthorController@showOneAuthor']);
 //

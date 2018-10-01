@@ -2,7 +2,7 @@
 
 namespace Setlist\Application\Exception;
 
-class SongTitleNotUniqueException extends \Exception
+class SongTitleNotUniqueException extends EntityAlreadyExistsException
 {
 
 }

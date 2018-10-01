@@ -14,10 +14,7 @@ class SongController extends Controller
 
     public function createSong(CreateSongPayload $createSongPayload)
     {
-        $command = $this->messageFactory->make(
-            CreateSong::class,
-            ['payload' => $createSongPayload()]
-        );
+        $command = $this->messageFactory->make(CreateSong::class, $createSongPayload());
 
         return $this->dispatchCommand($command, 'New song inserted');
     }

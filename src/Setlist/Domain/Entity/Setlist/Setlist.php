@@ -34,6 +34,11 @@ class Setlist
         $this->id = $id;
     }
 
+    public function id(): Uuid
+    {
+        return $this->id;
+    }
+
     protected function setActCollection(ActCollection $actCollection)
     {
         if ($actCollection->count() == 0) {

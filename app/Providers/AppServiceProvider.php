@@ -20,7 +20,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(\PDO::class, function() {
             return new \PDO(
                 sprintf(
-                    '%s:host=%s;dbname=%s',
+                    '%s:host=%s;dbname=%s;charset=utf8',
                     env('DB_CONNECTION'), env('DB_HOST'), env('DB_DATABASE')
                 ),
                 env('DB_USERNAME'),

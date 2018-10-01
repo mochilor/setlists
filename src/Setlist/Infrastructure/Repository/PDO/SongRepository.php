@@ -8,12 +8,13 @@ use Setlist\Domain\Entity\Song\Event\SongWasDeleted;
 use Setlist\Domain\Entity\Song\Song;
 use Setlist\Domain\Entity\Song\SongRepository as SongRepositoryInterface;
 use Setlist\Domain\Value\Uuid;
+use PDO;
 
 class SongRepository implements SongRepositoryInterface
 {
     private $PDO;
 
-    public function __construct(\PDO $PDO)
+    public function __construct(PDO $PDO)
     {
         $this->PDO = $PDO;
     }
@@ -32,14 +33,14 @@ class SongRepository implements SongRepositoryInterface
         }
     }
 
-    public function get(Uuid $uuid)
+    public function get(Uuid $uuid): ?Song
     {
         // TODO: Implement get() method.
     }
 
     private function runQuery($event)
     {
-        switch ($event) {
+        switch (get_class($event)) {
             case SongWasCreated::class:
                 $this->insert($event->id(), $event->title());
                 break;
@@ -55,11 +56,11 @@ class SongRepository implements SongRepositoryInterface
     private function insert(string $uuid, string $title)
     {
         $sql = <<<SQL
-INSERT INTO `songs` VALUES (:uuid, :title);
+INSERT INTO `song` (id, title) VALUES (:uuid, :title);
 SQL;
         $query = $this->PDO->prepare($sql);
-        $query->bindValue(':uuid', $uuid);
-        $query->bindValue(':title', $title);
+        $query->bindValue(':uuid', $uuid, PDO::PARAM_STR);
+        $query->bindValue(':title', $title, PDO::PARAM_STR);
         $query->execute();
     }
 
