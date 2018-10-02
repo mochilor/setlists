@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Laravel\Lumen\Routing\Controller as BaseController;
 use Setlist\Application\Exception\EntityAlreadyExistsException;
+use Setlist\Application\Exception\EntityDoesNotExistException;
 use Setlist\Infrastructure\Messaging\CommandBus;
 use Setlist\Infrastructure\Messaging\MessageFactory;
 
@@ -39,7 +40,13 @@ class Controller extends BaseController
                     break;
                 }
 
-                // Resto de excepciones de Domain
+                if ($e instanceof EntityDoesNotExistException) {
+                    $message = $e->getMessage() ?: self::GENERIC_ERROR_MESSAGE;
+                    $code = 404;
+                    break;
+                }
+
+                // Resto de excepciones de Domain o Application
                 // ...
 
                 $e = $e->getPrevious();

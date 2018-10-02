@@ -3,9 +3,9 @@
 namespace Setlist\Application\Command\Handler;
 
 use Setlist\Application\Command\DeleteSong;
+use Setlist\Application\Exception\SongDoesNotExistException;
 use Setlist\Domain\Entity\Song\Song;
 use Setlist\Domain\Entity\Song\SongRepository;
-use Setlist\Domain\Exception\Song\SongDoesNotExistException;
 use Setlist\Domain\Value\Uuid;
 
 class DeleteSongHandler

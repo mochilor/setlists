@@ -2,34 +2,25 @@
 
 namespace Setlist\Domain\Entity\Song;
 
+use Setlist\Domain\Entity\EventsTrigger;
 use Setlist\Domain\Entity\Song\Event\SongChangedItsTitle;
-use Setlist\Domain\Entity\Song\Event\SongWasCreated;
 use Setlist\Domain\Entity\Song\Event\SongWasDeleted;
-use Setlist\Domain\Entity\TriggerEventsTrait;
 use Setlist\Domain\Exception\Song\InvalidSongTitleException;
 use Setlist\Domain\Value\Uuid;
 
 class Song
 {
-    use TriggerEventsTrait;
-
     private $id;
     private $title;
+    private $eventsTrigger;
 
     const MIN_TITLE_LENGTH = 3;
     const MAX_TITLE_LENGTH = 30;
 
-    public static function create(Uuid $id, string $title): self
-    {
-        $song = self::restore($id, $title);
-        $song->trigger(SongWasCreated::create($id, $title));
-
-        return $song;
-    }
-
-    public static function restore(Uuid $id, string $title): self
+    public static function create(Uuid $id, string $title, EventsTrigger $eventsTrigger): self
     {
         $song = new self();
+        $song->eventsTrigger = $eventsTrigger;
         $song->setId($id);
         $song->setTitle($title);
 
@@ -68,7 +59,7 @@ class Song
     {
         if ($title != $this->title()) {
             $this->setTitle($title);
-            $this->trigger(SongChangedItsTitle::create($this->id(), $title));
+            $this->eventsTrigger->trigger(SongChangedItsTitle::create($this->id(), $title));
         }
     }
 
@@ -83,6 +74,11 @@ class Song
 
     public function delete()
     {
-        $this->trigger(SongWasDeleted::create($this->id()));
+        $this->eventsTrigger->trigger(SongWasDeleted::create($this->id()));
+    }
+
+    public function events()
+    {
+        return $this->eventsTrigger->events();
     }
 }

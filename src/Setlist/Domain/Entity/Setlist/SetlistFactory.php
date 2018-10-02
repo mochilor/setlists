@@ -7,9 +7,11 @@ use Setlist\Domain\Value\Uuid;
 
 class SetlistFactory
 {
-    public function make(Uuid $id, array $acts, string $name, DateTimeImmutable $date): Setlist
+    public function make(string $uuidString, array $acts, string $name, DateTimeImmutable $date): Setlist
     {
+        $uuid = Uuid::create($uuidString);
         $actCollection = ActCollection::create(...$acts);
-        return Setlist::create($id, $actCollection, $name, $date);
+
+        return Setlist::create($uuid, $actCollection, $name, $date);
     }
 }

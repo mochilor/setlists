@@ -2,17 +2,31 @@
 
 namespace Setlist\Domain\Entity\Song;
 
+use Setlist\Domain\Entity\EventsTrigger;
+use Setlist\Domain\Entity\Song\Event\SongWasCreated;
 use Setlist\Domain\Value\Uuid;
 
 class SongFactory
 {
-    public function make(Uuid $uuid, string $title): Song
+    private $eventsTrigger;
+
+    public function __construct(EventsTrigger $eventsTrigger)
     {
-        return Song::create($uuid, $title);
+        $this->eventsTrigger = $eventsTrigger;
     }
 
-    public function restore(Uuid $uuid, string $title): Song
+    public function make(string $uuidString, string $title): Song
     {
-        return Song::restore($uuid, $title);
+        $uuid = Uuid::create($uuidString);
+        $this->eventsTrigger->trigger(SongWasCreated::create($uuid, $title));
+
+        return Song::create($uuid, $title, $this->eventsTrigger);
+    }
+
+    public function restore(string $uuidString, string $title): Song
+    {
+        $uuid = Uuid::create($uuidString);
+
+        return Song::create($uuid, $title, $this->eventsTrigger);
     }
 }

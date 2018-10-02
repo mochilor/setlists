@@ -2,11 +2,11 @@
 
 namespace Setlist\Domain\Entity;
 
-trait TriggerEventsTrait
+class EventsTrigger
 {
     private $events = [];
 
-    protected function trigger($event)
+    public function trigger($event)
     {
         $this->events[] = $event;
     }

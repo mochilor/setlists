@@ -6,6 +6,7 @@ use Setlist\Domain\Entity\Song\Event\SongChangedItsTitle;
 use Setlist\Domain\Entity\Song\Event\SongWasCreated;
 use Setlist\Domain\Entity\Song\Event\SongWasDeleted;
 use Setlist\Domain\Entity\Song\Song;
+use Setlist\Domain\Entity\Song\SongFactory;
 use Setlist\Domain\Entity\Song\SongRepository as SongRepositoryInterface;
 use Setlist\Domain\Value\Uuid;
 use PDO;
@@ -13,10 +14,14 @@ use PDO;
 class SongRepository implements SongRepositoryInterface
 {
     private $PDO;
+    private $songFactory;
 
-    public function __construct(PDO $PDO)
+    const TABLE_NAME = 'song';
+
+    public function __construct(PDO $PDO, SongFactory $songFactory)
     {
         $this->PDO = $PDO;
+        $this->songFactory = $songFactory;
     }
 
     public function nextIdentity(): Uuid
@@ -35,7 +40,20 @@ class SongRepository implements SongRepositoryInterface
 
     public function get(Uuid $uuid): ?Song
     {
-        // TODO: Implement get() method.
+        $sql = <<<SQL
+SELECT * FROM `%s` WHERE id = :uuid;
+SQL;
+        $sql = sprintf($sql, self::TABLE_NAME);
+        $query = $this->PDO->prepare($sql);
+        $query->bindValue('uuid', $uuid);
+        $query->execute();
+        $songData = $query->fetch(PDO::FETCH_ASSOC);
+
+        if ($songData) {
+            return $this->songFactory->restore($songData['id'], $songData['title']);
+        }
+
+        return null;
     }
 
     private function runQuery($event)
@@ -56,8 +74,9 @@ class SongRepository implements SongRepositoryInterface
     private function insert(string $uuid, string $title)
     {
         $sql = <<<SQL
-INSERT INTO `song` (id, title) VALUES (:uuid, :title);
+INSERT INTO `%s` (id, title) VALUES (:uuid, :title);
 SQL;
+        $sql = sprintf($sql, self::TABLE_NAME);
         $query = $this->PDO->prepare($sql);
         $query->bindValue(':uuid', $uuid, PDO::PARAM_STR);
         $query->bindValue(':title', $title, PDO::PARAM_STR);
@@ -67,8 +86,9 @@ SQL;
     private function update(string $uuid, string $title)
     {
         $sql = <<<SQL
-UPDATE `songs` SET title = :title WHERE id = :uuid;
+UPDATE `%s` SET title = :title WHERE id = :uuid;
 SQL;
+        $sql = sprintf($sql, self::TABLE_NAME);
         $query = $this->PDO->prepare($sql);
         $query->bindValue('title', $title);
         $query->bindValue('uuid', $uuid);
@@ -78,8 +98,9 @@ SQL;
     private function delete(string $uuid)
     {
         $sql = <<<SQL
-DELETE FROM `songs` WHERE id = :uuid;
+DELETE FROM `%s` WHERE id = :uuid;
 SQL;
+        $sql = sprintf($sql, self::TABLE_NAME);
         $query = $this->PDO->prepare($sql);
         $query->bindValue('uuid', $uuid);
         $query->execute();
