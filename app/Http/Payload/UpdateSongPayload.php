@@ -11,7 +11,7 @@ class UpdateSongPayload
 
     public function __construct(Request $request)
     {
-        $this->uuid = $request->input('uuid', '');
+        $this->uuid = $request->route()[2]['id'];
         $this->title = $request->input('title', '');
     }
 
