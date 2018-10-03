@@ -10,7 +10,7 @@ class DeleteSongPayload
 
     public function __construct(Request $request)
     {
-        $this->uuid = $request->input('uuid', '');
+        $this->uuid = $request->route()[2]['id'];
     }
 
     public function __invoke()

@@ -2,6 +2,9 @@
 
 namespace Tests\Unit\Setlist\Domain\Entity\Song;
 
+use DateTimeImmutable;
+use Setlist\Domain\Entity\EventsTrigger;
+use Setlist\Domain\Entity\Song\Event\SongWasCreated;
 use Setlist\Domain\Entity\Song\Song;
 use PHPUnit\Framework\TestCase;
 use Setlist\Domain\Value\Uuid;
@@ -9,6 +12,7 @@ use Setlist\Domain\Value\Uuid;
 class SongTest extends TestCase
 {
     const SONG_TITLE = 'Song title';
+    const SONG_DATE_TIME = '2018-01-01 00:00:00';
 
     /**
      * @test
@@ -29,9 +33,16 @@ class SongTest extends TestCase
 
     private function getSong(): Song
     {
+        $eventsTrigger = new EventsTrigger();
+        $uuid = Uuid::random();
+        $title = self::SONG_TITLE;
+        $eventsTrigger->trigger(SongWasCreated::create($uuid, $title, self::SONG_DATE_TIME));
+
         return Song::create(
-            Uuid::random(),
-            self::SONG_TITLE
+            $uuid,
+            $title,
+            DateTimeImmutable::createFromFormat(Song::DATE_TIME_FORMAT, self::SONG_DATE_TIME),
+            $eventsTrigger
         );
     }
 
@@ -44,7 +55,15 @@ class SongTest extends TestCase
         $uuid = Uuid::random();
         $title = 'A';
 
-        Song::create($uuid, $title);
+        $eventsTrigger = new EventsTrigger();
+        $eventsTrigger->trigger(SongWasCreated::create($uuid, $title, self::SONG_DATE_TIME));
+
+        Song::create(
+            $uuid,
+            $title,
+            DateTimeImmutable::createFromFormat(Song::DATE_TIME_FORMAT, self::SONG_DATE_TIME),
+            $eventsTrigger
+        );
     }
 
     /**
@@ -143,9 +162,16 @@ class SongTest extends TestCase
 
     private function getAnotherSong(): Song
     {
+        $eventsTrigger = new EventsTrigger();
+        $uuid = Uuid::random();
+        $title = 'Another song title';
+        $eventsTrigger->trigger(SongWasCreated::create($uuid, $title, self::SONG_DATE_TIME));
+
         return Song::create(
-            Uuid::random(),
-            'Another song title'
+            $uuid,
+            $title,
+            DateTimeImmutable::createFromFormat(Song::DATE_TIME_FORMAT, self::SONG_DATE_TIME),
+            $eventsTrigger
         );
     }
 

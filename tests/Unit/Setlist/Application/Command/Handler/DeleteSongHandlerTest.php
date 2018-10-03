@@ -45,7 +45,7 @@ class DeleteSongHandlerTest extends TestCase
 
     /**
      * @test
-     * @expectedException \Setlist\Domain\Exception\Song\SongDoesNotExistException
+     * @expectedException \Setlist\Application\Exception\SongDoesNotExistException
      */
     public function unknownUuidThrowsException()
     {
@@ -64,6 +64,7 @@ class DeleteSongHandlerTest extends TestCase
         $payload = [
             'uuid' => '550e8400-e29b-41d4-a716-446655440000'
         ];
+
         return new DeleteSong($payload);
     }
 }

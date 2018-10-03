@@ -2,6 +2,9 @@
 
 namespace Tests\Unit\Setlist\Domain\Entity\Song;
 
+use DateTimeImmutable;
+use Setlist\Domain\Entity\EventsTrigger;
+use Setlist\Domain\Entity\Song\Event\SongWasCreated;
 use Setlist\Domain\Entity\Song\Song;
 use PHPUnit\Framework\TestCase;
 use Setlist\Domain\Entity\Song\SongFactory;
@@ -16,11 +19,52 @@ class SongFactoryTest extends TestCase
     {
         $uuid = Uuid::random();
         $title = 'Title';
-        $factory = new SongFactory();
+        $eventsTrigger = new EventsTrigger();
+        $dateTime = new DateTimeImmutable();
+        $eventsTrigger->trigger(SongWasCreated::create(
+            $uuid,
+            $title,
+            $dateTime->format(Song::DATE_TIME_FORMAT)
+        ));
+        $song = Song::create($uuid, $title, $dateTime, $eventsTrigger);
+        $factory = new SongFactory(new EventsTrigger());
 
         $this->assertEquals(
-            Song::create($uuid, $title),
+            $song,
             $factory->make($uuid, $title)
+        );
+
+        $this->assertCount(
+            1,
+            $song->events()
+        );
+
+        $this->assertInstanceOf(
+            SongWasCreated::class,
+            $song->events()[0]
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function factoryCanRestoreInstances()
+    {
+        $uuid = Uuid::random();
+        $title = 'Title';
+        $eventsTrigger = new EventsTrigger();
+        $dateTime = DateTimeImmutable::createFromFormat(Song::DATE_TIME_FORMAT, '2018-01-01 00:00:00');
+        $song = Song::create($uuid, $title, $dateTime, $eventsTrigger);
+        $factory = new SongFactory(new EventsTrigger());
+
+        $this->assertEquals(
+            $song,
+            $factory->restore($uuid, $title, $dateTime->format(Song::DATE_TIME_FORMAT))
+        );
+
+        $this->assertCount(
+            0,
+            $song->events()
         );
     }
 }

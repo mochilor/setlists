@@ -15,7 +15,8 @@ class SongWasCreatedTest extends TestCase
     {
         $uuid = Uuid::random();
         $title = 'A Title';
-        $event = SongWasCreated::create($uuid, $title);
+        $formattedDateTime = '2018-01-01 00:00:00';
+        $event = SongWasCreated::create($uuid, $title, $formattedDateTime);
 
         $this->assertInstanceOf(
             SongWasCreated::class,
@@ -30,6 +31,11 @@ class SongWasCreatedTest extends TestCase
         $this->assertEquals(
             $title,
             $event->title()
+        );
+
+        $this->assertEquals(
+            $formattedDateTime,
+            $event->formattedDateTime()
         );
 
         $this->assertInternalType(

@@ -6,6 +6,7 @@ use Setlist\Application\Command\CreateSong;
 use Setlist\Application\Command\Handler\CreateSongHandler;
 use PHPUnit\Framework\TestCase;
 use Setlist\Application\Persistence\Song\ApplicationSongRepository;
+use Setlist\Domain\Entity\EventsTrigger;
 use Setlist\Domain\Entity\Song\Song;
 use Setlist\Domain\Entity\Song\SongFactory;
 use Setlist\Domain\Entity\Song\SongRepository;
@@ -28,7 +29,8 @@ class CreateSongHandlerTest extends TestCase
     {
         $this->songRepository = $this->getMockBuilder(SongRepository::class)->getMock();
         $this->applicationSongRepository = $this->getMockBuilder(ApplicationSongRepository::class)->getMock();
-        $this->songFactory = $this->getMockBuilder(SongFactory::class)->getMock();
+        $eventsTrigger = new EventsTrigger();
+        $this->songFactory = new SongFactory($eventsTrigger);
         $this->commandHandler = new CreateSongHandler(
             $this->songRepository,
             $this->applicationSongRepository,
@@ -46,18 +48,11 @@ class CreateSongHandlerTest extends TestCase
         ];
         $command = new CreateSong($payload);
         $uuid = Uuid::random();
-        $song = $this->getMockBuilder(Song::class)->getMock();
 
         $this->applicationSongRepository
             ->expects($this->once())
             ->method('getAllTitles')
             ->willReturn(self::ALL_TITLES);
-
-        $this->songFactory
-            ->expects($this->once())
-            ->method('make')
-            ->with($uuid, $payload['title'])
-            ->willReturn($song);
 
         $this->songRepository
             ->expects($this->once())

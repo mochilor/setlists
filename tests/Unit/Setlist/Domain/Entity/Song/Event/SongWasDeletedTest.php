@@ -14,12 +14,16 @@ class SongWasDeletedTest extends TestCase
     public function domainEventCanBeCreatedAndHasGetters()
     {
         $uuid = Uuid::random();
-        $title = 'A Title';
         $event = SongWasDeleted::create($uuid);
 
         $this->assertInstanceOf(
             SongWasDeleted::class,
             $event
+        );
+
+        $this->assertEquals(
+            $uuid,
+            $event->id()
         );
 
         $this->assertInternalType(

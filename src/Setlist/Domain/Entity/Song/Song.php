@@ -2,6 +2,7 @@
 
 namespace Setlist\Domain\Entity\Song;
 
+use DateTimeImmutable;
 use Setlist\Domain\Entity\EventsTrigger;
 use Setlist\Domain\Entity\Song\Event\SongChangedItsTitle;
 use Setlist\Domain\Entity\Song\Event\SongWasDeleted;
@@ -13,16 +14,19 @@ class Song
     private $id;
     private $title;
     private $eventsTrigger;
+    private $dateTime;
 
     const MIN_TITLE_LENGTH = 3;
     const MAX_TITLE_LENGTH = 30;
+    const DATE_TIME_FORMAT = 'Y-m-d H:i:s';
 
-    public static function create(Uuid $id, string $title, EventsTrigger $eventsTrigger): self
+    public static function create(Uuid $id, string $title, DateTimeImmutable $dateTime, EventsTrigger $eventsTrigger): self
     {
         $song = new self();
         $song->eventsTrigger = $eventsTrigger;
         $song->setId($id);
         $song->setTitle($title);
+        $song->setDatetime($dateTime);
 
         return $song;
     }
@@ -36,6 +40,11 @@ class Song
     {
         $this->guardTitle($title);
         $this->title = $title;
+    }
+
+    private function setDatetime(\DateTimeImmutable $dateTime)
+    {
+        $this->dateTime = $dateTime;
     }
 
     private function guardTitle(string $title)
@@ -53,6 +62,16 @@ class Song
     public function title(): string
     {
         return $this->title;
+    }
+
+    public function dateTime(): DateTimeImmutable
+    {
+        return $this->dateTime;
+    }
+
+    public function formattedDateTime(): string
+    {
+        return $this->dateTime->format(self::DATE_TIME_FORMAT);
     }
 
     public function changeTitle(string $title)

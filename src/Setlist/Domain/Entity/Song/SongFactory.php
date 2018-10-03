@@ -2,6 +2,7 @@
 
 namespace Setlist\Domain\Entity\Song;
 
+use DateTimeImmutable;
 use Setlist\Domain\Entity\EventsTrigger;
 use Setlist\Domain\Entity\Song\Event\SongWasCreated;
 use Setlist\Domain\Value\Uuid;
@@ -18,15 +19,19 @@ class SongFactory
     public function make(string $uuidString, string $title): Song
     {
         $uuid = Uuid::create($uuidString);
-        $this->eventsTrigger->trigger(SongWasCreated::create($uuid, $title));
+        $dateTime = new DateTimeImmutable();
+        $this->eventsTrigger->trigger(
+            SongWasCreated::create($uuid, $title, $dateTime->format(Song::DATE_TIME_FORMAT))
+        );
 
-        return Song::create($uuid, $title, $this->eventsTrigger);
+        return Song::create($uuid, $title, $dateTime, $this->eventsTrigger);
     }
 
-    public function restore(string $uuidString, string $title): Song
+    public function restore(string $uuidString, string $title, string $formattedDateTime): Song
     {
         $uuid = Uuid::create($uuidString);
+        $dateTime = DateTimeImmutable::createFromFormat(Song::DATE_TIME_FORMAT, $formattedDateTime);
 
-        return Song::create($uuid, $title, $this->eventsTrigger);
+        return Song::create($uuid, $title, $dateTime, $this->eventsTrigger);
     }
 }

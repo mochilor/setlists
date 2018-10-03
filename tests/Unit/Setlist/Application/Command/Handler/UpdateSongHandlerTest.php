@@ -46,7 +46,7 @@ class UpdateSongHandlerTest extends TestCase
 
     /**
      * @test
-     * @expectedException \Setlist\Domain\Exception\Song\SongDoesNotExistException
+     * @expectedException \Setlist\Application\Exception\SongDoesNotExistException
      */
     public function unknownUuidThrowsException()
     {

@@ -9,13 +9,15 @@ class SongWasCreated
     private $id;
     private $title;
     private $occurredOn;
+    private $formattedDateTime;
 
-    public static function create(Uuid $id, string $title): self
+    public static function create(Uuid $id, string $title, string $formattedDateTime): self
     {
         $event = new self();
 
         $event->id = $id;
         $event->title = $title;
+        $event->formattedDateTime = $formattedDateTime;
         $event->occurredOn = (new \DateTimeImmutable())->getTimestamp();
 
         return $event;
@@ -34,5 +36,10 @@ class SongWasCreated
     public function title(): string
     {
         return $this->title;
+    }
+
+    public function formattedDateTime(): string
+    {
+        return $this->formattedDateTime;
     }
 }

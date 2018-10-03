@@ -16,6 +16,7 @@ class CreateSongTable extends Migration
         Schema::create('song', function (Blueprint $table) {
             $table->uuid('id')->unique();
             $table->string('title')->unique();
+            $table->timestamp('created_at')->nullable();
 
             $table->primary('id');
         });
