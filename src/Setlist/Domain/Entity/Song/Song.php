@@ -20,7 +20,12 @@ class Song
     const MAX_TITLE_LENGTH = 30;
     const DATE_TIME_FORMAT = 'Y-m-d H:i:s';
 
-    public static function create(Uuid $id, string $title, DateTimeImmutable $dateTime, EventsTrigger $eventsTrigger): self
+    public static function create(
+        Uuid $id,
+        string $title,
+        DateTimeImmutable $dateTime,
+        EventsTrigger $eventsTrigger
+    ): self
     {
         $song = new self();
         $song->eventsTrigger = $eventsTrigger;
@@ -96,7 +101,7 @@ class Song
         $this->eventsTrigger->trigger(SongWasDeleted::create($this->id()));
     }
 
-    public function events()
+    public function events(): array
     {
         return $this->eventsTrigger->events();
     }

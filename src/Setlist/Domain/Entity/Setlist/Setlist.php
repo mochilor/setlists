@@ -2,7 +2,8 @@
 
 namespace Setlist\Domain\Entity\Setlist;
 
-use DateTimeImmutable;
+use DateTime;
+use Setlist\Domain\Entity\EventsTrigger;
 use Setlist\Domain\Exception\Setlist\InvalidActCollectionException;
 use Setlist\Domain\Exception\Setlist\InvalidSetlistNameException;
 use Setlist\Domain\Value\Uuid;
@@ -13,13 +14,22 @@ class Setlist
     protected $actCollection;
     private $name;
     private $date;
+    private $eventsTrigger;
 
     const MIN_NAME_LENGTH = 3;
     const MAX_NAME_LENGTH = 30;
+    const DATE_TIME_FORMAT = 'Y-m-d';
 
-    public static function create(Uuid $id, ActCollection $actCollection, string $name, DateTimeImmutable $date): self
+    public static function create(
+        Uuid $id,
+        ActCollection $actCollection,
+        string $name,
+        DateTime $date,
+        EventsTrigger $eventsTrigger
+    ): self
     {
         $setlist = new static();
+        $setlist->eventsTrigger = $eventsTrigger;
 
         $setlist->setId($id);
         $setlist->setActCollection($actCollection);
@@ -61,7 +71,7 @@ class Setlist
         }
     }
 
-    private function setDatetime(DateTimeImmutable $date)
+    private function setDatetime(DateTime $date)
     {
         $this->date = $date;
     }
@@ -81,14 +91,14 @@ class Setlist
         return sprintf('%s - %s', $this->formattedDate(), $this->name());
     }
 
-    public function date(): DateTimeImmutable
+    public function date(): DateTime
     {
         return $this->date;
     }
 
     public function formattedDate(): string
     {
-        return $this->date->format('Y-m-d');
+        return $this->date->format(self::DATE_TIME_FORMAT);
     }
 
     public function changeName(string $name)
@@ -99,7 +109,7 @@ class Setlist
         }
     }
 
-    public function changeDate(DateTimeImmutable $date)
+    public function changeDate(DateTime $date)
     {
         if ($date !== $this->date()) {
             $this->setDatetime($date);
@@ -126,5 +136,10 @@ class Setlist
         if ($canChange) {
             $this->setActCollection($actCollection);
         }
+    }
+
+    public function events(): array
+    {
+        return $this->eventsTrigger->events();
     }
 }

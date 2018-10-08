@@ -26,12 +26,12 @@ class SongFactoryTest extends TestCase
             $title,
             $dateTime->format(Song::DATE_TIME_FORMAT)
         ));
-        $song = Song::create($uuid, $title, $dateTime, $eventsTrigger);
         $factory = new SongFactory(new EventsTrigger());
+        $song = $factory->make($uuid, $title);
 
-        $this->assertEquals(
-            $song,
-            $factory->make($uuid, $title)
+        $this->assertInstanceOf(
+            Song::class,
+            $song
         );
 
         $this->assertCount(

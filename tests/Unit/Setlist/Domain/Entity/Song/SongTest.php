@@ -188,4 +188,31 @@ class SongTest extends TestCase
             $song->events()
         );
     }
+
+    /**
+     * @test
+     */
+    public function songHasDateTime()
+    {
+        $song = $this->getSong();
+        $dateTime = DateTimeImmutable::createFromFormat(Song::DATE_TIME_FORMAT, self::SONG_DATE_TIME);
+
+        $this->assertEquals(
+            $dateTime,
+            $song->dateTime()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function songHasFormattedDateTime()
+    {
+        $song = $this->getSong();
+
+        $this->assertEquals(
+            self::SONG_DATE_TIME,
+            $song->formattedDateTime()
+        );
+    }
 }

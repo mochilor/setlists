@@ -2,8 +2,9 @@
 
 namespace Tests\Unit\Setlist\Domain\Entity\Setlist;
 
-use DateTimeImmutable;
+use DateTime;
 use PHPUnit\Framework\TestCase;
+use Setlist\Domain\Entity\EventsTrigger;
 use Setlist\Domain\Entity\Setlist\Act;
 use Setlist\Domain\Entity\Setlist\Setlist;
 use Setlist\Domain\Entity\Setlist\ActCollection;
@@ -45,12 +46,13 @@ class SetlistTest extends TestCase
     {
         $id = $this->getMockBuilder(Uuid::class)->getMock();
         $actCollection = ActCollection::create(...$acts);
-        $date = DateTimeImmutable::createFromFormat(self::DATE_FORMAT, self::FULL_DATETIME);
+        $date = DateTime::createFromFormat(self::DATE_FORMAT, self::FULL_DATETIME);
+        $eventsTrigger = new EventsTrigger();
         if (!$dummy) {
-            return Setlist::create($id, $actCollection, $name, $date);
+            return Setlist::create($id, $actCollection, $name, $date,$eventsTrigger);
         }
 
-        return DummySetList::create($id, $actCollection, $name, $date);
+        return DummySetList::create($id, $actCollection, $name, $date, $eventsTrigger);
     }
 
     /**
@@ -69,6 +71,19 @@ class SetlistTest extends TestCase
     public function setlistWithEmptyActCollectionThrowsException()
     {
         $this->getSetlist([], self::SETLIST_NAME);
+    }
+
+    /**
+     * @test
+     */
+    public function setlisHasId()
+    {
+        $setList = $this->getSetlist([$this->getAct()], self::SETLIST_NAME);
+
+        $this->assertInstanceOf(
+            Uuid::class,
+            $setList->id()
+        );
     }
 
     /**
@@ -118,7 +133,7 @@ class SetlistTest extends TestCase
         $setList = $this->getSetlist([$this->getAct()], self::SETLIST_NAME);
 
         $this->assertInstanceOf(
-            DateTimeImmutable::class,
+            DateTime::class,
             $setList->date()
         );
     }
@@ -159,7 +174,7 @@ class SetlistTest extends TestCase
     {
         $setList = $this->getSetlist([$this->getAct()], self::SETLIST_NAME);
 
-        $newDate = DateTimeImmutable::createFromFormat(self::DATE_FORMAT, '2017-08-30 00:00:00');
+        $newDate = DateTime::createFromFormat(self::DATE_FORMAT, '2017-08-30 00:00:00');
         $setList->changeDate($newDate);
 
         $this->assertEquals(
