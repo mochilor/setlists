@@ -16,11 +16,11 @@ class SetlistFactory
         $this->eventsTrigger = $eventsTrigger;
     }
 
-    public function make(string $uuidString, array $acts, string $name): Setlist
+    public function make(string $uuidString, array $acts, string $name, string $formattedDate): Setlist
     {
         $uuid = Uuid::create($uuidString);
         $actCollection = ActCollection::create(...$acts);
-        $dateTime = new DateTime();
+        $dateTime = DateTime::createFromFormat(Setlist::DATE_TIME_FORMAT, $formattedDate);
         $this->eventsTrigger->trigger(
             SetlistWasCreated::create($uuid, $actCollection, $name, $dateTime->format(Setlist::DATE_TIME_FORMAT))
         );
@@ -28,11 +28,11 @@ class SetlistFactory
         return Setlist::create($uuid, $actCollection, $name, $dateTime, $this->eventsTrigger);
     }
 
-    public function restore(string $uuidString, array $acts, string $name, string $formattedDateTime): Setlist
+    public function restore(string $uuidString, array $acts, string $name, string $formattedDate): Setlist
     {
         $uuid = Uuid::create($uuidString);
         $actCollection = ActCollection::create(...$acts);
-        $dateTime = DateTime::createFromFormat(Setlist::DATE_TIME_FORMAT, $formattedDateTime);
+        $dateTime = DateTime::createFromFormat(Setlist::DATE_TIME_FORMAT, $formattedDate);
 
         return Setlist::create($uuid, $actCollection, $name, $dateTime, $this->eventsTrigger);
     }

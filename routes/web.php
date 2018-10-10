@@ -16,9 +16,19 @@ $router->get('/', function () use ($router) {
 });
 
 $router->group(['prefix' => 'api'], function () use ($router) {
-    $router->post('song',  ['uses' => 'SongController@createSong']);
-    $router->patch('song/{id}',  ['uses' => 'SongController@updateSong']);
-    $router->delete('song/{id}',  ['uses' => 'SongController@deleteSong']);
+
+    // Song routes
+    $router->group(['prefix' => 'song'], function () use ($router) {
+        $router->post('',  ['uses' => 'SongController@createSong']);
+        $router->patch('{id}',  ['uses' => 'SongController@updateSong']);
+        $router->delete('{id}',  ['uses' => 'SongController@deleteSong']);
+    });
+
+    // Setlist routes
+    $router->group(['prefix' => 'setlist'], function () use ($router) {
+        $router->post('',  ['uses' => 'SetlistController@createSetlist']);
+    });
+
 
 //    $router->get('authors/{id}', ['uses' => 'AuthorController@showOneAuthor']);
 //

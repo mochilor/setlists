@@ -4,7 +4,6 @@ namespace Tests\Unit\Setlist\Domain\Entity\Setlist;
 
 use Setlist\Domain\Entity\Setlist\Act;
 use PHPUnit\Framework\TestCase;
-use Setlist\Domain\Entity\Setlist\ActCollection;
 use Setlist\Domain\Entity\Setlist\SongCollection;
 use Setlist\Domain\Entity\Song\Song;
 
