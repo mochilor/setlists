@@ -2,6 +2,8 @@
 
 namespace App\Service;
 
+use Setlist\Application\Command\Handler\UpdateSetlistHandler;
+use Setlist\Application\Command\UpdateSetlist;
 use Setlist\Infrastructure\Messaging\CommandBus;
 use Setlist\Application\Command\CreateSong;
 use Setlist\Application\Command\DeleteSong;
@@ -30,5 +32,6 @@ class RoutingInitializer
 
         // Setlist
         $this->commandBus->addHandler(CreateSetlist::class, app(CreateSetlistHandler::class));
+        $this->commandBus->addHandler(UpdateSetlist::class, app(UpdateSetlistHandler::class));
     }
 }

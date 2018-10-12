@@ -4,6 +4,8 @@ namespace Setlist\Domain\Entity\Setlist;
 
 use DateTime;
 use Setlist\Domain\Entity\EventsTrigger;
+use Setlist\Domain\Entity\Setlist\Event\SetlistChangedItsDate;
+use Setlist\Domain\Entity\Setlist\Event\SetlistChangedItsName;
 use Setlist\Domain\Exception\Setlist\InvalidActCollectionException;
 use Setlist\Domain\Exception\Setlist\InvalidSetlistNameException;
 use Setlist\Domain\Value\Uuid;
@@ -105,7 +107,7 @@ class Setlist
     {
         if ($name != $this->name()) {
             $this->setName($name);
-            // Event
+            $this->eventsTrigger->trigger(SetlistChangedItsName::create($this->id(), $name));
         }
     }
 
@@ -113,7 +115,7 @@ class Setlist
     {
         if ($date !== $this->date()) {
             $this->setDatetime($date);
-            // Event
+            $this->eventsTrigger->trigger(SetlistChangedItsDate::create($this->id(), $date));
         }
     }
 
@@ -128,7 +130,6 @@ class Setlist
         foreach ($actCollection as $key => $act) {
             if (!$act->isEqual($this->actCollection()[$key])) {
                 $canChange = true;
-                // Event
                 break;
             }
         }

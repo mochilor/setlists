@@ -12,4 +12,9 @@ class ApplicationSetlistRepository implements ApplicationSetlistRepositoryInterf
     {
         return $this->names;
     }
+
+    public function getOtherNames(string $uuid): array
+    {
+        return [];
+    }
 }

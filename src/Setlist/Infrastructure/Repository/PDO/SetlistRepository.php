@@ -3,6 +3,9 @@
 namespace Setlist\Infrastructure\Repository\PDO;
 
 use Setlist\Domain\Entity\Setlist\ActCollection;
+use Setlist\Domain\Entity\Setlist\ActFactory;
+use Setlist\Domain\Entity\Setlist\Event\SetlistChangedItsDate;
+use Setlist\Domain\Entity\Setlist\Event\SetlistChangedItsName;
 use Setlist\Domain\Entity\Setlist\Event\SetlistWasCreated;
 use Setlist\Domain\Entity\Setlist\SetlistFactory;
 use Setlist\Domain\Entity\Setlist\Setlist;
@@ -14,13 +17,21 @@ class SetlistRepository implements SetlistRepositoryInterface
 {
     private $PDO;
     private $setlistFactory;
+    private $songRepository;
+    private $actFactory;
 
     const TABLE_NAME = 'setlist';
 
-    public function __construct(PDO $PDO, SetlistFactory $setlistFactory)
-    {
+    public function __construct(
+        PDO $PDO,
+        SetlistFactory $setlistFactory,
+        SongRepository $songRepository,
+        ActFactory $actFactory
+    ) {
         $this->PDO = $PDO;
         $this->setlistFactory = $setlistFactory;
+        $this->songRepository = $songRepository;
+        $this->actFactory = $actFactory;
     }
 
     public function nextIdentity(): Uuid
@@ -49,10 +60,33 @@ SQL;
         $setlistData = $query->fetch(PDO::FETCH_ASSOC);
 
         if ($setlistData) {
+            $sql = <<<SQL
+SELECT * FROM `setlist_song` WHERE setlist_id = :uuid;
+SQL;
+            $query = $this->PDO->prepare($sql);
+            $query->bindValue('uuid', $uuid);
+            $query->execute();
+            $setlistSongs = $query->fetchAll(PDO::FETCH_ASSOC);
+
+            $currentAct = 0;
+            $acts =
+            $actsForSetlist = [];
+            foreach ($setlistSongs as $song) {
+                if ($song['act'] != $currentAct) {
+                    $currentAct = $song['act'];
+                }
+
+                $acts[$currentAct][] = $this->songRepository->get(Uuid::create($song['song_id']));
+            }
+
+            foreach ($acts as $act) {
+                $actsForSetlist[] = $this->actFactory->make($act);
+            }
+
             return $this->setlistFactory->restore(
                 $setlistData['id'],
-                $setlistData['acts'], // Hay que hacer select de las canciones y agruparlas en acts
-                $setlistData['title'],
+                $actsForSetlist,
+                $setlistData['name'],
                 $setlistData['date']
             );
         }
@@ -66,9 +100,12 @@ SQL;
             case SetlistWasCreated::class:
                 $this->insert($event->id(), $event->name(), $event->actCollection(), $event->formattedDate());
                 break;
-//            case SetlistChangedItsName::class:
-//                $this->update($event->id(), $event->title());
-//                break;
+            case SetlistChangedItsName::class:
+                $this->update($event->id(), 'name', $event->name());
+                break;
+            case SetlistChangedItsDate::class:
+                $this->update($event->id(), 'date', $event->date()->format(Setlist::DATE_TIME_FORMAT));
+                break;
 //            case SetlistWasDeleted::class:
 //                $this->delete($event->id());
 //                break;
@@ -99,5 +136,17 @@ SQL;
             $songQuery = $this->PDO->prepare($songSql);
             $songQuery->execute();
         }
+    }
+
+    private function update(string $uuid, string $parameter, string $value)
+    {
+        $sql = <<<SQL
+UPDATE `%s` SET %s = :value WHERE id = :uuid;
+SQL;
+        $sql = sprintf($sql, self::TABLE_NAME, $parameter);
+        $query = $this->PDO->prepare($sql);
+        $query->bindValue('value', $value);
+        $query->bindValue('uuid', $uuid);
+        $query->execute();
     }
 }

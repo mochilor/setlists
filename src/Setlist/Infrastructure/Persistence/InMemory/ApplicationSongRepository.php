@@ -12,4 +12,9 @@ class ApplicationSongRepository implements ApplicationSongRepositoryInterface
     {
         return $this->titles;
     }
+
+    public function getOtherTitles(string $uuid): array
+    {
+        return $this->titles;
+    }
 }

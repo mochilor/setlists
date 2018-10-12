@@ -4,6 +4,8 @@ namespace Setlist\Application\Command\Handler;
 
 use Setlist\Application\Command\UpdateSong;
 use Setlist\Application\Exception\SongDoesNotExistException;
+use Setlist\Application\Exception\SongTitleNotUniqueException;
+use Setlist\Application\Persistence\Song\ApplicationSongRepository;
 use Setlist\Domain\Entity\Song\Song;
 use Setlist\Domain\Entity\Song\SongRepository;
 use Setlist\Domain\Value\Uuid;
@@ -11,9 +13,11 @@ use Setlist\Domain\Value\Uuid;
 class UpdateSongHandler
 {
     private $songRepository;
+    private $applicationSongRepository;
 
-    public function __construct(SongRepository $songRepository) {
+    public function __construct(SongRepository $songRepository, ApplicationSongRepository $applicationSongRepository) {
         $this->songRepository = $songRepository;
+        $this->applicationSongRepository = $applicationSongRepository;
     }
 
     public function __invoke(UpdateSong $command)
@@ -21,12 +25,22 @@ class UpdateSongHandler
         $uuid = Uuid::create($command->uuid());
         $song = $this->songRepository->get($uuid);
 
-        if (!$song instanceof Song) {
-            throw new SongDoesNotExistException('Song not found');
-        }
+        $this->guard($command, $song);
 
         $song->changeTitle($command->title());
 
         $this->songRepository->save($song);
+    }
+
+    private function guard(UpdateSong $command, $song)
+    {
+        if (!$song instanceof Song) {
+            throw new SongDoesNotExistException('Song not found');
+        }
+
+        $otherTitles = $this->applicationSongRepository->getOtherTitles($command->uuid());
+        if (in_array($command->title(), $otherTitles)) {
+            throw new SongTitleNotUniqueException('Song title already exists');
+        }
     }
 }

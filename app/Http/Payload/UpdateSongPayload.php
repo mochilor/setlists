@@ -18,8 +18,8 @@ class UpdateSongPayload
     public function __invoke()
     {
         return [
-            'title' => $this->title,
             'uuid' => $this->uuid,
+            'title' => $this->title,
         ];
     }
 }

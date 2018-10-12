@@ -5,6 +5,7 @@ namespace Tests\Unit\Setlist\Application\Command\Handler;
 use Setlist\Application\Command\CreateSetlist;
 use Setlist\Application\Command\Handler\CreateSetlistHandler;
 use PHPUnit\Framework\TestCase;
+use Setlist\Application\Command\Handler\Helper\SetlistHandlerHelper;
 use Setlist\Application\Persistence\Setlist\ApplicationSetlistRepository;
 use Setlist\Domain\Entity\EventsTrigger;
 use Setlist\Domain\Entity\Setlist\SetlistFactory;
@@ -12,7 +13,6 @@ use Setlist\Domain\Entity\Song\Song;
 use Setlist\Domain\Entity\Song\SongFactory;
 use Setlist\Domain\Entity\Setlist\SetlistRepository;
 use Setlist\Domain\Entity\Song\SongRepository;
-use Setlist\Domain\Entity\Setlist\ActFactory;
 use Setlist\Domain\Value\Uuid;
 
 class CreateSetlistHandlerTest extends TestCase
@@ -21,7 +21,7 @@ class CreateSetlistHandlerTest extends TestCase
     private $setlistRepository;
     private $setlistFactory;
     private $songFactory;
-    private $actFactory;
+    private $setlistHandlerHelper;
     private $songRepository;
     private $commandHandler;
 
@@ -38,14 +38,16 @@ class CreateSetlistHandlerTest extends TestCase
         $this->songRepository = $this->getMockBuilder(SongRepository::class)->getMock();
         $this->setlistFactory = new SetlistFactory(new EventsTrigger());
         $this->songFactory = new SongFactory(new EventsTrigger());
-        $this->actFactory = new ActFactory();
+        $this->setlistHandlerHelper = $this->getMockBuilder(SetlistHandlerHelper::class)
+            ->disableOriginalConstructor()
+            ->getMock();
         $this->commandHandler = new CreateSetlistHandler(
             $this->applicationSetlistRepository,
             $this->setlistRepository,
             $this->songRepository,
             $this->setlistFactory,
             $this->songFactory,
-            $this->actFactory
+            $this->setlistHandlerHelper
         );
     }
 
@@ -123,6 +125,7 @@ class CreateSetlistHandlerTest extends TestCase
     /**
      * @test
      * @expectedException \Setlist\Application\Exception\InvalidSetlistException
+     * @expectedExceptionMessage Non unique song provided
      */
     public function repeatedSongUuidThrowsException()
     {
@@ -142,6 +145,42 @@ class CreateSetlistHandlerTest extends TestCase
             ->expects($this->once())
             ->method('getAllNames')
             ->willReturn(self::ALL_NAMES);
+
+        ($this->commandHandler)($command);
+    }
+
+    /**
+     * @test
+     * @expectedException \Setlist\Application\Exception\InvalidSetlistException
+     * @expectedExceptionMessage Invalid song provided
+     */
+    public function nonExistentSongThrowsException()
+    {
+        $payload = [
+            'name' => 'New Name',
+            'acts' => [
+                [
+                    Uuid::random()->uuid(),
+                    Uuid::random()->uuid(),
+                ],
+            ],
+        ];
+        $command = new CreateSetlist($payload);
+
+        $this->applicationSetlistRepository
+            ->expects($this->once())
+            ->method('getAllNames')
+            ->willReturn(self::ALL_NAMES);
+
+        $this->songRepository
+            ->expects($this->at(0))
+            ->method('get')
+            ->willReturn($this->getSongMock());
+
+        $this->songRepository
+            ->expects($this->at(1))
+            ->method('get')
+            ->willReturn(null);
 
         ($this->commandHandler)($command);
     }

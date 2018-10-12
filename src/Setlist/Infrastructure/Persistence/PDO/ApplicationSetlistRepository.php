@@ -21,4 +21,17 @@ SELECT `name` FROM `setlist`;
 SQL;
         return $this->PDO->query($sql)->fetchAll(PDO::FETCH_COLUMN);
     }
+
+    public function getOtherNames(string $uuid): array
+    {
+        $sql = <<<SQL
+SELECT `name` FROM `setlist` WHERE `id` != :uuid;
+SQL;
+        $query = $this->PDO->prepare($sql);
+        $query->bindValue('uuid', $uuid);
+        $query->execute();
+        return $query->fetchAll(PDO::FETCH_COLUMN);
+    }
+
+
 }

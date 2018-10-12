@@ -2,64 +2,73 @@
 
 namespace Setlist\Application\Command\Handler;
 
-use Setlist\Application\Command\CreateSetlist;
+use DateTime;
 use Setlist\Application\Command\Handler\Helper\SetlistHandlerHelper;
+use Setlist\Application\Command\UpdateSetlist;
 use Setlist\Application\Exception\InvalidSetlistException;
+use Setlist\Application\Exception\SetlistDoesNotExistException;
 use Setlist\Application\Exception\SetlistNameNotUniqueException;
 use Setlist\Application\Persistence\Setlist\ApplicationSetlistRepository;
+use Setlist\Domain\Entity\Setlist\ActCollection;
+use Setlist\Domain\Entity\Setlist\Setlist;
 use Setlist\Domain\Entity\Setlist\SetlistFactory;
 use Setlist\Domain\Entity\Setlist\SetlistRepository;
 use Setlist\Domain\Entity\Song\SongFactory;
 use Setlist\Domain\Entity\Song\SongRepository;
-use Setlist\Domain\Service\Setlist\SetlistNameValidator;
+use Setlist\Domain\Value\Uuid;
 
-class CreateSetlistHandler
+class UpdateSetlistHandler
 {
-    private $applicationSetlistRepository;
     private $setlistRepository;
+    private $applicationSetlistRepository;
     private $songRepository;
     private $setlistFactory;
     private $songFactory;
     private $setlistHandlerHelper;
 
     public function __construct(
-        ApplicationSetlistRepository $applicationSetlistRepository,
         SetlistRepository $setlistRepository,
+        ApplicationSetlistRepository $applicationSetlistRepository,
         SongRepository $songRepository,
         SetlistFactory $setlistFactory,
         SongFactory $songFactory,
         SetlistHandlerHelper $setlistHandlerHelper
     ) {
-        $this->applicationSetlistRepository = $applicationSetlistRepository;
         $this->setlistRepository = $setlistRepository;
         $this->setlistFactory = $setlistFactory;
         $this->songFactory = $songFactory;
-        $this->songRepository = $songRepository;
         $this->setlistHandlerHelper = $setlistHandlerHelper;
+        $this->songRepository = $songRepository;
+        $this->applicationSetlistRepository = $applicationSetlistRepository;
     }
 
-    public function __invoke(CreateSetlist $command)
+    public function __invoke(UpdateSetlist $command)
     {
-        $this->guard($command);
+        $uuid = Uuid::create($command->uuid());
+        $setlist = $this->setlistRepository->get($uuid);
 
-        $actsForSetlist = $this->setlistHandlerHelper->getActsForSetlist($command->acts());
+        $this->guard($command, $setlist);
 
-        $setlist = $this->setlistFactory->make(
-            $this->setlistRepository->nextIdentity(),
-            $actsForSetlist,
-            $command->name(),
-            $command->date()
-        );
+        $acts = $this->setlistHandlerHelper->getActsForSetlist($command->acts());
+        $actCollection = ActCollection::create(...$acts);
+        $dateTime = DateTime::createFromFormat(Setlist::DATE_TIME_FORMAT, $command->date());
+
+        $setlist->changeName($command->name());
+        $setlist->changeActCollection($actCollection);
+        $setlist->changeDate($dateTime);
 
         $this->setlistRepository->save($setlist);
     }
 
-    private function guard(CreateSetlist $command)
+    private function guard(UpdateSetlist $command, $setlist)
     {
-        $setlistNames = $this->applicationSetlistRepository->getAllNames();
-        $setlistNameValidator = SetlistNameValidator::create($setlistNames);
-        if (!$setlistNameValidator->setlistNameIsUnique($command->name())) {
-            throw new SetlistNameNotUniqueException();
+        if (!$setlist instanceof Setlist) {
+            throw new SetlistDoesNotExistException('Setlist not found');
+        }
+
+        $otherNames = $this->applicationSetlistRepository->getOtherNames($command->uuid());
+        if (in_array($command->name(), $otherNames)) {
+            throw new SetlistNameNotUniqueException('Setlist name already exists');
         }
 
         $songs = [];
