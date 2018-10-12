@@ -40,7 +40,7 @@ class Uuid
         return $uuid->uuid() === $this->uuid();
     }
 
-    public function uuid()
+    public function uuid(): string
     {
         return $this->uuid;
     }

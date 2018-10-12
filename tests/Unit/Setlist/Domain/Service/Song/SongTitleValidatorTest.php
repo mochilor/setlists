@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Unit\Setlist\Domain\Validator\Song;
+namespace Tests\Unit\Setlist\Domain\Service\Song;
 
 use Setlist\Domain\Service\Song\SongTitleValidator;
 use PHPUnit\Framework\TestCase;

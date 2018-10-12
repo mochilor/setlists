@@ -3,6 +3,7 @@
 namespace Setlist\Application\Command\Handler;
 
 use Setlist\Application\Command\CreateSetlist;
+use Setlist\Application\Exception\InvalidSetlistException;
 use Setlist\Application\Exception\SetlistNameNotUniqueException;
 use Setlist\Application\Persistence\Setlist\ApplicationSetlistRepository;
 use Setlist\Domain\Entity\Setlist\ActFactory;
@@ -41,13 +42,41 @@ class CreateSetlistHandler
 
     public function __invoke(CreateSetlist $command)
     {
+        $this->guard($command);
+
+        $actsForSetlist = $this->getActsForSetlist($command->acts());
+
+        $setlist = $this->setlistFactory->make(
+            $this->setlistRepository->nextIdentity(),
+            $actsForSetlist,
+            $command->name(),
+            $command->date()
+        );
+
+        $this->setlistRepository->save($setlist);
+    }
+
+    private function guard(CreateSetlist $command)
+    {
         $setlistNames = $this->applicationSetlistRepository->getAllNames();
         $setlistNameValidator = SetlistNameValidator::create($setlistNames);
         if (!$setlistNameValidator->setlistNameIsUnique($command->name())) {
             throw new SetlistNameNotUniqueException();
         }
 
-        $acts = $command->acts();
+        $songs = [];
+        foreach ($command->acts() as $act) {
+            foreach ($act as $songUuid) {
+                if (in_array($songUuid, $songs)) {
+                    throw new InvalidSetlistException();
+                }
+                $songs[] = $songUuid;
+            }
+        }
+    }
+
+    private function getActsForSetlist(array $acts): array
+    {
         $actsForSetlist = [];
 
         foreach ($acts as $act) {
@@ -62,13 +91,6 @@ class CreateSetlistHandler
             $actsForSetlist[] = $this->actFactory->make($songs);
         }
 
-        $setlist = $this->setlistFactory->make(
-            $this->setlistRepository->nextIdentity(),
-            $actsForSetlist,
-            $command->name(),
-            $command->date()
-        );
-
-        $this->setlistRepository->save($setlist);
+        return $actsForSetlist;
     }
 }

@@ -27,11 +27,7 @@ class CreateSongHandler
 
     public function __invoke(CreateSong $command)
     {
-        $songTitles = $this->applicationSongRepository->getAllTitles();
-        $songTitleValidator = SongTitleValidator::create($songTitles);
-        if (!$songTitleValidator->songTitleIsUnique($command->title())) {
-            throw new SongTitleNotUniqueException();
-        }
+        $this->guard($command);
 
         $song = $this->songFactory->make(
             $this->songRepository->nextIdentity(),
@@ -39,5 +35,14 @@ class CreateSongHandler
         );
 
         $this->songRepository->save($song);
+    }
+
+    private function guard(CreateSong $command)
+    {
+        $songTitles = $this->applicationSongRepository->getAllTitles();
+        $songTitleValidator = SongTitleValidator::create($songTitles);
+        if (!$songTitleValidator->songTitleIsUnique($command->title())) {
+            throw new SongTitleNotUniqueException();
+        }
     }
 }

@@ -7,7 +7,6 @@ use Setlist\Application\Command\Handler\CreateSongHandler;
 use PHPUnit\Framework\TestCase;
 use Setlist\Application\Persistence\Song\ApplicationSongRepository;
 use Setlist\Domain\Entity\EventsTrigger;
-use Setlist\Domain\Entity\Song\Song;
 use Setlist\Domain\Entity\Song\SongFactory;
 use Setlist\Domain\Entity\Song\SongRepository;
 use Setlist\Domain\Value\Uuid;

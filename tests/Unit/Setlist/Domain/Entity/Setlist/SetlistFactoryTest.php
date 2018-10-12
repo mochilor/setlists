@@ -18,7 +18,7 @@ class SetlistFactoryTest extends TestCase
     public function factoryCanMakeInstances()
     {
         $uuid = Uuid::random();
-        $songs = [
+        $acts = [
             $this->getAct(),
             $this->getAct(),
             $this->getAct(),
@@ -29,7 +29,7 @@ class SetlistFactoryTest extends TestCase
         $eventsTrigger = new EventsTrigger();
 
         $factory = new SetlistFactory($eventsTrigger);
-        $setlist = $factory->make($uuid, $songs, $name, $formattedDate);
+        $setlist = $factory->make($uuid, $acts, $name, $formattedDate);
 
         $this->assertInstanceOf(
             Setlist::class,
@@ -50,5 +50,34 @@ class SetlistFactoryTest extends TestCase
     protected function getAct()
     {
         return $this->getMockBuilder(Act::class)->getMock();
+    }
+
+    /**
+     * @test
+     */
+    public function factoryCanRestoreInstances()
+    {
+        $uuid = Uuid::random();
+        $acts = [
+            $this->getAct(),
+            $this->getAct(),
+            $this->getAct(),
+        ];
+        $name = 'Name';
+        $formattedDate = '2018-10-01';
+        $eventsTrigger = new EventsTrigger();
+
+        $factory = new SetlistFactory($eventsTrigger);
+        $setlist = $factory->restore($uuid, $acts, $name, $formattedDate);
+
+        $this->assertInstanceOf(
+            Setlist::class,
+            $setlist
+        );
+
+        $this->assertCount(
+            0,
+            $setlist->events()
+        );
     }
 }
