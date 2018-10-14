@@ -1,9 +1,9 @@
 <?php
 
-namespace Tests\Unit\Setlist\Application\Command;
+namespace Tests\Unit\Setlist\Application\Command\Setlist;
 
-use Setlist\Application\Command\CreateSetlist;
 use PHPUnit\Framework\TestCase;
+use Setlist\Application\Command\Setlist\CreateSetlist;
 
 class CreateSetlistTest extends TestCase
 {

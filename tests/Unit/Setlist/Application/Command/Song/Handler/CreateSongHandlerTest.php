@@ -1,9 +1,9 @@
 <?php
 
-namespace Tests\Unit\Setlist\Application\Command\Handler;
+namespace Tests\Unit\Setlist\Application\Command\Song\Handler;
 
-use Setlist\Application\Command\CreateSong;
-use Setlist\Application\Command\Handler\CreateSongHandler;
+use Setlist\Application\Command\Song\CreateSong;
+use Setlist\Application\Command\Song\Handler\CreateSongHandler;
 use PHPUnit\Framework\TestCase;
 use Setlist\Application\Persistence\Song\ApplicationSongRepository;
 use Setlist\Domain\Entity\EventsTrigger;

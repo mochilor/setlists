@@ -1,6 +1,8 @@
 <?php
 
-namespace Setlist\Application\Command;
+namespace Setlist\Application\Command\Song;
+
+use Setlist\Application\Command\BaseCommand;
 
 class CreateSong extends BaseCommand
 {

@@ -1,9 +1,16 @@
 <?php
 
-namespace Setlist\Application\Command;
+namespace Setlist\Application\Command\Setlist;
 
-class CreateSetlist extends BaseCommand
+use Setlist\Application\Command\BaseCommand;
+
+class UpdateSetlist extends BaseCommand
 {
+    public function uuid(): string
+    {
+        return $this->payload()['uuid'];
+    }
+
     public function name(): string
     {
         return $this->payload()['name'];

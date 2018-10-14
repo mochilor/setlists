@@ -2,17 +2,17 @@
 
 namespace App\Service;
 
-use Setlist\Application\Command\Handler\UpdateSetlistHandler;
-use Setlist\Application\Command\UpdateSetlist;
+use Setlist\Application\Command\Setlist\CreateSetlist;
+use Setlist\Application\Command\Setlist\Handler\CreateSetlistHandler;
+use Setlist\Application\Command\Setlist\Handler\UpdateSetlistHandler;
+use Setlist\Application\Command\Setlist\UpdateSetlist;
+use Setlist\Application\Command\Song\CreateSong;
+use Setlist\Application\Command\Song\DeleteSong;
+use Setlist\Application\Command\Song\Handler\CreateSongHandler;
+use Setlist\Application\Command\Song\Handler\DeleteSongHandler;
+use Setlist\Application\Command\Song\Handler\UpdateSongHandler;
+use Setlist\Application\Command\Song\UpdateSong;
 use Setlist\Infrastructure\Messaging\CommandBus;
-use Setlist\Application\Command\CreateSong;
-use Setlist\Application\Command\DeleteSong;
-use Setlist\Application\Command\UpdateSong;
-use Setlist\Application\Command\Handler\CreateSongHandler;
-use Setlist\Application\Command\Handler\DeleteSongHandler;
-use Setlist\Application\Command\Handler\UpdateSongHandler;
-use Setlist\Application\Command\CreateSetlist;
-use Setlist\Application\Command\Handler\CreateSetlistHandler;
 
 class RoutingInitializer
 {

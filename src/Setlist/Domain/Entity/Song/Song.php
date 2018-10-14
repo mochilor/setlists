@@ -14,16 +14,16 @@ class Song
     private $id;
     private $title;
     private $eventsTrigger;
-    private $dateTime;
+    private $creationDate;
 
     const MIN_TITLE_LENGTH = 3;
     const MAX_TITLE_LENGTH = 30;
-    const DATE_TIME_FORMAT = 'Y-m-d H:i:s';
+    const CREATION_DATE_FORMAT = 'Y-m-d H:i:s';
 
     public static function create(
         Uuid $id,
         string $title,
-        DateTimeImmutable $dateTime,
+        DateTimeImmutable $creationDate,
         EventsTrigger $eventsTrigger
     ): self
     {
@@ -31,7 +31,7 @@ class Song
         $song->eventsTrigger = $eventsTrigger;
         $song->setId($id);
         $song->setTitle($title);
-        $song->setDatetime($dateTime);
+        $song->setCreationDate($creationDate);
 
         return $song;
     }
@@ -47,9 +47,9 @@ class Song
         $this->title = $title;
     }
 
-    private function setDatetime(\DateTimeImmutable $dateTime)
+    private function setCreationDate(\DateTimeImmutable $dateTime)
     {
-        $this->dateTime = $dateTime;
+        $this->creationDate = $dateTime;
     }
 
     private function guardTitle(string $title)
@@ -69,14 +69,14 @@ class Song
         return $this->title;
     }
 
-    public function dateTime(): DateTimeImmutable
+    public function creationDate(): DateTimeImmutable
     {
-        return $this->dateTime;
+        return $this->creationDate;
     }
 
-    public function formattedDateTime(): string
+    public function formattedCreationDate(): string
     {
-        return $this->dateTime->format(self::DATE_TIME_FORMAT);
+        return $this->creationDate->format(self::CREATION_DATE_FORMAT);
     }
 
     public function changeTitle(string $title)

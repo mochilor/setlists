@@ -50,7 +50,7 @@ SQL;
         $songData = $query->fetch(PDO::FETCH_ASSOC);
 
         if ($songData) {
-            return $this->songFactory->restore($songData['id'], $songData['title'], $songData['created_at']);
+            return $this->songFactory->restore($songData['id'], $songData['title'], $songData['creation_date']);
         }
 
         return null;
@@ -60,7 +60,7 @@ SQL;
     {
         switch (get_class($event)) {
             case SongWasCreated::class:
-                $this->insert($event->id(), $event->title(), $event->formattedDateTime());
+                $this->insert($event->id(), $event->title(), $event->formattedCreationDate());
                 break;
             case SongChangedItsTitle::class:
                 $this->update($event->id(), $event->title());
@@ -71,16 +71,16 @@ SQL;
         }
     }
 
-    private function insert(string $uuid, string $title, string $formattedDateTime)
+    private function insert(string $uuid, string $title, string $formattedCreationDate)
     {
         $sql = <<<SQL
-INSERT INTO `%s` (id, title, created_at) VALUES (:uuid, :title, :datetime);
+INSERT INTO `%s` (id, title, creation_date) VALUES (:uuid, :title, :datetime);
 SQL;
         $sql = sprintf($sql, self::TABLE_NAME);
         $query = $this->PDO->prepare($sql);
         $query->bindValue(':uuid', $uuid, PDO::PARAM_STR);
         $query->bindValue(':title', $title, PDO::PARAM_STR);
-        $query->bindValue(':datetime', $formattedDateTime, PDO::PARAM_STR);
+        $query->bindValue(':datetime', $formattedCreationDate, PDO::PARAM_STR);
         $query->execute();
     }
 

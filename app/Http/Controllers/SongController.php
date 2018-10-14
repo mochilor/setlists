@@ -4,10 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Payload\DeleteSongPayload;
 use App\Http\Payload\UpdateSongPayload;
-use Setlist\Application\Command\CreateSong;
+use Setlist\Application\Command\Song\CreateSong;
 use App\Http\Payload\CreateSongPayload;
-use Setlist\Application\Command\DeleteSong;
-use Setlist\Application\Command\UpdateSong;
+use Setlist\Application\Command\Song\DeleteSong;
+use Setlist\Application\Command\Song\UpdateSong;
 
 class SongController extends Controller
 {

@@ -1,15 +1,16 @@
 <?php
 
-namespace Tests\Unit\Setlist\Application\Command\Handler;
+namespace Tests\Unit\Setlist\Application\Command\Setlist\Handler;
 
-use Setlist\Application\Command\CreateSetlist;
-use Setlist\Application\Command\Handler\CreateSetlistHandler;
+use Setlist\Application\Command\Setlist\CreateSetlist;
+use Setlist\Application\Command\Setlist\Handler\CreateSetlistHandler;
 use PHPUnit\Framework\TestCase;
-use Setlist\Application\Command\Handler\Helper\SetlistHandlerHelper;
+use Setlist\Application\Command\Setlist\Handler\Helper\SetlistHandlerHelper;
 use Setlist\Application\Persistence\Setlist\ApplicationSetlistRepository;
 use Setlist\Domain\Entity\EventsTrigger;
+use Setlist\Domain\Entity\Setlist\Act;
+use Setlist\Domain\Entity\Setlist\Setlist;
 use Setlist\Domain\Entity\Setlist\SetlistFactory;
-use Setlist\Domain\Entity\Song\Song;
 use Setlist\Domain\Entity\Song\SongFactory;
 use Setlist\Domain\Entity\Setlist\SetlistRepository;
 use Setlist\Domain\Entity\Song\SongRepository;
@@ -36,7 +37,9 @@ class CreateSetlistHandlerTest extends TestCase
         $this->applicationSetlistRepository = $this->getMockBuilder(ApplicationSetlistRepository::class)->getMock();
         $this->setlistRepository = $this->getMockBuilder(SetlistRepository::class)->getMock();
         $this->songRepository = $this->getMockBuilder(SongRepository::class)->getMock();
-        $this->setlistFactory = new SetlistFactory(new EventsTrigger());
+        $this->setlistFactory = $this->getMockBuilder(SetlistFactory::class)
+            ->disableOriginalConstructor()
+            ->getMock();
         $this->songFactory = new SongFactory(new EventsTrigger());
         $this->setlistHandlerHelper = $this->getMockBuilder(SetlistHandlerHelper::class)
             ->disableOriginalConstructor()
@@ -74,31 +77,53 @@ class CreateSetlistHandlerTest extends TestCase
             'date' => '2018-10-01',
         ];
 
-        $songsCount = 0;
-        array_walk_recursive(
-            $payload['acts'],
-            function() use (&$songsCount) {
-                $songsCount++;
-            }
-        );
+//        $songsCount = 0;
+//        array_walk_recursive(
+//            $payload['acts'],
+//            function() use (&$songsCount) {
+//                $songsCount++;
+//            }
+//        );
+
+        $actsForSetlist = [];
+        foreach ($payload['acts'] as $act) {
+            $actsForSetlist[] = $this->getMockBuilder(Act::class)->getMock();
+        }
 
         $command = new CreateSetlist($payload);
         $uuid = Uuid::random();
+        $setlistMock = $this->getMockBuilder(Setlist::class)->getMock();
 
         $this->applicationSetlistRepository
             ->expects($this->once())
             ->method('getAllNames')
             ->willReturn(self::ALL_NAMES);
 
-        $this->songRepository
-            ->expects($this->exactly($songsCount))
-            ->method('get')
-            ->willReturn($this->getSongMock());
+        $this->setlistHandlerHelper
+            ->expects($this->once())
+            ->method('getActsForSetlist')
+            ->willReturn($actsForSetlist);
+
+//        $this->songRepository
+//            ->expects($this->exactly($songsCount))
+//            ->method('get')
+//            ->willReturn($this->getSongMock());
 
         $this->setlistRepository
             ->expects($this->once())
             ->method('nextIdentity')
             ->willReturn($uuid);
+
+        $this->setlistFactory
+            ->expects($this->once())
+            ->method('make')
+            ->with($uuid, $actsForSetlist, $command->name(), $command->date())
+            ->willReturn($setlistMock);
+
+        $this->setlistRepository
+            ->expects($this->once())
+            ->method('save')
+            ->willReturn($setlistMock);
 
         ($this->commandHandler)($command);
     }
@@ -147,46 +172,5 @@ class CreateSetlistHandlerTest extends TestCase
             ->willReturn(self::ALL_NAMES);
 
         ($this->commandHandler)($command);
-    }
-
-    /**
-     * @test
-     * @expectedException \Setlist\Application\Exception\InvalidSetlistException
-     * @expectedExceptionMessage Invalid song provided
-     */
-    public function nonExistentSongThrowsException()
-    {
-        $payload = [
-            'name' => 'New Name',
-            'acts' => [
-                [
-                    Uuid::random()->uuid(),
-                    Uuid::random()->uuid(),
-                ],
-            ],
-        ];
-        $command = new CreateSetlist($payload);
-
-        $this->applicationSetlistRepository
-            ->expects($this->once())
-            ->method('getAllNames')
-            ->willReturn(self::ALL_NAMES);
-
-        $this->songRepository
-            ->expects($this->at(0))
-            ->method('get')
-            ->willReturn($this->getSongMock());
-
-        $this->songRepository
-            ->expects($this->at(1))
-            ->method('get')
-            ->willReturn(null);
-
-        ($this->commandHandler)($command);
-    }
-
-    private function getSongMock()
-    {
-        return $this->getMockBuilder(Song::class)->getMock();
     }
 }

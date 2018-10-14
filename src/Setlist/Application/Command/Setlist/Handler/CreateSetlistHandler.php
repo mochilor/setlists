@@ -1,9 +1,9 @@
 <?php
 
-namespace Setlist\Application\Command\Handler;
+namespace Setlist\Application\Command\Setlist\Handler;
 
-use Setlist\Application\Command\CreateSetlist;
-use Setlist\Application\Command\Handler\Helper\SetlistHandlerHelper;
+use Setlist\Application\Command\Setlist\CreateSetlist;
+use Setlist\Application\Command\Setlist\Handler\Helper\SetlistHandlerHelper;
 use Setlist\Application\Exception\InvalidSetlistException;
 use Setlist\Application\Exception\SetlistNameNotUniqueException;
 use Setlist\Application\Persistence\Setlist\ApplicationSetlistRepository;

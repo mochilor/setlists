@@ -1,10 +1,10 @@
 <?php
 
-namespace Tests\Unit\Setlist\Application\Command\Handler;
+namespace Tests\Unit\Setlist\Application\Command\Song\Handler;
 
 use PHPUnit\Framework\TestCase;
-use Setlist\Application\Command\DeleteSong;
-use Setlist\Application\Command\Handler\DeleteSongHandler;
+use Setlist\Application\Command\Song\DeleteSong;
+use Setlist\Application\Command\Song\Handler\DeleteSongHandler;
 use Setlist\Domain\Entity\Song\Song;
 use Setlist\Domain\Entity\Song\SongRepository;
 

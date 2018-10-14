@@ -1,6 +1,6 @@
 <?php
 
-namespace Setlist\Application\Command\Handler\Helper;
+namespace Setlist\Application\Command\Setlist\Handler\Helper;
 
 use Setlist\Application\Exception\InvalidSetlistException;
 use Setlist\Domain\Entity\Setlist\ActFactory;

@@ -1,8 +1,8 @@
 <?php
 
-namespace Setlist\Application\Command\Handler;
+namespace Setlist\Application\Command\Song\Handler;
 
-use Setlist\Application\Command\DeleteSong;
+use Setlist\Application\Command\Song\DeleteSong;
 use Setlist\Application\Exception\SongDoesNotExistException;
 use Setlist\Domain\Entity\Song\Song;
 use Setlist\Domain\Entity\Song\SongRepository;

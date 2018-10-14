@@ -2,12 +2,11 @@
 
 namespace App\Http\Controllers;
 
-//use App\Http\Payload\DeleteSetlistPayload;
 use App\Http\Payload\UpdateSetlistPayload;
-use Setlist\Application\Command\CreateSetlist;
+use Setlist\Application\Command\Setlist\CreateSetlist;
 use App\Http\Payload\CreateSetlistPayload;
-//use Setlist\Application\Command\DeleteSetlist;
-use Setlist\Application\Command\UpdateSetlist;
+//use Setlist\Application\Command\Setlist\DeleteSetlist;
+use Setlist\Application\Command\Setlist\UpdateSetlist;
 
 class SetlistController extends Controller
 {

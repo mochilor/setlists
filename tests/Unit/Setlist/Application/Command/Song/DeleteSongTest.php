@@ -1,14 +1,14 @@
 <?php
 
-namespace Tests\Unit\Setlist\Application\Command;
+namespace Tests\Unit\Setlist\Application\Command\Song;
 
-use Setlist\Application\Command\CreateSong;
+use Setlist\Application\Command\Song\DeleteSong;
 use PHPUnit\Framework\TestCase;
 
-class CreateSongTest extends TestCase
+class DeleteSongTest extends TestCase
 {
     const PAYLOAD = [
-        'title' => 'A title'
+        'uuid' => '550e8400-e29b-41d4-a716-446655440000',
     ];
 
     /**
@@ -19,25 +19,25 @@ class CreateSongTest extends TestCase
         $command = $this->getCommand();
 
         $this->assertInstanceOf(
-            CreateSong::class,
+            DeleteSong::class,
             $command
         );
     }
 
     private function getCommand()
     {
-        return new CreateSong(self::PAYLOAD);
+        return new DeleteSong(self::PAYLOAD);
     }
 
     /**
      * @test
      */
-    public function commandHasTitle()
+    public function commandHasUuid()
     {
         $command = $this->getCommand();
         $this->assertEquals(
-            self::PAYLOAD['title'],
-            $command->title()
+            self::PAYLOAD['uuid'],
+            $command->uuid()
         );
     }
 }

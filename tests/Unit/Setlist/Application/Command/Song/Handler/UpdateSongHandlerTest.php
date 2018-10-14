@@ -1,22 +1,26 @@
 <?php
 
-namespace Tests\Unit\Setlist\Application\Command\Handler;
+namespace Tests\Unit\Setlist\Application\Command\Song\Handler;
 
 use PHPUnit\Framework\TestCase;
-use Setlist\Application\Command\Handler\UpdateSongHandler;
-use Setlist\Application\Command\UpdateSong;
+use Setlist\Application\Command\Song\Handler\UpdateSongHandler;
+use Setlist\Application\Command\Song\UpdateSong;
+use Setlist\Application\Persistence\Song\ApplicationSongRepository;
 use Setlist\Domain\Entity\Song\Song;
 use Setlist\Domain\Entity\Song\SongRepository;
+use Setlist\Domain\Value\Uuid;
 
 class UpdateSongHandlerTest extends TestCase
 {
     private $songRepository;
     private $commandHandler;
+    private $applicationSongRepository;
 
     protected function setUp()
     {
         $this->songRepository = $this->getMockBuilder(SongRepository::class)->getMock();
-        $this->commandHandler = new UpdateSongHandler($this->songRepository);
+        $this->applicationSongRepository = $this->getMockBuilder(ApplicationSongRepository::class)->getMock();
+        $this->commandHandler = new UpdateSongHandler($this->songRepository, $this->applicationSongRepository);
     }
 
     /**
@@ -26,11 +30,19 @@ class UpdateSongHandlerTest extends TestCase
     {
         $command = $this->getCommand();
         $song = $this->getMockBuilder(Song::class)->getMock();
+        $uuid = Uuid::create($command->uuid());
 
         $this->songRepository
             ->expects($this->once())
             ->method('get')
+            ->with($uuid)
             ->willReturn($song);
+
+        $this->applicationSongRepository
+            ->expects($this->once())
+            ->method('getOtherTitles')
+            ->with($command->uuid())
+            ->willReturn([]);
 
         $song->expects($this->once())
             ->method('changeTitle')

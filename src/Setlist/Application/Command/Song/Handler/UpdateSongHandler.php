@@ -1,8 +1,8 @@
 <?php
 
-namespace Setlist\Application\Command\Handler;
+namespace Setlist\Application\Command\Song\Handler;
 
-use Setlist\Application\Command\UpdateSong;
+use Setlist\Application\Command\Song\UpdateSong;
 use Setlist\Application\Exception\SongDoesNotExistException;
 use Setlist\Application\Exception\SongTitleNotUniqueException;
 use Setlist\Application\Persistence\Song\ApplicationSongRepository;

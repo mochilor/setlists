@@ -35,7 +35,7 @@ class SongWasCreatedTest extends TestCase
 
         $this->assertEquals(
             $formattedDateTime,
-            $event->formattedDateTime()
+            $event->formattedCreationDate()
         );
 
         $this->assertInternalType(

@@ -1,9 +1,9 @@
 <?php
 
-namespace Setlist\Application\Command\Handler;
+namespace Setlist\Application\Command\Song\Handler;
 
+use Setlist\Application\Command\Song\CreateSong;
 use Setlist\Application\Exception\SongTitleNotUniqueException;
-use Setlist\Application\Command\CreateSong;
 use Setlist\Application\Persistence\Song\ApplicationSongRepository;
 use Setlist\Domain\Entity\Song\SongFactory;
 use Setlist\Domain\Entity\Song\SongRepository;

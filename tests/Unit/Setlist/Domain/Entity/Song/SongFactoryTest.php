@@ -24,7 +24,7 @@ class SongFactoryTest extends TestCase
         $eventsTrigger->trigger(SongWasCreated::create(
             $uuid,
             $title,
-            $dateTime->format(Song::DATE_TIME_FORMAT)
+            $dateTime->format(Song::CREATION_DATE_FORMAT)
         ));
         $factory = new SongFactory(new EventsTrigger());
         $song = $factory->make($uuid, $title);
@@ -53,13 +53,13 @@ class SongFactoryTest extends TestCase
         $uuid = Uuid::random();
         $title = 'Title';
         $eventsTrigger = new EventsTrigger();
-        $dateTime = DateTimeImmutable::createFromFormat(Song::DATE_TIME_FORMAT, '2018-01-01 00:00:00');
+        $dateTime = DateTimeImmutable::createFromFormat(Song::CREATION_DATE_FORMAT, '2018-01-01 00:00:00');
         $song = Song::create($uuid, $title, $dateTime, $eventsTrigger);
         $factory = new SongFactory(new EventsTrigger());
 
         $this->assertEquals(
             $song,
-            $factory->restore($uuid, $title, $dateTime->format(Song::DATE_TIME_FORMAT))
+            $factory->restore($uuid, $title, $dateTime->format(Song::CREATION_DATE_FORMAT))
         );
 
         $this->assertCount(

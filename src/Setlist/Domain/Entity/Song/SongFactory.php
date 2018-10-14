@@ -21,7 +21,7 @@ class SongFactory
         $uuid = Uuid::create($uuidString);
         $dateTime = new DateTimeImmutable();
         $this->eventsTrigger->trigger(
-            SongWasCreated::create($uuid, $title, $dateTime->format(Song::DATE_TIME_FORMAT))
+            SongWasCreated::create($uuid, $title, $dateTime->format(Song::CREATION_DATE_FORMAT))
         );
 
         return Song::create($uuid, $title, $dateTime, $this->eventsTrigger);
@@ -30,7 +30,7 @@ class SongFactory
     public function restore(string $uuidString, string $title, string $formattedDateTime): Song
     {
         $uuid = Uuid::create($uuidString);
-        $dateTime = DateTimeImmutable::createFromFormat(Song::DATE_TIME_FORMAT, $formattedDateTime);
+        $dateTime = DateTimeImmutable::createFromFormat(Song::CREATION_DATE_FORMAT, $formattedDateTime);
 
         return Song::create($uuid, $title, $dateTime, $this->eventsTrigger);
     }
