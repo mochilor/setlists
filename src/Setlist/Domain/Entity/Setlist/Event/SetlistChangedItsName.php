@@ -8,22 +8,17 @@ class SetlistChangedItsName
 {
     private $id;
     private $name;
-    private $occurredOn;
+    private $formattedUpdateDate;
 
-    public static function create(Uuid $id, string $name): self
+    public static function create(Uuid $id, string $name, string $formattedUpdateDate): self
     {
         $event = new self();
 
         $event->id = $id;
         $event->name = $name;
-        $event->occurredOn = (new \DateTimeImmutable())->getTimestamp();
+        $event->formattedUpdateDate = $formattedUpdateDate;
 
         return $event;
-    }
-
-    public function occurredOn(): int
-    {
-        return $this->occurredOn;
     }
 
     public function id(): Uuid
@@ -34,5 +29,10 @@ class SetlistChangedItsName
     public function name(): string
     {
         return $this->name;
+    }
+
+    public function formattedUpdateDate(): string
+    {
+        return $this->formattedUpdateDate;
     }
 }

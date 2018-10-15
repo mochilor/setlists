@@ -87,7 +87,9 @@ SQL;
                 $setlistData['id'],
                 $actsForSetlist,
                 $setlistData['name'],
-                $setlistData['date']
+                $setlistData['date'],
+                $setlistData['creation_date'],
+                $setlistData['update_date']
             );
         }
 
@@ -98,13 +100,19 @@ SQL;
     {
         switch (get_class($event)) {
             case SetlistWasCreated::class:
-                $this->insert($event->id(), $event->name(), $event->actCollection(), $event->formattedDate());
+                $this->insert(
+                    $event->id(),
+                    $event->name(),
+                    $event->actCollection(),
+                    $event->formattedDate(),
+                    $event->formattedCreationDate()
+                );
                 break;
             case SetlistChangedItsName::class:
-                $this->update($event->id(), 'name', $event->name());
+                $this->update($event->id(), 'name', $event->name(), $event->formattedUpdateDate());
                 break;
             case SetlistChangedItsDate::class:
-                $this->update($event->id(), 'date', $event->date()->format(Setlist::DATE_TIME_FORMAT));
+                $this->update($event->id(), 'date', $event->date(), $event->formattedUpdateDate());
                 break;
 //            case SetlistWasDeleted::class:
 //                $this->delete($event->id());
@@ -112,16 +120,23 @@ SQL;
         }
     }
 
-    private function insert(string $uuid, string $name, ActCollection $actCollection, string $formattedDate)
-    {
+    private function insert(
+        string $uuid,
+        string $name,
+        ActCollection $actCollection,
+        string $formattedDate,
+        string $formattedCreationDate
+    ) {
         $sql = <<<SQL
-INSERT INTO `%s` (id, name, date) VALUES (:uuid, :name, :date);
+INSERT INTO `%s` (id, name, date, creation_date, update_date) VALUES (:uuid, :name, :date, :creation_date, :update_date);
 SQL;
         $sql = sprintf($sql, self::TABLE_NAME);
         $query = $this->PDO->prepare($sql);
         $query->bindValue(':uuid', $uuid, PDO::PARAM_STR);
         $query->bindValue(':name', $name, PDO::PARAM_STR);
         $query->bindValue(':date', $formattedDate, PDO::PARAM_STR);
+        $query->bindValue(':creation_date', $formattedCreationDate, PDO::PARAM_STR);
+        $query->bindValue(':update_date', $formattedCreationDate, PDO::PARAM_STR);
         $query->execute();
 
         $songSql = "INSERT INTO `setlist_song` (setlist_id, song_id, act) VALUES ";
@@ -138,15 +153,16 @@ SQL;
         }
     }
 
-    private function update(string $uuid, string $parameter, string $value)
+    private function update(string $uuid, string $parameter, string $value, string $updateDate)
     {
         $sql = <<<SQL
-UPDATE `%s` SET %s = :value WHERE id = :uuid;
+UPDATE `%s` SET %s = :value, update_date = :update_date WHERE id = :uuid;
 SQL;
         $sql = sprintf($sql, self::TABLE_NAME, $parameter);
         $query = $this->PDO->prepare($sql);
         $query->bindValue('value', $value);
         $query->bindValue('uuid', $uuid);
+        $query->bindValue('update_date', $updateDate);
         $query->execute();
     }
 }

@@ -72,6 +72,31 @@ class UpdateSongHandlerTest extends TestCase
         ($this->commandHandler)($command);
     }
 
+    /**
+     * @test
+     * @expectedException \Setlist\Application\Exception\SongTitleNotUniqueException
+     */
+    public function nonUniqueTitleThrowsException()
+    {
+        $command = $this->getCommand();
+        $song = $this->getMockBuilder(Song::class)->getMock();
+        $uuid = Uuid::create($command->uuid());
+
+        $this->songRepository
+            ->expects($this->once())
+            ->method('get')
+            ->with($uuid)
+            ->willReturn($song);
+
+        $this->applicationSongRepository
+            ->expects($this->once())
+            ->method('getOtherTitles')
+            ->with($command->uuid())
+            ->willReturn([$command->title()]);
+
+        ($this->commandHandler)($command);
+    }
+
     private function getCommand(): UpdateSong
     {
         $payload = [

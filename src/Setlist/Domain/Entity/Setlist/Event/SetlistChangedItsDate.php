@@ -7,23 +7,19 @@ use Setlist\Domain\Value\Uuid;
 class SetlistChangedItsDate
 {
     private $id;
-    private $date;
+    private $formattedDate;
     private $occurredOn;
+    private $formattedUpdateDate;
 
-    public static function create(Uuid $id, \DateTime $date): self
+    public static function create(Uuid $id, string $formattedDate, string $formattedUpdateDate): self
     {
         $event = new self();
 
         $event->id = $id;
-        $event->date = $date;
-        $event->occurredOn = (new \DateTimeImmutable())->getTimestamp();
+        $event->formattedDate = $formattedDate;
+        $event->formattedUpdateDate = $formattedUpdateDate;
 
         return $event;
-    }
-
-    public function occurredOn(): int
-    {
-        return $this->occurredOn;
     }
 
     public function id(): Uuid
@@ -31,8 +27,13 @@ class SetlistChangedItsDate
         return $this->id;
     }
 
-    public function date(): \DateTime
+    public function formattedDate(): string
     {
-        return $this->date;
+        return $this->formattedDate;
+    }
+
+    public function formattedUpdateDate(): string
+    {
+        return $this->formattedUpdateDate;
     }
 }

@@ -3,6 +3,7 @@
 namespace Tests\Unit\Setlist\Domain\Entity\Setlist;
 
 use DateTime;
+use DateTimeImmutable;
 use PHPUnit\Framework\TestCase;
 use Setlist\Domain\Entity\EventsTrigger;
 use Setlist\Domain\Entity\Setlist\Act;
@@ -47,12 +48,15 @@ class SetlistTest extends TestCase
         $id = $this->getMockBuilder(Uuid::class)->getMock();
         $actCollection = ActCollection::create(...$acts);
         $date = DateTime::createFromFormat(self::DATE_FORMAT, self::FULL_DATETIME);
+        $creationDate = DateTimeImmutable::createFromFormat(self::DATE_FORMAT, self::FULL_DATETIME);
+        $updateDate = DateTimeImmutable::createFromFormat(self::DATE_FORMAT, self::FULL_DATETIME);
         $eventsTrigger = new EventsTrigger();
+
         if (!$dummy) {
-            return Setlist::create($id, $actCollection, $name, $date,$eventsTrigger);
+            return Setlist::create($id, $actCollection, $name, $date, $creationDate, $updateDate, $eventsTrigger);
         }
 
-        return DummySetList::create($id, $actCollection, $name, $date, $eventsTrigger);
+        return DummySetList::create($id, $actCollection, $name, $date, $creationDate, $updateDate, $eventsTrigger);
     }
 
     /**

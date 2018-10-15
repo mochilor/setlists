@@ -65,10 +65,12 @@ class SetlistFactoryTest extends TestCase
         ];
         $name = 'Name';
         $formattedDate = '2018-10-01';
+        $formattedCreationDate = '2018-10-01 15:00:00';
+        $formattedUpdateDate = '2018-10-01 15:00:00';
         $eventsTrigger = new EventsTrigger();
 
         $factory = new SetlistFactory($eventsTrigger);
-        $setlist = $factory->restore($uuid, $acts, $name, $formattedDate);
+        $setlist = $factory->restore($uuid, $acts, $name, $formattedDate, $formattedCreationDate, $formattedUpdateDate);
 
         $this->assertInstanceOf(
             Setlist::class,

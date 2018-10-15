@@ -3,6 +3,7 @@
 namespace Setlist\Domain\Entity\Setlist;
 
 use DateTime;
+use DateTimeImmutable;
 use Setlist\Domain\Entity\EventsTrigger;
 use Setlist\Domain\Entity\Setlist\Event\SetlistWasCreated;
 use Setlist\Domain\Value\Uuid;
@@ -20,20 +21,36 @@ class SetlistFactory
     {
         $uuid = Uuid::create($uuidString);
         $actCollection = ActCollection::create(...$acts);
-        $dateTime = DateTime::createFromFormat(Setlist::DATE_TIME_FORMAT, $formattedDate);
+        $date = DateTime::createFromFormat(Setlist::DATE_TIME_FORMAT, $formattedDate);
+        $creationDate = $updateDate = new DateTimeImmutable();
         $this->eventsTrigger->trigger(
-            SetlistWasCreated::create($uuid, $actCollection, $name, $dateTime->format(Setlist::DATE_TIME_FORMAT))
+            SetlistWasCreated::create(
+                $uuid,
+                $actCollection,
+                $name,
+                $date->format(Setlist::DATE_TIME_FORMAT),
+                $creationDate->format(Setlist::CREATION_DATE_FORMAT)
+            )
         );
 
-        return Setlist::create($uuid, $actCollection, $name, $dateTime, $this->eventsTrigger);
+        return Setlist::create($uuid, $actCollection, $name, $date, $creationDate, $updateDate, $this->eventsTrigger);
     }
 
-    public function restore(string $uuidString, array $acts, string $name, string $formattedDate): Setlist
+    public function restore(
+        string $uuidString,
+        array $acts,
+        string $name,
+        string $formattedDate,
+        string $formattedCreationDate,
+        string $formattedUpdateDate
+    ): Setlist
     {
         $uuid = Uuid::create($uuidString);
         $actCollection = ActCollection::create(...$acts);
-        $dateTime = DateTime::createFromFormat(Setlist::DATE_TIME_FORMAT, $formattedDate);
+        $date = DateTime::createFromFormat(Setlist::DATE_TIME_FORMAT, $formattedDate);
+        $creationDate = DateTimeImmutable::createFromFormat(Setlist::CREATION_DATE_FORMAT, $formattedCreationDate);
+        $updateDate = DateTimeImmutable::createFromFormat(Setlist::UPDATE_DATE_FORMAT, $formattedUpdateDate);
 
-        return Setlist::create($uuid, $actCollection, $name, $dateTime, $this->eventsTrigger);
+        return Setlist::create($uuid, $actCollection, $name, $date, $creationDate, $updateDate, $this->eventsTrigger);
     }
 }

@@ -17,6 +17,8 @@ class CreateSetlistTable extends Migration
             $table->uuid('id')->unique();
             $table->string('name')->unique();
             $table->date('date')->nullable();
+            $table->timestamp('creation_date')->nullable();
+            $table->timestamp('update_date')->nullable();
 
             $table->primary('id');
         });

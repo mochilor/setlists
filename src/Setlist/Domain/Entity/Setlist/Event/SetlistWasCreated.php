@@ -10,10 +10,17 @@ class SetlistWasCreated
     private $id;
     private $actCollection;
     private $name;
-    private $occurredOn;
     private $formattedDate;
+    private $formattedCreationDate;
+    private $formattedUpdateDate;
 
-    public static function create(Uuid $id, ActCollection $actCollection, string $name, string $formattedDate): self
+    public static function create(
+        Uuid $id,
+        ActCollection $actCollection,
+        string $name,
+        string $formattedDate,
+        string $formattedCreationDate
+    ): self
     {
         $event = new self();
 
@@ -21,14 +28,10 @@ class SetlistWasCreated
         $event->actCollection = $actCollection;
         $event->name = $name;
         $event->formattedDate = $formattedDate;
-        $event->occurredOn = (new \DateTimeImmutable())->getTimestamp();
+        $event->formattedCreationDate = $formattedCreationDate;
+        $event->formattedUpdateDate = $formattedCreationDate;
 
         return $event;
-    }
-
-    public function occurredOn(): int
-    {
-        return $this->occurredOn;
     }
 
     public function actCollection(): ActCollection
@@ -49,5 +52,15 @@ class SetlistWasCreated
     public function formattedDate(): string
     {
         return $this->formattedDate;
+    }
+
+    public function formattedCreationDate(): string
+    {
+        return $this->formattedCreationDate;
+    }
+
+    public function formattedUpdateDate(): string
+    {
+        return $this->formattedUpdateDate;
     }
 }

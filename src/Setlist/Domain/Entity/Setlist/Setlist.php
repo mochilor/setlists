@@ -3,6 +3,7 @@
 namespace Setlist\Domain\Entity\Setlist;
 
 use DateTime;
+use DateTimeImmutable;
 use Setlist\Domain\Entity\EventsTrigger;
 use Setlist\Domain\Entity\Setlist\Event\SetlistChangedItsDate;
 use Setlist\Domain\Entity\Setlist\Event\SetlistChangedItsName;
@@ -17,16 +18,22 @@ class Setlist
     private $name;
     private $date;
     private $eventsTrigger;
+    private $creationDate;
+    private $updateDate;
 
     const MIN_NAME_LENGTH = 3;
     const MAX_NAME_LENGTH = 30;
     const DATE_TIME_FORMAT = 'Y-m-d';
+    const CREATION_DATE_FORMAT = 'Y-m-d H:i:s';
+    const UPDATE_DATE_FORMAT = 'Y-m-d H:i:s';
 
     public static function create(
         Uuid $id,
         ActCollection $actCollection,
         string $name,
         DateTime $date,
+        DateTimeImmutable $creationDate,
+        DateTimeImmutable $updateDate,
         EventsTrigger $eventsTrigger
     ): self
     {
@@ -36,7 +43,9 @@ class Setlist
         $setlist->setId($id);
         $setlist->setActCollection($actCollection);
         $setlist->setName($name);
-        $setlist->setDatetime($date);
+        $setlist->setDate($date);
+        $setlist->setCreationDate($creationDate);
+        $setlist->setUpdateDate($updateDate);
 
         return $setlist;
     }
@@ -73,9 +82,19 @@ class Setlist
         }
     }
 
-    private function setDatetime(DateTime $date)
+    private function setDate(DateTime $date)
     {
         $this->date = $date;
+    }
+
+    private function setCreationDate(DateTimeImmutable $dateTime)
+    {
+        $this->creationDate = $dateTime;
+    }
+
+    private function setUpdateDate(DateTimeImmutable $updateDate)
+    {
+        $this->updateDate = $updateDate;
     }
 
     public function actCollection(): ActCollection
@@ -103,19 +122,57 @@ class Setlist
         return $this->date->format(self::DATE_TIME_FORMAT);
     }
 
+    public function creationDate(): DateTimeImmutable
+    {
+        return $this->creationDate;
+    }
+
+    public function formattedCreationDate(): string
+    {
+        return $this->creationDate->format(self::CREATION_DATE_FORMAT);
+    }
+
+    public function updateDate(): DateTimeImmutable
+    {
+        return $this->updateDate;
+    }
+
+    public function formattedUpdateDate(): string
+    {
+        return $this->updateDate->format(self::UPDATE_DATE_FORMAT);
+    }
+
     public function changeName(string $name)
     {
         if ($name != $this->name()) {
             $this->setName($name);
-            $this->eventsTrigger->trigger(SetlistChangedItsName::create($this->id(), $name));
+            $newUpdateDate = new DateTimeImmutable();
+            $this->setUpdateDate($newUpdateDate);
+
+            $this->eventsTrigger->trigger(
+                SetlistChangedItsName::create(
+                    $this->id(),
+                    $name,
+                    $newUpdateDate->format(self::UPDATE_DATE_FORMAT)
+                )
+            );
         }
     }
 
     public function changeDate(DateTime $date)
     {
         if ($date !== $this->date()) {
-            $this->setDatetime($date);
-            $this->eventsTrigger->trigger(SetlistChangedItsDate::create($this->id(), $date));
+            $this->setDate($date);
+            $newUpdateDate = new DateTimeImmutable();
+            $this->setUpdateDate($newUpdateDate);
+
+            $this->eventsTrigger->trigger(
+                SetlistChangedItsDate::create(
+                    $this->id(),
+                    $date->format(self::DATE_TIME_FORMAT),
+                    $newUpdateDate->format(self::UPDATE_DATE_FORMAT)
+                )
+            );
         }
     }
 
@@ -136,6 +193,7 @@ class Setlist
 
         if ($canChange) {
             $this->setActCollection($actCollection);
+            // Event!
         }
     }
 
