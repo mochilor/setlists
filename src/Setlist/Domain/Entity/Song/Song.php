@@ -15,15 +15,18 @@ class Song
     private $title;
     private $eventsTrigger;
     private $creationDate;
+    private $updateDate;
 
     const MIN_TITLE_LENGTH = 3;
     const MAX_TITLE_LENGTH = 30;
     const CREATION_DATE_FORMAT = 'Y-m-d H:i:s';
+    const UPDATE_DATE_FORMAT = 'Y-m-d H:i:s';
 
     public static function create(
         Uuid $id,
         string $title,
         DateTimeImmutable $creationDate,
+        DateTimeImmutable $updateDate,
         EventsTrigger $eventsTrigger
     ): self
     {
@@ -32,6 +35,7 @@ class Song
         $song->setId($id);
         $song->setTitle($title);
         $song->setCreationDate($creationDate);
+        $song->setUpdateDate($updateDate);
 
         return $song;
     }
@@ -47,9 +51,14 @@ class Song
         $this->title = $title;
     }
 
-    private function setCreationDate(\DateTimeImmutable $dateTime)
+    private function setCreationDate(DateTimeImmutable $dateTime)
     {
         $this->creationDate = $dateTime;
+    }
+
+    private function setUpdateDate(DateTimeImmutable $updateDate)
+    {
+        $this->updateDate = $updateDate;
     }
 
     private function guardTitle(string $title)
@@ -74,16 +83,35 @@ class Song
         return $this->creationDate;
     }
 
+    public function updateDate(): DateTimeImmutable
+    {
+        return $this->updateDate;
+    }
+
     public function formattedCreationDate(): string
     {
         return $this->creationDate->format(self::CREATION_DATE_FORMAT);
+    }
+
+    public function formattedUpdateDate(): string
+    {
+        return $this->updateDate->format(self::UPDATE_DATE_FORMAT);
     }
 
     public function changeTitle(string $title)
     {
         if ($title != $this->title()) {
             $this->setTitle($title);
-            $this->eventsTrigger->trigger(SongChangedItsTitle::create($this->id(), $title));
+            $newUpdateDate = new DateTimeImmutable();
+            $this->setUpdateDate($newUpdateDate);
+
+            $this->eventsTrigger->trigger(
+                SongChangedItsTitle::create(
+                    $this->id(),
+                    $title,
+                    $newUpdateDate->format(self::UPDATE_DATE_FORMAT)
+                )
+            );
         }
     }
 

@@ -50,7 +50,12 @@ SQL;
         $songData = $query->fetch(PDO::FETCH_ASSOC);
 
         if ($songData) {
-            return $this->songFactory->restore($songData['id'], $songData['title'], $songData['creation_date']);
+            return $this->songFactory->restore(
+                $songData['id'],
+                $songData['title'],
+                $songData['creation_date'],
+                $songData['update_date']
+            );
         }
 
         return null;
@@ -60,10 +65,10 @@ SQL;
     {
         switch (get_class($event)) {
             case SongWasCreated::class:
-                $this->insert($event->id(), $event->title(), $event->formattedCreationDate());
+                $this->insert($event->id(), $event->title(), $event->formattedCreationDate(), $event->formattedUpdateDate());
                 break;
             case SongChangedItsTitle::class:
-                $this->update($event->id(), $event->title());
+                $this->update($event->id(), $event->title(), $event->formattedUpdateDate());
                 break;
             case SongWasDeleted::class:
                 $this->delete($event->id());
@@ -71,28 +76,30 @@ SQL;
         }
     }
 
-    private function insert(string $uuid, string $title, string $formattedCreationDate)
+    private function insert(string $uuid, string $title, string $formattedCreationDate, string $formattedUpdateDate)
     {
         $sql = <<<SQL
-INSERT INTO `%s` (id, title, creation_date) VALUES (:uuid, :title, :datetime);
+INSERT INTO `%s` (id, title, creation_date, update_date) VALUES (:uuid, :title, :creation_date, :update_date);
 SQL;
         $sql = sprintf($sql, self::TABLE_NAME);
         $query = $this->PDO->prepare($sql);
         $query->bindValue(':uuid', $uuid, PDO::PARAM_STR);
         $query->bindValue(':title', $title, PDO::PARAM_STR);
-        $query->bindValue(':datetime', $formattedCreationDate, PDO::PARAM_STR);
+        $query->bindValue(':creation_date', $formattedCreationDate, PDO::PARAM_STR);
+        $query->bindValue(':update_date', $formattedUpdateDate, PDO::PARAM_STR);
         $query->execute();
     }
 
-    private function update(string $uuid, string $title)
+    private function update(string $uuid, string $title, string $formattedUpdateDate)
     {
         $sql = <<<SQL
-UPDATE `%s` SET title = :title WHERE id = :uuid;
+UPDATE `%s` SET title = :title, update_date = :update_date WHERE id = :uuid;
 SQL;
         $sql = sprintf($sql, self::TABLE_NAME);
         $query = $this->PDO->prepare($sql);
-        $query->bindValue('title', $title);
         $query->bindValue('uuid', $uuid);
+        $query->bindValue('title', $title);
+        $query->bindValue('update_date', $formattedUpdateDate);
         $query->execute();
     }
 

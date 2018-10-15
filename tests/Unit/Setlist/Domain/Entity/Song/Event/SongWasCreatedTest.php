@@ -38,9 +38,9 @@ class SongWasCreatedTest extends TestCase
             $event->formattedCreationDate()
         );
 
-        $this->assertInternalType(
-            'int',
-            $event->occurredOn()
+        $this->assertEquals(
+            $formattedDateTime,
+            $event->formattedUpdateDate()
         );
     }
 }

@@ -25,10 +25,5 @@ class SongWasDeletedTest extends TestCase
             $uuid,
             $event->id()
         );
-
-        $this->assertInternalType(
-            'int',
-            $event->occurredOn()
-        );
     }
 }

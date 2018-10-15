@@ -42,6 +42,7 @@ class SongTest extends TestCase
             $uuid,
             $title,
             DateTimeImmutable::createFromFormat(Song::CREATION_DATE_FORMAT, self::SONG_DATE_TIME),
+            DateTimeImmutable::createFromFormat(Song::UPDATE_DATE_FORMAT, self::SONG_DATE_TIME),
             $eventsTrigger
         );
     }
@@ -62,6 +63,7 @@ class SongTest extends TestCase
             $uuid,
             $title,
             DateTimeImmutable::createFromFormat(Song::CREATION_DATE_FORMAT, self::SONG_DATE_TIME),
+            DateTimeImmutable::createFromFormat(Song::UPDATE_DATE_FORMAT, self::SONG_DATE_TIME),
             $eventsTrigger
         );
     }
@@ -171,6 +173,7 @@ class SongTest extends TestCase
             $uuid,
             $title,
             DateTimeImmutable::createFromFormat(Song::CREATION_DATE_FORMAT, self::SONG_DATE_TIME),
+            DateTimeImmutable::createFromFormat(Song::UPDATE_DATE_FORMAT, self::SONG_DATE_TIME),
             $eventsTrigger
         );
     }
@@ -213,6 +216,33 @@ class SongTest extends TestCase
         $this->assertEquals(
             self::SONG_DATE_TIME,
             $song->formattedCreationDate()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function songHasUpdateDate()
+    {
+        $song = $this->getSong();
+        $dateTime = DateTimeImmutable::createFromFormat(Song::UPDATE_DATE_FORMAT, self::SONG_DATE_TIME);
+
+        $this->assertEquals(
+            $dateTime,
+            $song->updateDate()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function songHasFormattedUpdateDate()
+    {
+        $song = $this->getSong();
+
+        $this->assertEquals(
+            self::SONG_DATE_TIME,
+            $song->formattedUpdateDate()
         );
     }
 }

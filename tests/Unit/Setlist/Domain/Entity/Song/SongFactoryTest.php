@@ -54,12 +54,14 @@ class SongFactoryTest extends TestCase
         $title = 'Title';
         $eventsTrigger = new EventsTrigger();
         $dateTime = DateTimeImmutable::createFromFormat(Song::CREATION_DATE_FORMAT, '2018-01-01 00:00:00');
-        $song = Song::create($uuid, $title, $dateTime, $eventsTrigger);
+        $song = Song::create($uuid, $title, $dateTime, $dateTime, $eventsTrigger);
         $factory = new SongFactory(new EventsTrigger());
+        $formattedCreationDate = $dateTime->format(Song::CREATION_DATE_FORMAT);
+        $formattedUpdateDate = $dateTime->format(Song::UPDATE_DATE_FORMAT);
 
         $this->assertEquals(
             $song,
-            $factory->restore($uuid, $title, $dateTime->format(Song::CREATION_DATE_FORMAT))
+            $factory->restore($uuid, $title, $formattedCreationDate, $formattedUpdateDate)
         );
 
         $this->assertCount(

@@ -17,6 +17,7 @@ class CreateSongTable extends Migration
             $table->uuid('id')->unique();
             $table->string('title')->unique();
             $table->timestamp('creation_date')->nullable();
+            $table->timestamp('update_date')->nullable();
 
             $table->primary('id');
         });

@@ -8,22 +8,17 @@ class SongChangedItsTitle
 {
     private $id;
     private $title;
-    private $occurredOn;
+    private $formattedUpdateDate;
 
-    public static function create(Uuid $id, string $title): self
+    public static function create(Uuid $id, string $title, string $formattedUpdateDate): self
     {
         $event = new self();
 
         $event->id = $id;
         $event->title = $title;
-        $event->occurredOn = (new \DateTimeImmutable())->getTimestamp();
+        $event->formattedUpdateDate = $formattedUpdateDate;
 
         return $event;
-    }
-
-    public function occurredOn(): int
-    {
-        return $this->occurredOn;
     }
 
     public function id(): Uuid
@@ -34,5 +29,10 @@ class SongChangedItsTitle
     public function title(): string
     {
         return $this->title;
+    }
+
+    public function formattedUpdateDate(): string
+    {
+        return $this->formattedUpdateDate;
     }
 }

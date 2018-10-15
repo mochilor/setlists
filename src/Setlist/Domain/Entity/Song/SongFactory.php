@@ -24,14 +24,15 @@ class SongFactory
             SongWasCreated::create($uuid, $title, $dateTime->format(Song::CREATION_DATE_FORMAT))
         );
 
-        return Song::create($uuid, $title, $dateTime, $this->eventsTrigger);
+        return Song::create($uuid, $title, $dateTime, $dateTime, $this->eventsTrigger);
     }
 
-    public function restore(string $uuidString, string $title, string $formattedDateTime): Song
+    public function restore(string $uuidString, string $title, string $formattedDateTime, string $formattedUpdateDate): Song
     {
         $uuid = Uuid::create($uuidString);
-        $dateTime = DateTimeImmutable::createFromFormat(Song::CREATION_DATE_FORMAT, $formattedDateTime);
+        $creationDate = DateTimeImmutable::createFromFormat(Song::CREATION_DATE_FORMAT, $formattedDateTime);
+        $updateDate = DateTimeImmutable::createFromFormat(Song::CREATION_DATE_FORMAT, $formattedUpdateDate);
 
-        return Song::create($uuid, $title, $dateTime, $this->eventsTrigger);
+        return Song::create($uuid, $title, $creationDate, $updateDate, $this->eventsTrigger);
     }
 }

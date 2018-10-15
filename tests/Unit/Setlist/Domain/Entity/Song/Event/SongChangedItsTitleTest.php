@@ -15,7 +15,8 @@ class SongChangedItsTitleTest extends TestCase
     {
         $uuid = Uuid::random();
         $title = 'A Title';
-        $event = SongChangedItsTitle::create($uuid, $title);
+        $formattedUpdateTime = '2018-01-01 00:00:00';
+        $event = SongChangedItsTitle::create($uuid, $title, $formattedUpdateTime);
 
         $this->assertInstanceOf(
             SongChangedItsTitle::class,
@@ -33,8 +34,8 @@ class SongChangedItsTitleTest extends TestCase
         );
 
         $this->assertInternalType(
-            'int',
-            $event->occurredOn()
+            'string',
+            $event->formattedUpdateDate()
         );
     }
 }
