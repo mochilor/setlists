@@ -14,7 +14,6 @@ class SetlistWasCreatedTest extends TestCase
      */
     public function domainEventCanBeCreatedAndHasGetters()
     {
-        // Uuid $id, ActCollection $actCollection, string $name, string $formattedDate
         $uuid = Uuid::random();
         $actCollection = $this->getMockBuilder(ActCollection::class)->getMock();
         $name = 'A Name';
@@ -49,6 +48,11 @@ class SetlistWasCreatedTest extends TestCase
         $this->assertEquals(
             $formattedUpdateDate,
             $event->formattedUpdateDate()
+        );
+
+        $this->assertEquals(
+            $formattedDateTime,
+            $event->formattedCreationDate()
         );
     }
 }

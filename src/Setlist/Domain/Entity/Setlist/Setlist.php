@@ -5,6 +5,7 @@ namespace Setlist\Domain\Entity\Setlist;
 use DateTime;
 use DateTimeImmutable;
 use Setlist\Domain\Entity\EventsTrigger;
+use Setlist\Domain\Entity\Setlist\Event\SetlistChangedItsActCollection;
 use Setlist\Domain\Entity\Setlist\Event\SetlistChangedItsDate;
 use Setlist\Domain\Entity\Setlist\Event\SetlistChangedItsName;
 use Setlist\Domain\Exception\Setlist\InvalidActCollectionException;
@@ -153,7 +154,7 @@ class Setlist
                 SetlistChangedItsName::create(
                     $this->id(),
                     $name,
-                    $newUpdateDate->format(self::UPDATE_DATE_FORMAT)
+                    $this->formattedUpdateDate()
                 )
             );
         }
@@ -161,7 +162,7 @@ class Setlist
 
     public function changeDate(DateTime $date)
     {
-        if ($date !== $this->date()) {
+        if ($date != $this->date()) {
             $this->setDate($date);
             $newUpdateDate = new DateTimeImmutable();
             $this->setUpdateDate($newUpdateDate);
@@ -170,7 +171,7 @@ class Setlist
                 SetlistChangedItsDate::create(
                     $this->id(),
                     $date->format(self::DATE_TIME_FORMAT),
-                    $newUpdateDate->format(self::UPDATE_DATE_FORMAT)
+                    $this->formattedUpdateDate()
                 )
             );
         }
@@ -193,7 +194,13 @@ class Setlist
 
         if ($canChange) {
             $this->setActCollection($actCollection);
-            // Event!
+            $this->eventsTrigger->trigger(
+                SetlistChangedItsActCollection::create(
+                    $this->id(),
+                    $actCollection,
+                    $this->formattedUpdateDate()
+                )
+            );
         }
     }
 

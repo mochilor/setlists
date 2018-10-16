@@ -235,6 +235,60 @@ class SetlistTest extends TestCase
             ],
         ];
     }
+
+    /**
+     * @test
+     */
+    public function setlistHasUpdateDate()
+    {
+        $setList = $this->getSetlist([$this->getAct()], self::SETLIST_NAME);
+        $dateTime = DateTimeImmutable::createFromFormat(Setlist::UPDATE_DATE_FORMAT, self::FULL_DATETIME);
+
+        $this->assertEquals(
+            $dateTime,
+            $setList->updateDate()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function setlistHasFormattedUpdateDate()
+    {
+        $setList = $this->getSetlist([$this->getAct()], self::SETLIST_NAME);
+
+        $this->assertEquals(
+            self::FULL_DATETIME,
+            $setList->formattedUpdateDate()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function setlistHasCreationDate()
+    {
+        $setList = $this->getSetlist([$this->getAct()], self::SETLIST_NAME);
+        $dateTime = DateTimeImmutable::createFromFormat(Setlist::CREATION_DATE_FORMAT, self::FULL_DATETIME);
+
+        $this->assertEquals(
+            $dateTime,
+            $setList->creationDate()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function setlistHasFormattedCreationDate()
+    {
+        $setList = $this->getSetlist([$this->getAct()], self::SETLIST_NAME);
+
+        $this->assertEquals(
+            self::FULL_DATETIME,
+            $setList->formattedCreationDate()
+        );
+    }
 }
 
 class DummySetList extends Setlist

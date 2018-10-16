@@ -4,6 +4,7 @@ namespace Setlist\Infrastructure\Repository\PDO;
 
 use Setlist\Domain\Entity\Setlist\ActCollection;
 use Setlist\Domain\Entity\Setlist\ActFactory;
+use Setlist\Domain\Entity\Setlist\Event\SetlistChangedItsActCollection;
 use Setlist\Domain\Entity\Setlist\Event\SetlistChangedItsDate;
 use Setlist\Domain\Entity\Setlist\Event\SetlistChangedItsName;
 use Setlist\Domain\Entity\Setlist\Event\SetlistWasCreated;
@@ -12,6 +13,7 @@ use Setlist\Domain\Entity\Setlist\Setlist;
 use Setlist\Domain\Entity\Setlist\SetlistRepository as SetlistRepositoryInterface;
 use Setlist\Domain\Value\Uuid;
 use PDO;
+use Setlist\Infrastructure\Exception\PersistenceException;
 
 class SetlistRepository implements SetlistRepositoryInterface
 {
@@ -29,6 +31,7 @@ class SetlistRepository implements SetlistRepositoryInterface
         ActFactory $actFactory
     ) {
         $this->PDO = $PDO;
+        $this->PDO->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         $this->setlistFactory = $setlistFactory;
         $this->songRepository = $songRepository;
         $this->actFactory = $actFactory;
@@ -41,11 +44,20 @@ class SetlistRepository implements SetlistRepositoryInterface
 
     public function save(Setlist $setlist)
     {
-        $events = $setlist->events();
+        $this->PDO->beginTransaction();
 
-        foreach ($events as $event) {
-            $this->runQuery($event);
+        try {
+            $events = $setlist->events();
+
+            foreach ($events as $event) {
+                $this->runQuery($event);
+            }
+        } catch (\PDOException $e) {
+            $this->PDO->rollBack();
+            throw new PersistenceException('Setlist could not be updated.');
         }
+
+        $this->PDO->commit();
     }
 
     public function get(Uuid $uuid): ?Setlist
@@ -112,7 +124,10 @@ SQL;
                 $this->update($event->id(), 'name', $event->name(), $event->formattedUpdateDate());
                 break;
             case SetlistChangedItsDate::class:
-                $this->update($event->id(), 'date', $event->date(), $event->formattedUpdateDate());
+                $this->update($event->id(), 'date', $event->formattedDate(), $event->formattedUpdateDate());
+                break;
+            case SetlistChangedItsActCollection::class:
+                $this->updateActCollection($event->id(), $event->actCollection(), $event->formattedUpdateDate());
                 break;
 //            case SetlistWasDeleted::class:
 //                $this->delete($event->id());
@@ -164,5 +179,53 @@ SQL;
         $query->bindValue('uuid', $uuid);
         $query->bindValue('update_date', $updateDate);
         $query->execute();
+    }
+
+    private function updateActCollection(string $uuid, ActCollection $actCollection, string $formattedUpdateDate)
+    {
+        $sql = <<<SQL
+DELETE FROM `setlist_song` WHERE setlist_id = :uuid;
+SQL;
+        $query = $this->PDO->prepare($sql);
+        $query->bindValue('uuid', $uuid);
+        $query->execute();
+
+
+        $sql = <<<SQL
+INSERT INTO `setlist_song` (setlist_id, song_id, act) VALUES 
+SQL;
+        $values = "('%s', '%s', %d),";
+        foreach ($actCollection as $key => $act) {
+            foreach ($act->songCollection() as $song) {
+                $sql .= sprintf($values, $uuid, $song->id(), $key);
+            }
+        }
+
+        if (isset($song)) {
+            $sql = substr($sql, 0, -1) . ";";
+            $query = $this->PDO->prepare($sql);
+            $query->execute();
+
+            $sql = <<<SQL
+UPDATE `%s` SET update_date = :update_date WHERE id = :uuid;
+SQL;
+            $sql = sprintf($sql, self::TABLE_NAME);
+            $query = $this->PDO->prepare($sql);
+            $query->bindValue('uuid', $uuid);
+            $query->bindValue('update_date', $formattedUpdateDate);
+            $query->execute();
+        }
+    }
+
+    private function startTransaction()
+    {
+    }
+
+    private function rollback()
+    {
+    }
+
+    private function commitTransaction()
+    {
     }
 }

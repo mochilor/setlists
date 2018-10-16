@@ -30,18 +30,16 @@ class Controller extends BaseController
             $this->commandBus->handle($command);
         } catch (\Exception $e) {
             $type = 'Error';
-            $message = $e->getMessage() ?: self::GENERIC_ERROR_MESSAGE;
             $code = 500;
 
             while ($e instanceof \Exception) {
+                $message = $e->getMessage() ?: self::GENERIC_ERROR_MESSAGE;
                 if ($e instanceof EntityAlreadyExistsException) {
-                    $message = $e->getMessage() ?: self::GENERIC_ERROR_MESSAGE;
                     $code = 409;
                     break;
                 }
 
                 if ($e instanceof EntityDoesNotExistException) {
-                    $message = $e->getMessage() ?: self::GENERIC_ERROR_MESSAGE;
                     $code = 404;
                     break;
                 }
@@ -51,6 +49,11 @@ class Controller extends BaseController
 
                 $e = $e->getPrevious();
             }
+
+        } catch (\Throwable $e) {
+            $type = 'Error';
+            $code = 500;
+            $message = $e->getMessage() ?: self::GENERIC_ERROR_MESSAGE;
         }
 
         return $this->returnResponse([$type => $message], $code);

@@ -2,20 +2,21 @@
 
 namespace Setlist\Domain\Entity\Setlist\Event;
 
+use Setlist\Domain\Entity\Setlist\ActCollection;
 use Setlist\Domain\Value\Uuid;
 
-class SetlistChangedItsDate
+class SetlistChangedItsActCollection
 {
     private $id;
-    private $formattedDate;
+    private $actCollection;
     private $formattedUpdateDate;
 
-    public static function create(Uuid $id, string $formattedDate, string $formattedUpdateDate): self
+    public static function create(Uuid $id, ActCollection $actCollection, string $formattedUpdateDate): self
     {
         $event = new self();
 
         $event->id = $id;
-        $event->formattedDate = $formattedDate;
+        $event->actCollection = $actCollection;
         $event->formattedUpdateDate = $formattedUpdateDate;
 
         return $event;
@@ -26,9 +27,9 @@ class SetlistChangedItsDate
         return $this->id;
     }
 
-    public function formattedDate(): string
+    public function actCollection(): ActCollection
     {
-        return $this->formattedDate;
+        return $this->actCollection;
     }
 
     public function formattedUpdateDate(): string
