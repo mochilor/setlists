@@ -30,25 +30,8 @@ class Controller extends BaseController
             $this->commandBus->handle($command);
         } catch (\Exception $e) {
             $type = 'Error';
-            $code = 500;
-
-            while ($e instanceof \Exception) {
-                $message = $e->getMessage() ?: self::GENERIC_ERROR_MESSAGE;
-                if ($e instanceof EntityAlreadyExistsException) {
-                    $code = 409;
-                    break;
-                }
-
-                if ($e instanceof EntityDoesNotExistException) {
-                    $code = 404;
-                    break;
-                }
-
-                // Resto de excepciones de Domain o Application
-                // ...
-
-                $e = $e->getPrevious();
-            }
+            $code = $e->getCode() != 0 ? $e->getCode() : 500;
+            $message = $e->getMessage() ?: self::GENERIC_ERROR_MESSAGE;
 
         } catch (\Throwable $e) {
             $type = 'Error';

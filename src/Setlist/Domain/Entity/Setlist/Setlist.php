@@ -64,7 +64,7 @@ class Setlist
     protected function setActCollection(ActCollection $actCollection)
     {
         if ($actCollection->count() == 0) {
-            throw new InvalidActCollectionException;
+            throw new InvalidActCollectionException('No acts provided for the Setlist');
         }
 
         $this->actCollection = $actCollection;
@@ -79,7 +79,7 @@ class Setlist
     private function guardName(string $name)
     {
         if (empty($name) || strlen($name) < self::MIN_NAME_LENGTH || strlen($name) > self::MAX_NAME_LENGTH) {
-            throw new InvalidSetlistNameException();
+            throw new InvalidSetlistNameException('Invalid name provided for the Setlist');
         }
     }
 

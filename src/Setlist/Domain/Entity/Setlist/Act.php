@@ -26,7 +26,7 @@ class Act
     private function guardSongCollection(SongCollection $songCollection)
     {
         if ($songCollection->count() == 0) {
-            throw new InvalidSongcollectionException();
+            throw new InvalidSongcollectionException('Act with empty song collection provided');
         }
     }
 
