@@ -3,8 +3,6 @@
 namespace App\Http\Controllers;
 
 use Laravel\Lumen\Routing\Controller as BaseController;
-use Setlist\Application\Exception\EntityAlreadyExistsException;
-use Setlist\Application\Exception\EntityDoesNotExistException;
 use Setlist\Infrastructure\Messaging\CommandBus;
 use Setlist\Infrastructure\Messaging\MessageFactory;
 

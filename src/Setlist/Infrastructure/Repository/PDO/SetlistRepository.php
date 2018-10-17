@@ -154,18 +154,7 @@ SQL;
         $query->bindValue(':update_date', $formattedCreationDate, PDO::PARAM_STR);
         $query->execute();
 
-        $songSql = "INSERT INTO `setlist_song` (setlist_id, song_id, act) VALUES ";
-        foreach ($actCollection as $keyAct => $act) {
-            foreach ($act->songCollection() as $keySong => $song) {
-                $songSql .= sprintf("('%s', '%s', %d),", $uuid, $song->id(), $keyAct);
-            }
-        }
-
-        if (isset($keySong)) {
-            $songSql = substr($songSql, 0, -1) . ";";
-            $songQuery = $this->PDO->prepare($songSql);
-            $songQuery->execute();
-        }
+        $this->insertSetlistSongs($uuid, $actCollection);
     }
 
     private function update(string $uuid, string $parameter, string $value, string $updateDate)
@@ -191,21 +180,7 @@ SQL;
         $query->execute();
 
 
-        $sql = <<<SQL
-INSERT INTO `setlist_song` (setlist_id, song_id, act) VALUES 
-SQL;
-        $values = "('%s', '%s', %d),";
-        foreach ($actCollection as $key => $act) {
-            foreach ($act->songCollection() as $song) {
-                $sql .= sprintf($values, $uuid, $song->id(), $key);
-            }
-        }
-
-        if (isset($song)) {
-            $sql = substr($sql, 0, -1) . ";";
-            $query = $this->PDO->prepare($sql);
-            $query->execute();
-
+        if ($this->insertSetlistSongs($uuid, $actCollection)) {
             $sql = <<<SQL
 UPDATE `%s` SET update_date = :update_date WHERE id = :uuid;
 SQL;
@@ -217,15 +192,22 @@ SQL;
         }
     }
 
-    private function startTransaction()
+    private function insertSetlistSongs(string $uuid, ActCollection $actCollection)
     {
-    }
+        $songSql = "INSERT INTO `setlist_song` (setlist_id, song_id, act) VALUES ";
 
-    private function rollback()
-    {
-    }
+        foreach ($actCollection as $keyAct => $act) {
+            foreach ($act->songCollection() as $keySong => $song) {
+                $songSql .= sprintf("('%s', '%s', %d),", $uuid, $song->id(), $keyAct);
+            }
+        }
 
-    private function commitTransaction()
-    {
+        if (isset($keySong)) {
+            $songSql = substr($songSql, 0, -1) . ";";
+            $songQuery = $this->PDO->prepare($songSql);
+            $songQuery->execute();
+
+            return true;
+        }
     }
 }
