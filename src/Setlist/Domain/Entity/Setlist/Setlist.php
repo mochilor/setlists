@@ -162,7 +162,7 @@ class Setlist
 
     public function changeDate(DateTime $date)
     {
-        if ($date != $this->date()) {
+        if ($date->format(self::DATE_TIME_FORMAT) != $this->formattedDate()) {
             $this->setDate($date);
             $newUpdateDate = new DateTimeImmutable();
             $this->setUpdateDate($newUpdateDate);

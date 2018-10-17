@@ -73,7 +73,7 @@ SQL;
 
         if ($setlistData) {
             $sql = <<<SQL
-SELECT * FROM `setlist_song` WHERE setlist_id = :uuid;
+SELECT * FROM `setlist_song` WHERE setlist_id = :uuid ORDER BY act, `order`;
 SQL;
             $query = $this->PDO->prepare($sql);
             $query->bindValue('uuid', $uuid);
@@ -88,7 +88,7 @@ SQL;
                     $currentAct = $song['act'];
                 }
 
-                $acts[$currentAct][] = $this->songRepository->get(Uuid::create($song['song_id']));
+                $acts[$currentAct][$song['order']] = $this->songRepository->get(Uuid::create($song['song_id']));
             }
 
             foreach ($acts as $act) {
@@ -194,11 +194,11 @@ SQL;
 
     private function insertSetlistSongs(string $uuid, ActCollection $actCollection)
     {
-        $songSql = "INSERT INTO `setlist_song` (setlist_id, song_id, act) VALUES ";
+        $songSql = "INSERT INTO `setlist_song` (`setlist_id`, `song_id`, `act`, `order`) VALUES ";
 
         foreach ($actCollection as $keyAct => $act) {
             foreach ($act->songCollection() as $keySong => $song) {
-                $songSql .= sprintf("('%s', '%s', %d),", $uuid, $song->id(), $keyAct);
+                $songSql .= sprintf("('%s', '%s', %d, %d),", $uuid, $song->id(), $keyAct, $keySong);
             }
         }
 

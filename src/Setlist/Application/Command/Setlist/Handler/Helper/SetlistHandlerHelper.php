@@ -21,17 +21,19 @@ class SetlistHandlerHelper
 
     public function getActsForSetlist(array $acts): array
     {
+        ksort($acts);
+        $acts = array_values($acts);
         $actsForSetlist = [];
 
         foreach ($acts as $act) {
             $songs = [];
-            foreach ($act as $songUuid) {
+            foreach ($act as $key => $songUuid) {
                 $song = $this->songRepository->get(Uuid::create($songUuid));
                 if (!$song instanceof Song) {
                     throw new InvalidSetlistException('Invalid song provided');
                 }
 
-                $songs[] = $song;
+                $songs[$key] = $song;
             }
 
             $actsForSetlist[] = $this->actFactory->make($songs);

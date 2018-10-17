@@ -6,7 +6,9 @@ class ActFactory
 {
     public function make(array $songs): Act
     {
-        $songCollection = SongCollection::create(...$songs);
+        ksort($songs);
+        $songCollection = SongCollection::create(...array_values($songs));
+
         return Act::create($songCollection);
     }
 }

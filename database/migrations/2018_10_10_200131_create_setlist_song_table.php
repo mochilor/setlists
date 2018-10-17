@@ -17,6 +17,7 @@ class CreateSetlistSongTable extends Migration
             $table->uuid('setlist_id');
             $table->uuid('song_id');
             $table->integer('act');
+            $table->integer('order');
 
             $table->foreign('setlist_id')->references('id')->on('setlist');
             $table->foreign('song_id')->references('id')->on('song');

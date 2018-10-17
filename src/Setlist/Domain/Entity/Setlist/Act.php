@@ -4,7 +4,6 @@ namespace Setlist\Domain\Entity\Setlist;
 
 use Setlist\Domain\Exception\Setlist\InvalidSongCollectionException;
 
-// VO of Setlist?
 class Act
 {
     private $songCollection;
