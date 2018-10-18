@@ -6,7 +6,7 @@ use Setlist\Application\Command\Setlist\CreateSetlist;
 use Setlist\Application\Command\Setlist\Handler\Helper\SetlistHandlerHelper;
 use Setlist\Application\Exception\InvalidSetlistException;
 use Setlist\Application\Exception\SetlistNameNotUniqueException;
-use Setlist\Application\Persistence\Setlist\ApplicationSetlistRepository;
+use Setlist\Application\Persistence\Setlist\SetlistRepository as ApplicationSetlistRespository;
 use Setlist\Domain\Entity\Setlist\SetlistFactory;
 use Setlist\Domain\Entity\Setlist\SetlistRepository;
 use Setlist\Domain\Entity\Song\SongFactory;
@@ -23,7 +23,7 @@ class CreateSetlistHandler
     private $setlistHandlerHelper;
 
     public function __construct(
-        ApplicationSetlistRepository $applicationSetlistRepository,
+        ApplicationSetlistRespository $applicationSetlistRepository,
         SetlistRepository $setlistRepository,
         SongRepository $songRepository,
         SetlistFactory $setlistFactory,

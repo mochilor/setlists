@@ -2,8 +2,8 @@
 
 namespace Tests\Unit\Setlist\Infrastructure\Persistence\InMemory;
 
-use Setlist\Infrastructure\Persistence\InMemory\ApplicationSetlistRepository;
 use PHPUnit\Framework\TestCase;
+use Setlist\Infrastructure\Repository\Application\InMemory\SetlistRepository;
 
 class ApplicationSetlistRepositoryTest extends TestCase
 {
@@ -12,7 +12,7 @@ class ApplicationSetlistRepositoryTest extends TestCase
      */
     public function repositoryCanGetAllTitles()
     {
-        $applicationRepository = new ApplicationSetlistRepository();
+        $applicationRepository = new SetlistRepository();
         $names = [
             'Name 1',
             'Name 2',

@@ -1,6 +1,6 @@
 <?php
 
-namespace Setlist\Infrastructure\Repository\PDO;
+namespace Setlist\Infrastructure\Repository\Domain\PDO;
 
 use Setlist\Domain\Entity\Setlist\ActCollection;
 use Setlist\Domain\Entity\Setlist\ActFactory;

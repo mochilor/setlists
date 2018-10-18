@@ -8,37 +8,25 @@ use Setlist\Application\Command\Setlist\UpdateSetlist;
 use Setlist\Application\Exception\InvalidSetlistException;
 use Setlist\Application\Exception\SetlistDoesNotExistException;
 use Setlist\Application\Exception\SetlistNameNotUniqueException;
-use Setlist\Application\Persistence\Setlist\ApplicationSetlistRepository;
+use Setlist\Application\Persistence\Setlist\SetlistRepository as ApplicationSetlistRespository;
 use Setlist\Domain\Entity\Setlist\ActCollection;
 use Setlist\Domain\Entity\Setlist\Setlist;
-use Setlist\Domain\Entity\Setlist\SetlistFactory;
 use Setlist\Domain\Entity\Setlist\SetlistRepository;
-use Setlist\Domain\Entity\Song\SongFactory;
-use Setlist\Domain\Entity\Song\SongRepository;
 use Setlist\Domain\Value\Uuid;
 
 class UpdateSetlistHandler
 {
     private $setlistRepository;
     private $applicationSetlistRepository;
-    private $songRepository;
-    private $setlistFactory;
-    private $songFactory;
     private $setlistHandlerHelper;
 
     public function __construct(
         SetlistRepository $setlistRepository,
-        ApplicationSetlistRepository $applicationSetlistRepository,
-        SongRepository $songRepository,
-        SetlistFactory $setlistFactory,
-        SongFactory $songFactory,
+        ApplicationSetlistRespository $applicationSetlistRepository,
         SetlistHandlerHelper $setlistHandlerHelper
     ) {
         $this->setlistRepository = $setlistRepository;
-        $this->setlistFactory = $setlistFactory;
-        $this->songFactory = $songFactory;
         $this->setlistHandlerHelper = $setlistHandlerHelper;
-        $this->songRepository = $songRepository;
         $this->applicationSetlistRepository = $applicationSetlistRepository;
     }
 

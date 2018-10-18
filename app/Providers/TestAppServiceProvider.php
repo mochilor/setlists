@@ -16,22 +16,22 @@ class TestAppServiceProvider extends ServiceProvider
         // Common implementations
         $this->app->bind(
             \Setlist\Domain\Entity\Song\SongRepository::class,
-            \Setlist\Infrastructure\Repository\InMemory\SongRepository::class
+            \Setlist\Infrastructure\Repository\Domain\InMemory\SongRepository::class
         );
 
         $this->app->bind(
-            \Setlist\Application\Persistence\Song\ApplicationSongRepository::class,
-            \Setlist\Infrastructure\Persistence\InMemory\ApplicationSongRepository::class
+            \Setlist\Application\Persistence\Song\SongRepository::class,
+            \Setlist\Infrastructure\Repository\Application\InMemory\SongRepository::class
         );
 
         $this->app->bind(
             \Setlist\Domain\Entity\Setlist\SetlistRepository::class,
-            \Setlist\Infrastructure\Repository\InMemory\SetlistRepository::class
+            \Setlist\Infrastructure\Repository\Domain\InMemory\SetlistRepository::class
         );
 
         $this->app->bind(
-            \Setlist\Application\Persistence\Setlist\ApplicationSetlistRepository::class,
-            \Setlist\Infrastructure\Persistence\InMemory\ApplicationSetlistRepository::class
+            \Setlist\Application\Persistence\Setlist\SetlistRepository::class,
+            \Setlist\Infrastructure\Repository\Application\InMemory\SetlistRepository::class
         );
     }
 }

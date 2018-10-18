@@ -7,6 +7,10 @@ use DateTimeImmutable;
 use PHPUnit\Framework\TestCase;
 use Setlist\Domain\Entity\EventsTrigger;
 use Setlist\Domain\Entity\Setlist\Act;
+use Setlist\Domain\Entity\Setlist\Event\SetlistChangedItsActCollection;
+use Setlist\Domain\Entity\Setlist\Event\SetlistChangedItsDate;
+use Setlist\Domain\Entity\Setlist\Event\SetlistChangedItsName;
+use Setlist\Domain\Entity\Setlist\Event\SetlistWasCreated;
 use Setlist\Domain\Entity\Setlist\Setlist;
 use Setlist\Domain\Entity\Setlist\ActCollection;
 use Setlist\Domain\Value\Uuid;
@@ -41,6 +45,16 @@ class SetlistTest extends TestCase
             Setlist::class,
             $setList
         );
+
+        $this->assertCount(
+            1,
+            $setList->events()
+        );
+
+        $this->assertInstanceOf(
+            SetlistWasCreated::class,
+            $setList->events()[0]
+        );
     }
 
     private function getSetlist(array $acts, string $name, $dummy = false): Setlist
@@ -51,12 +65,17 @@ class SetlistTest extends TestCase
         $creationDate = DateTimeImmutable::createFromFormat(self::DATE_FORMAT, self::FULL_DATETIME);
         $updateDate = DateTimeImmutable::createFromFormat(self::DATE_FORMAT, self::FULL_DATETIME);
         $eventsTrigger = new EventsTrigger();
+        $eventsTrigger->trigger(
+            SetlistWasCreated::create(
+                $id,
+                $actCollection,
+                $name,
+                $date->format(Setlist::DATE_TIME_FORMAT),
+                $creationDate->format(Setlist::CREATION_DATE_FORMAT)
+            )
+        );
 
-        if (!$dummy) {
-            return Setlist::create($id, $actCollection, $name, $date, $creationDate, $updateDate, $eventsTrigger);
-        }
-
-        return DummySetList::create($id, $actCollection, $name, $date, $creationDate, $updateDate, $eventsTrigger);
+        return Setlist::create($id, $actCollection, $name, $date, $creationDate, $updateDate, $eventsTrigger);
     }
 
     /**
@@ -169,6 +188,16 @@ class SetlistTest extends TestCase
             $newName,
             $setList->name()
         );
+
+        $this->assertCount(
+            2,
+            $setList->events()
+        );
+
+        $this->assertInstanceOf(
+            SetlistChangedItsName::class,
+            $setList->events()[1]
+        );
     }
 
     /**
@@ -185,6 +214,16 @@ class SetlistTest extends TestCase
             $newDate,
             $setList->date()
         );
+
+        $this->assertCount(
+            2,
+            $setList->events()
+        );
+
+        $this->assertInstanceOf(
+            SetlistChangedItsDate::class,
+            $setList->events()[1]
+        );
     }
 
     /**
@@ -195,15 +234,22 @@ class SetlistTest extends TestCase
     {
         $newActCollection = ActCollection::create(...$actArray2);
 
-        $setList = $this->getSetlist($actArray1, self::SETLIST_NAME, true);
+        $setList = $this->getSetlist($actArray1, self::SETLIST_NAME);
 
         $setList->changeActCollection($newActCollection);
 
-        $this->assertEquals(
+        $this->assertCount(
             $result,
-            $setList->setActCollectionWasCalled,
+            $setList->events(),
             $message
         );
+
+        if ($result > 1) {
+            $this->assertInstanceOf(
+                SetlistChangedItsActCollection::class,
+                $setList->events()[1]
+            );
+        }
     }
 
     public function isEqualDataProvider()
@@ -288,16 +334,5 @@ class SetlistTest extends TestCase
             self::FULL_DATETIME,
             $setList->formattedCreationDate()
         );
-    }
-}
-
-class DummySetList extends Setlist
-{
-    public $setActCollectionWasCalled = 0;
-
-    protected function setActCollection(ActCollection $actCollection)
-    {
-        $this->actCollection = $actCollection;
-        $this->setActCollectionWasCalled++;
     }
 }

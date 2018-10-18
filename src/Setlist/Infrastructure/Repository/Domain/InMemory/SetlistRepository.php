@@ -1,6 +1,6 @@
 <?php
 
-namespace Setlist\Infrastructure\Repository\InMemory;
+namespace Setlist\Infrastructure\Repository\Domain\InMemory;
 
 use Setlist\Domain\Entity\Setlist\Event\SetlistWasCreated;
 use Setlist\Domain\Entity\Setlist\Setlist;

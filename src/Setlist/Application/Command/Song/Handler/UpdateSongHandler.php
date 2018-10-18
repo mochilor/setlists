@@ -5,7 +5,7 @@ namespace Setlist\Application\Command\Song\Handler;
 use Setlist\Application\Command\Song\UpdateSong;
 use Setlist\Application\Exception\SongDoesNotExistException;
 use Setlist\Application\Exception\SongTitleNotUniqueException;
-use Setlist\Application\Persistence\Song\ApplicationSongRepository;
+use Setlist\Application\Persistence\Song\SongRepository as ApplicationSongRespository;
 use Setlist\Domain\Entity\Song\Song;
 use Setlist\Domain\Entity\Song\SongRepository;
 use Setlist\Domain\Value\Uuid;
@@ -15,7 +15,8 @@ class UpdateSongHandler
     private $songRepository;
     private $applicationSongRepository;
 
-    public function __construct(SongRepository $songRepository, ApplicationSongRepository $applicationSongRepository) {
+    public function __construct(SongRepository $songRepository, ApplicationSongRespository $applicationSongRepository)
+    {
         $this->songRepository = $songRepository;
         $this->applicationSongRepository = $applicationSongRepository;
     }

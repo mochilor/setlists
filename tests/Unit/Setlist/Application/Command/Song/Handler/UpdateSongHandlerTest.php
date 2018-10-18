@@ -5,7 +5,7 @@ namespace Tests\Unit\Setlist\Application\Command\Song\Handler;
 use PHPUnit\Framework\TestCase;
 use Setlist\Application\Command\Song\Handler\UpdateSongHandler;
 use Setlist\Application\Command\Song\UpdateSong;
-use Setlist\Application\Persistence\Song\ApplicationSongRepository;
+use Setlist\Application\Persistence\Song\SongRepository as ApplicationSongRespository;
 use Setlist\Domain\Entity\Song\Song;
 use Setlist\Domain\Entity\Song\SongRepository;
 use Setlist\Domain\Value\Uuid;
@@ -19,7 +19,7 @@ class UpdateSongHandlerTest extends TestCase
     protected function setUp()
     {
         $this->songRepository = $this->getMockBuilder(SongRepository::class)->getMock();
-        $this->applicationSongRepository = $this->getMockBuilder(ApplicationSongRepository::class)->getMock();
+        $this->applicationSongRepository = $this->getMockBuilder(ApplicationSongRespository::class)->getMock();
         $this->commandHandler = new UpdateSongHandler($this->songRepository, $this->applicationSongRepository);
     }
 

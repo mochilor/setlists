@@ -2,8 +2,8 @@
 
 namespace Tests\Unit\Setlist\Infrastructure\Persistence\InMemory;
 
-use Setlist\Infrastructure\Persistence\InMemory\ApplicationSongRepository;
 use PHPUnit\Framework\TestCase;
+use Setlist\Infrastructure\Repository\Application\InMemory\SongRepository;
 
 class ApplicationSongRepositoryTest extends TestCase
 {
@@ -12,7 +12,7 @@ class ApplicationSongRepositoryTest extends TestCase
      */
     public function repositoryCanGetAllTitles()
     {
-        $applicationRepository = new ApplicationSongRepository();
+        $applicationRepository = new SongRepository();
         $titles = [
             'Title 1',
             'Title 2',

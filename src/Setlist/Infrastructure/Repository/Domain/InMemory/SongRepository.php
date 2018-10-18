@@ -1,6 +1,6 @@
 <?php
 
-namespace Setlist\Infrastructure\Repository\InMemory;
+namespace Setlist\Infrastructure\Repository\Domain\InMemory;
 
 use Setlist\Domain\Entity\Song\Event\SongChangedItsTitle;
 use Setlist\Domain\Entity\Song\Event\SongWasCreated;

@@ -1,11 +1,11 @@
 <?php
 
-namespace Setlist\Infrastructure\Persistence\PDO;
+namespace Setlist\Infrastructure\Repository\Application\PDO;
 
-use Setlist\Application\Persistence\Song\ApplicationSongRepository as ApplicationSongRepositoryInterface;
+use Setlist\Application\Persistence\Setlist\SetlistRepository as ApplicationSetlistRepositoryInterface;
 use PDO;
 
-class ApplicationSongRepository implements ApplicationSongRepositoryInterface
+class SetlistRepository implements ApplicationSetlistRepositoryInterface
 {
     private $PDO;
 
@@ -14,22 +14,24 @@ class ApplicationSongRepository implements ApplicationSongRepositoryInterface
         $this->PDO = $PDO;
     }
 
-    public function getAllTitles(): array
+    public function getAllNames(): array
     {
         $sql = <<<SQL
-SELECT `title` FROM `song`;
+SELECT `name` FROM `setlist`;
 SQL;
         return $this->PDO->query($sql)->fetchAll(PDO::FETCH_COLUMN);
     }
 
-    public function getOtherTitles(string $uuid): array
+    public function getOtherNames(string $uuid): array
     {
         $sql = <<<SQL
-SELECT `title` FROM `song` WHERE `id` != :uuid;
+SELECT `name` FROM `setlist` WHERE `id` != :uuid;
 SQL;
         $query = $this->PDO->prepare($sql);
         $query->bindValue('uuid', $uuid);
         $query->execute();
         return $query->fetchAll(PDO::FETCH_COLUMN);
     }
+
+
 }

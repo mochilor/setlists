@@ -4,7 +4,7 @@ namespace Setlist\Application\Command\Song\Handler;
 
 use Setlist\Application\Command\Song\CreateSong;
 use Setlist\Application\Exception\SongTitleNotUniqueException;
-use Setlist\Application\Persistence\Song\ApplicationSongRepository;
+use Setlist\Application\Persistence\Song\SongRepository as ApplicationSongRespository;
 use Setlist\Domain\Entity\Song\SongFactory;
 use Setlist\Domain\Entity\Song\SongRepository;
 use Setlist\Domain\Service\Song\SongTitleValidator;
@@ -17,7 +17,7 @@ class CreateSongHandler
 
     public function __construct(
         SongRepository $songRepository,
-        ApplicationSongRepository $applicationSongRepository,
+        ApplicationSongRespository $applicationSongRepository,
         SongFactory $songFactory
     ) {
         $this->songRepository = $songRepository;

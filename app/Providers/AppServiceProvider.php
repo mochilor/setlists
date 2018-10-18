@@ -31,22 +31,22 @@ class AppServiceProvider extends ServiceProvider
         // Common implementations
         $this->app->bind(
             \Setlist\Domain\Entity\Song\SongRepository::class,
-            \Setlist\Infrastructure\Repository\PDO\SongRepository::class
+            \Setlist\Infrastructure\Repository\Domain\PDO\SongRepository::class
         );
 
         $this->app->bind(
-            \Setlist\Application\Persistence\Song\ApplicationSongRepository::class,
-            \Setlist\Infrastructure\Persistence\PDO\ApplicationSongRepository::class
+            \Setlist\Application\Persistence\Song\SongRepository::class,
+            \Setlist\Infrastructure\Repository\Application\PDO\SongRepository::class
         );
 
         $this->app->bind(
             \Setlist\Domain\Entity\Setlist\SetlistRepository::class,
-            \Setlist\Infrastructure\Repository\PDO\SetlistRepository::class
+            \Setlist\Infrastructure\Repository\Domain\PDO\SetlistRepository::class
         );
 
         $this->app->bind(
-            \Setlist\Application\Persistence\Setlist\ApplicationSetlistRepository::class,
-            \Setlist\Infrastructure\Persistence\PDO\ApplicationSetlistRepository::class
+            \Setlist\Application\Persistence\Setlist\SetlistRepository::class,
+            \Setlist\Infrastructure\Repository\Application\PDO\SetlistRepository::class
         );
     }
 }

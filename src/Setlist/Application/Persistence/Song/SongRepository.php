@@ -2,7 +2,7 @@
 
 namespace Setlist\Application\Persistence\Song;
 
-interface ApplicationSongRepository
+interface SongRepository
 {
     public function getAllTitles(): array;
     public function getOtherTitles(string $uuid): array;

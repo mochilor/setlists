@@ -4,7 +4,9 @@ namespace Tests\Unit\Setlist\Domain\Entity\Song;
 
 use DateTimeImmutable;
 use Setlist\Domain\Entity\EventsTrigger;
+use Setlist\Domain\Entity\Song\Event\SongChangedItsTitle;
 use Setlist\Domain\Entity\Song\Event\SongWasCreated;
+use Setlist\Domain\Entity\Song\Event\SongWasDeleted;
 use Setlist\Domain\Entity\Song\Song;
 use PHPUnit\Framework\TestCase;
 use Setlist\Domain\Value\Uuid;
@@ -28,6 +30,11 @@ class SongTest extends TestCase
         $this->assertCount(
             1,
             $song->events()
+        );
+
+        $this->assertInstanceOf(
+            SongWasCreated::class,
+            $song->events()[0]
         );
     }
 
@@ -113,6 +120,11 @@ class SongTest extends TestCase
             2,
             $song->events()
         );
+
+        $this->assertInstanceOf(
+            SongChangedItsTitle::class,
+            $song->events()[1]
+        );
     }
 
     /**
@@ -189,6 +201,11 @@ class SongTest extends TestCase
         $this->assertCount(
             2,
             $song->events()
+        );
+
+        $this->assertInstanceOf(
+            SongWasDeleted::class,
+            $song->events()[1]
         );
     }
 
