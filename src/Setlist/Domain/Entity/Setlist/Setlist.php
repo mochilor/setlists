@@ -8,6 +8,7 @@ use Setlist\Domain\Entity\EventsTrigger;
 use Setlist\Domain\Entity\Setlist\Event\SetlistChangedItsActCollection;
 use Setlist\Domain\Entity\Setlist\Event\SetlistChangedItsDate;
 use Setlist\Domain\Entity\Setlist\Event\SetlistChangedItsName;
+use Setlist\Domain\Entity\Setlist\Event\SetlistWasDeleted;
 use Setlist\Domain\Exception\Setlist\InvalidActCollectionException;
 use Setlist\Domain\Exception\Setlist\InvalidSetlistNameException;
 use Setlist\Domain\Value\Uuid;
@@ -202,6 +203,11 @@ class Setlist
                 )
             );
         }
+    }
+
+    public function delete()
+    {
+        $this->eventsTrigger->trigger(SetlistWasDeleted::create($this->id()));
     }
 
     public function events(): array

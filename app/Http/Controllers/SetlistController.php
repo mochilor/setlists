@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Payload\DeleteSetlistPayload;
 use App\Http\Payload\UpdateSetlistPayload;
 use Setlist\Application\Command\Setlist\CreateSetlist;
 use App\Http\Payload\CreateSetlistPayload;
-//use Setlist\Application\Command\Setlist\DeleteSetlist;
+use Setlist\Application\Command\Setlist\DeleteSetlist;
 use Setlist\Application\Command\Setlist\UpdateSetlist;
 
 class SetlistController extends Controller
@@ -24,10 +25,10 @@ class SetlistController extends Controller
         return $this->dispatchCommand($command, 'Setlist updated');
     }
 
-//    public function deleteSetlist(DeleteSetlistPayload $deleteSetlistPayload)
-//    {
-//        $command = $this->messageFactory->make(DeleteSetlist::class, $deleteSetlistPayload());
-//
-//        return $this->dispatchCommand($command, 'Setlist deleted');
-//    }
+    public function deleteSetlist(DeleteSetlistPayload $deleteSetlistPayload)
+    {
+        $command = $this->messageFactory->make(DeleteSetlist::class, $deleteSetlistPayload());
+
+        return $this->dispatchCommand($command, 'Setlist deleted');
+    }
 }

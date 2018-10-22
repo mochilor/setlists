@@ -8,6 +8,7 @@ use Setlist\Domain\Entity\Setlist\Event\SetlistChangedItsActCollection;
 use Setlist\Domain\Entity\Setlist\Event\SetlistChangedItsDate;
 use Setlist\Domain\Entity\Setlist\Event\SetlistChangedItsName;
 use Setlist\Domain\Entity\Setlist\Event\SetlistWasCreated;
+use Setlist\Domain\Entity\Setlist\Event\SetlistWasDeleted;
 use Setlist\Domain\Entity\Setlist\SetlistFactory;
 use Setlist\Domain\Entity\Setlist\Setlist;
 use Setlist\Domain\Entity\Setlist\SetlistRepository as SetlistRepositoryInterface;
@@ -129,9 +130,9 @@ SQL;
             case SetlistChangedItsActCollection::class:
                 $this->updateActCollection($event->id(), $event->actCollection(), $event->formattedUpdateDate());
                 break;
-//            case SetlistWasDeleted::class:
-//                $this->delete($event->id());
-//                break;
+            case SetlistWasDeleted::class:
+                $this->delete($event->id());
+                break;
         }
     }
 
@@ -209,5 +210,21 @@ SQL;
 
             return true;
         }
+    }
+
+    private function delete(string $uuid)
+    {
+        $setlistSongsSql = "DELETE FROM `setlist_song` WHERE setlist_id = :uuid;";
+
+        $query = $this->PDO->prepare($setlistSongsSql);
+        $query->bindValue('uuid', $uuid);
+        $query->execute();
+
+        $setlistSql = "DELETE FROM `%s` WHERE id = :uuid";
+
+        $setlistSql = sprintf($setlistSql, self::TABLE_NAME);
+        $query = $this->PDO->prepare($setlistSql);
+        $query->bindValue('uuid', $uuid);
+        $query->execute();
     }
 }

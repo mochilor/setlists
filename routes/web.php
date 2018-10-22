@@ -28,6 +28,7 @@ $router->group(['prefix' => 'api'], function () use ($router) {
     $router->group(['prefix' => 'setlist'], function () use ($router) {
         $router->post('',  ['uses' => 'SetlistController@createSetlist']);
         $router->patch('{id}',  ['uses' => 'SetlistController@updateSetlist']);
+        $router->delete('{id}',  ['uses' => 'SetlistController@deleteSetlist']);
     });
 
 

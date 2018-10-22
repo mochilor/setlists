@@ -11,6 +11,7 @@ use Setlist\Domain\Entity\Setlist\Event\SetlistChangedItsActCollection;
 use Setlist\Domain\Entity\Setlist\Event\SetlistChangedItsDate;
 use Setlist\Domain\Entity\Setlist\Event\SetlistChangedItsName;
 use Setlist\Domain\Entity\Setlist\Event\SetlistWasCreated;
+use Setlist\Domain\Entity\Setlist\Event\SetlistWasDeleted;
 use Setlist\Domain\Entity\Setlist\Setlist;
 use Setlist\Domain\Entity\Setlist\ActCollection;
 use Setlist\Domain\Value\Uuid;
@@ -57,9 +58,9 @@ class SetlistTest extends TestCase
         );
     }
 
-    private function getSetlist(array $acts, string $name, $dummy = false): Setlist
+    private function getSetlist(array $acts, string $name): Setlist
     {
-        $id = $this->getMockBuilder(Uuid::class)->getMock();
+        $id = Uuid::random();
         $actCollection = ActCollection::create(...$acts);
         $date = DateTime::createFromFormat(self::DATE_FORMAT, self::FULL_DATETIME);
         $creationDate = DateTimeImmutable::createFromFormat(self::DATE_FORMAT, self::FULL_DATETIME);
@@ -333,6 +334,26 @@ class SetlistTest extends TestCase
         $this->assertEquals(
             self::FULL_DATETIME,
             $setList->formattedCreationDate()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function setlistCanBeDeleted()
+    {
+        $setList = $this->getSetlist([$this->getAct()], self::SETLIST_NAME);
+
+        $setList->delete();
+
+        $this->assertCount(
+            2,
+            $setList->events()
+        );
+
+        $this->assertInstanceOf(
+            SetlistWasDeleted::class,
+            $setList->events()[1]
         );
     }
 }
