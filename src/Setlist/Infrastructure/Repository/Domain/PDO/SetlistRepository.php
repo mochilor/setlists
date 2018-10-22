@@ -2,6 +2,7 @@
 
 namespace Setlist\Infrastructure\Repository\Domain\PDO;
 
+use Setlist\Domain\Entity\DomainEvent;
 use Setlist\Domain\Entity\Setlist\ActCollection;
 use Setlist\Domain\Entity\Setlist\ActFactory;
 use Setlist\Domain\Entity\Setlist\Event\SetlistChangedItsActCollection;
@@ -109,7 +110,7 @@ SQL;
         return null;
     }
 
-    private function runQuery($event)
+    private function runQuery(DomainEvent $event)
     {
         switch (get_class($event)) {
             case SetlistWasCreated::class:

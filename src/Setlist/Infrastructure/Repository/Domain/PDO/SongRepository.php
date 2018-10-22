@@ -2,6 +2,7 @@
 
 namespace Setlist\Infrastructure\Repository\Domain\PDO;
 
+use Setlist\Domain\Entity\DomainEvent;
 use Setlist\Domain\Entity\Song\Event\SongChangedItsTitle;
 use Setlist\Domain\Entity\Song\Event\SongWasCreated;
 use Setlist\Domain\Entity\Song\Event\SongWasDeleted;
@@ -61,7 +62,7 @@ SQL;
         return null;
     }
 
-    private function runQuery($event)
+    private function runQuery(DomainEvent $event)
     {
         switch (get_class($event)) {
             case SongWasCreated::class:

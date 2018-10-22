@@ -2,9 +2,10 @@
 
 namespace Setlist\Domain\Entity\Setlist\Event;
 
+use Setlist\Domain\Entity\DomainEvent;
 use Setlist\Domain\Value\Uuid;
 
-class SetlistWasDeleted
+class SetlistWasDeleted implements DomainEvent
 {
     private $id;
 

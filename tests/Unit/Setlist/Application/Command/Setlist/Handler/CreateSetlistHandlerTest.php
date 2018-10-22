@@ -7,6 +7,7 @@ use Setlist\Application\Command\Setlist\Handler\CreateSetlistHandler;
 use PHPUnit\Framework\TestCase;
 use Setlist\Application\Command\Setlist\Handler\Helper\SetlistHandlerHelper;
 use Setlist\Application\Persistence\Setlist\SetlistRepository as ApplicationSetlistRespository;
+use Setlist\Domain\Entity\EventBus;
 use Setlist\Domain\Entity\EventsTrigger;
 use Setlist\Domain\Entity\Setlist\Act;
 use Setlist\Domain\Entity\Setlist\Setlist;
@@ -40,7 +41,10 @@ class CreateSetlistHandlerTest extends TestCase
         $this->setlistFactory = $this->getMockBuilder(SetlistFactory::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $this->songFactory = new SongFactory(new EventsTrigger());
+
+        $eventBus = $this->getMockBuilder(EventBus::class)->getMock();
+        $eventsTrigger = new EventsTrigger($eventBus);
+        $this->songFactory = new SongFactory($eventsTrigger);
         $this->setlistHandlerHelper = $this->getMockBuilder(SetlistHandlerHelper::class)
             ->disableOriginalConstructor()
             ->getMock();

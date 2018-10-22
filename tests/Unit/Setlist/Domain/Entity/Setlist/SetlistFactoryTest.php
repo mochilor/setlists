@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Setlist\Domain\Entity\Song;
 
+use Setlist\Domain\Entity\EventBus;
 use Setlist\Domain\Entity\EventsTrigger;
 use Setlist\Domain\Entity\Setlist\Act;
 use Setlist\Domain\Entity\Setlist\Event\SetlistWasCreated;
@@ -26,7 +27,8 @@ class SetlistFactoryTest extends TestCase
         $name = 'Name';
         $formattedDate = '2018-10-01';
 
-        $eventsTrigger = new EventsTrigger();
+        $eventBus = $this->getMockBuilder(EventBus::class)->getMock();
+        $eventsTrigger = new EventsTrigger($eventBus);
 
         $factory = new SetlistFactory($eventsTrigger);
         $setlist = $factory->make($uuid, $acts, $name, $formattedDate);
@@ -67,7 +69,8 @@ class SetlistFactoryTest extends TestCase
         $formattedDate = '2018-10-01';
         $formattedCreationDate = '2018-10-01 15:00:00';
         $formattedUpdateDate = '2018-10-01 15:00:00';
-        $eventsTrigger = new EventsTrigger();
+        $eventBus = $this->getMockBuilder(EventBus::class)->getMock();
+        $eventsTrigger = new EventsTrigger($eventBus);
 
         $factory = new SetlistFactory($eventsTrigger);
         $setlist = $factory->restore($uuid, $acts, $name, $formattedDate, $formattedCreationDate, $formattedUpdateDate);

@@ -2,9 +2,10 @@
 
 namespace Setlist\Domain\Entity\Song\Event;
 
+use Setlist\Domain\Entity\DomainEvent;
 use Setlist\Domain\Value\Uuid;
 
-class SongWasDeleted
+class SongWasDeleted implements DomainEvent
 {
     private $id;
 

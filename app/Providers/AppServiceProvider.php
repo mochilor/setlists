@@ -16,6 +16,10 @@ class AppServiceProvider extends ServiceProvider
     {
         // Singletons
         $this->app->singleton(CommandBus::class);
+        $this->app->singleton(
+            \Setlist\Domain\Entity\EventBus::class,
+            \Setlist\Infrastructure\Messaging\EventBus::class
+        );
 
         $this->app->singleton(\PDO::class, function() {
             return new \PDO(

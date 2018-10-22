@@ -6,6 +6,7 @@ use Setlist\Application\Command\Song\CreateSong;
 use Setlist\Application\Command\Song\Handler\CreateSongHandler;
 use PHPUnit\Framework\TestCase;
 use Setlist\Application\Persistence\Song\SongRepository as ApplicationSongRespository;
+use Setlist\Domain\Entity\EventBus;
 use Setlist\Domain\Entity\EventsTrigger;
 use Setlist\Domain\Entity\Song\SongFactory;
 use Setlist\Domain\Entity\Song\SongRepository;
@@ -28,7 +29,8 @@ class CreateSongHandlerTest extends TestCase
     {
         $this->songRepository = $this->getMockBuilder(SongRepository::class)->getMock();
         $this->applicationSongRepository = $this->getMockBuilder(ApplicationSongRespository::class)->getMock();
-        $eventsTrigger = new EventsTrigger();
+        $eventBus = $this->getMockBuilder(EventBus::class)->getMock();
+        $eventsTrigger = new EventsTrigger($eventBus);
         $this->songFactory = new SongFactory($eventsTrigger);
         $this->commandHandler = new CreateSongHandler(
             $this->songRepository,

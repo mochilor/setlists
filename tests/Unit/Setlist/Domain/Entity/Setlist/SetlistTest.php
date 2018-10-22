@@ -5,6 +5,7 @@ namespace Tests\Unit\Setlist\Domain\Entity\Setlist;
 use DateTime;
 use DateTimeImmutable;
 use PHPUnit\Framework\TestCase;
+use Setlist\Domain\Entity\EventBus;
 use Setlist\Domain\Entity\EventsTrigger;
 use Setlist\Domain\Entity\Setlist\Act;
 use Setlist\Domain\Entity\Setlist\Event\SetlistChangedItsActCollection;
@@ -65,7 +66,8 @@ class SetlistTest extends TestCase
         $date = DateTime::createFromFormat(self::DATE_FORMAT, self::FULL_DATETIME);
         $creationDate = DateTimeImmutable::createFromFormat(self::DATE_FORMAT, self::FULL_DATETIME);
         $updateDate = DateTimeImmutable::createFromFormat(self::DATE_FORMAT, self::FULL_DATETIME);
-        $eventsTrigger = new EventsTrigger();
+        $eventBus = $this->getMockBuilder(EventBus::class)->getMock();
+        $eventsTrigger = new EventsTrigger($eventBus);
         $eventsTrigger->trigger(
             SetlistWasCreated::create(
                 $id,

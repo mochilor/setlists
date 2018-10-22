@@ -103,6 +103,6 @@ $app->router->group([
 });
 
 // Route commands, queries and events
-$app->make(App\Service\RoutingInitializer::class)->handle();
+$app->make(App\Service\RoutingInitializer::class)->init();
 
 return $app;

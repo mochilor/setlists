@@ -3,6 +3,7 @@
 namespace Tests\Unit\Setlist\Domain\Entity\Song;
 
 use DateTimeImmutable;
+use Setlist\Domain\Entity\EventBus;
 use Setlist\Domain\Entity\EventsTrigger;
 use Setlist\Domain\Entity\Song\Event\SongWasCreated;
 use Setlist\Domain\Entity\Song\Song;
@@ -19,14 +20,9 @@ class SongFactoryTest extends TestCase
     {
         $uuid = Uuid::random();
         $title = 'Title';
-        $eventsTrigger = new EventsTrigger();
-        $dateTime = new DateTimeImmutable();
-        $eventsTrigger->trigger(SongWasCreated::create(
-            $uuid,
-            $title,
-            $dateTime->format(Song::CREATION_DATE_FORMAT)
-        ));
-        $factory = new SongFactory(new EventsTrigger());
+        $eventBus = $this->getMockBuilder(EventBus::class)->getMock();
+        $eventsTrigger = new EventsTrigger($eventBus);
+        $factory = new SongFactory($eventsTrigger);
         $song = $factory->make($uuid, $title);
 
         $this->assertInstanceOf(
@@ -52,10 +48,11 @@ class SongFactoryTest extends TestCase
     {
         $uuid = Uuid::random();
         $title = 'Title';
-        $eventsTrigger = new EventsTrigger();
+        $eventBus = $this->getMockBuilder(EventBus::class)->getMock();
+        $eventsTrigger = new EventsTrigger($eventBus);
         $dateTime = DateTimeImmutable::createFromFormat(Song::CREATION_DATE_FORMAT, '2018-01-01 00:00:00');
         $song = Song::create($uuid, $title, $dateTime, $dateTime, $eventsTrigger);
-        $factory = new SongFactory(new EventsTrigger());
+        $factory = new SongFactory($eventsTrigger);
         $formattedCreationDate = $dateTime->format(Song::CREATION_DATE_FORMAT);
         $formattedUpdateDate = $dateTime->format(Song::UPDATE_DATE_FORMAT);
 

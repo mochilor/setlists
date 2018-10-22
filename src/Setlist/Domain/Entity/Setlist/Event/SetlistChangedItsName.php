@@ -2,9 +2,10 @@
 
 namespace Setlist\Domain\Entity\Setlist\Event;
 
+use Setlist\Domain\Entity\DomainEvent;
 use Setlist\Domain\Value\Uuid;
 
-class SetlistChangedItsName
+class SetlistChangedItsName implements DomainEvent
 {
     private $id;
     private $name;

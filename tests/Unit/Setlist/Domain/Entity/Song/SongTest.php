@@ -3,6 +3,7 @@
 namespace Tests\Unit\Setlist\Domain\Entity\Song;
 
 use DateTimeImmutable;
+use Setlist\Domain\Entity\EventBus;
 use Setlist\Domain\Entity\EventsTrigger;
 use Setlist\Domain\Entity\Song\Event\SongChangedItsTitle;
 use Setlist\Domain\Entity\Song\Event\SongWasCreated;
@@ -40,7 +41,8 @@ class SongTest extends TestCase
 
     private function getSong(): Song
     {
-        $eventsTrigger = new EventsTrigger();
+        $eventBus = $this->getMockBuilder(EventBus::class)->getMock();
+        $eventsTrigger = new EventsTrigger($eventBus);
         $uuid = Uuid::random();
         $title = self::SONG_TITLE;
         $eventsTrigger->trigger(SongWasCreated::create($uuid, $title, self::SONG_DATE_TIME));
@@ -63,7 +65,8 @@ class SongTest extends TestCase
         $uuid = Uuid::random();
         $title = 'A';
 
-        $eventsTrigger = new EventsTrigger();
+        $eventBus = $this->getMockBuilder(EventBus::class)->getMock();
+        $eventsTrigger = new EventsTrigger($eventBus);
         $eventsTrigger->trigger(SongWasCreated::create($uuid, $title, self::SONG_DATE_TIME));
 
         Song::create(
@@ -176,7 +179,8 @@ class SongTest extends TestCase
 
     private function getAnotherSong(): Song
     {
-        $eventsTrigger = new EventsTrigger();
+        $eventBus = $this->getMockBuilder(EventBus::class)->getMock();
+        $eventsTrigger = new EventsTrigger($eventBus);
         $uuid = Uuid::random();
         $title = 'Another song title';
         $eventsTrigger->trigger(SongWasCreated::create($uuid, $title, self::SONG_DATE_TIME));
