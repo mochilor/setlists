@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Setlist\Infrastructure\Messaging\CommandBus;
+use Setlist\Infrastructure\Messaging\QueryBus;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -16,6 +17,7 @@ class AppServiceProvider extends ServiceProvider
     {
         // Singletons
         $this->app->singleton(CommandBus::class);
+        $this->app->singleton(QueryBus::class);
         $this->app->singleton(
             \Setlist\Domain\Entity\EventBus::class,
             \Setlist\Infrastructure\Messaging\EventBus::class

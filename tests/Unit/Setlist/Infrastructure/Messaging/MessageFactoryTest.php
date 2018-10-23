@@ -21,7 +21,7 @@ class MessageFactoryTest extends TestCase
     {
         $this->assertInstanceOf(
             DummyCommand::class,
-            $this->messageFactory->make(DummyCommand::class, [])
+            $this->messageFactory->makeCommand(DummyCommand::class, [])
         );
     }
 
@@ -31,7 +31,7 @@ class MessageFactoryTest extends TestCase
      */
     public function unknownClassThrowsException()
     {
-        $this->messageFactory->make('UnknownClassName', []);
+        $this->messageFactory->makeCommand('UnknownClassName', []);
     }
 
     /**
@@ -40,6 +40,6 @@ class MessageFactoryTest extends TestCase
      */
     public function nonBaseCommandClassThrowsException()
     {
-        $this->messageFactory->make(MessageFactory::class, []);
+        $this->messageFactory->makeCommand(MessageFactory::class, []);
     }
 }

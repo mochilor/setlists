@@ -22,6 +22,7 @@ $router->group(['prefix' => 'api'], function () use ($router) {
         $router->post('',  ['uses' => 'SongController@createSong']);
         $router->patch('{id}',  ['uses' => 'SongController@updateSong']);
         $router->delete('{id}',  ['uses' => 'SongController@deleteSong']);
+        $router->get('{id}',  ['uses' => 'SongController@getSong']);
     });
 
     // Setlist routes

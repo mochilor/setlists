@@ -14,26 +14,32 @@ use Setlist\Application\Command\Song\Handler\CreateSongHandler;
 use Setlist\Application\Command\Song\Handler\DeleteSongHandler;
 use Setlist\Application\Command\Song\Handler\UpdateSongHandler;
 use Setlist\Application\Command\Song\UpdateSong;
+use Setlist\Application\Query\Song\GetSong;
+use Setlist\Application\Query\Song\Handler\GetSongHandler;
 use Setlist\Domain\Entity\EventBus;
 use Setlist\Domain\Entity\Song\Event\SongWasCreated;
 use Setlist\Infrastructure\Messaging\CommandBus;
 use Setlist\Infrastructure\Messaging\EventHandler\Song\SongWasCreatedHandler;
+use Setlist\Infrastructure\Messaging\QueryBus;
 
 class RoutingInitializer
 {
     private $commandBus;
     private $eventBus;
+    private $queryBus;
 
-    public function __construct(CommandBus $commandBus, EventBus $eventBus)
+    public function __construct(CommandBus $commandBus, EventBus $eventBus, QueryBus $queryBus)
     {
         $this->commandBus = $commandBus;
         $this->eventBus = $eventBus;
+        $this->queryBus = $queryBus;
     }
 
     public function init()
     {
         $this->initCommands();
         $this->initEvents();
+        $this->initQueries();
     }
 
     private function initCommands()
@@ -53,5 +59,10 @@ class RoutingInitializer
     {
         // Song
         $this->eventBus->addHandler(SongWasCreated::class, app(SongWasCreatedHandler::class));
+    }
+
+    private function initQueries()
+    {
+        $this->queryBus->addHandler(GetSong::class, app(GetSongHandler::class));
     }
 }

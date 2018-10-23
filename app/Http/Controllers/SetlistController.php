@@ -13,21 +13,21 @@ class SetlistController extends Controller
 {
     public function createSetlist(CreateSetlistPayload $createSetlistPayload)
     {
-        $command = $this->messageFactory->make(CreateSetlist::class, $createSetlistPayload());
+        $command = $this->messageFactory->makeCommand(CreateSetlist::class, $createSetlistPayload());
 
         return $this->dispatchCommand($command, 'New Setlist inserted');
     }
 
     public function updateSetlist(UpdateSetlistPayload $updateSetlistPayload)
     {
-        $command = $this->messageFactory->make(UpdateSetlist::class, $updateSetlistPayload());
+        $command = $this->messageFactory->makeCommand(UpdateSetlist::class, $updateSetlistPayload());
 
         return $this->dispatchCommand($command, 'Setlist updated');
     }
 
     public function deleteSetlist(DeleteSetlistPayload $deleteSetlistPayload)
     {
-        $command = $this->messageFactory->make(DeleteSetlist::class, $deleteSetlistPayload());
+        $command = $this->messageFactory->makeCommand(DeleteSetlist::class, $deleteSetlistPayload());
 
         return $this->dispatchCommand($command, 'Setlist deleted');
     }

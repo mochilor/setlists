@@ -3,32 +3,44 @@
 namespace App\Http\Controllers;
 
 use App\Http\Payload\DeleteSongPayload;
+use App\Http\Payload\GetSongPayload;
 use App\Http\Payload\UpdateSongPayload;
 use Setlist\Application\Command\Song\CreateSong;
 use App\Http\Payload\CreateSongPayload;
 use Setlist\Application\Command\Song\DeleteSong;
 use Setlist\Application\Command\Song\UpdateSong;
+use Setlist\Application\Query\Song\GetSong;
 
 class SongController extends Controller
 {
     public function createSong(CreateSongPayload $createSongPayload)
     {
-        $command = $this->messageFactory->make(CreateSong::class, $createSongPayload());
-
-        return $this->dispatchCommand($command, 'New song inserted');
+        return $this->dispatchCommand(
+            $this->getCommand($createSongPayload, CreateSong::class),
+            'New song inserted'
+        );
     }
 
     public function updateSong(UpdateSongPayload $updateSongPayload)
     {
-        $command = $this->messageFactory->make(UpdateSong::class, $updateSongPayload());
-
-        return $this->dispatchCommand($command, 'Song updated');
+        return $this->dispatchCommand(
+            $this->getCommand($updateSongPayload, UpdateSong::class),
+            'Song updated'
+        );
     }
 
     public function deleteSong(DeleteSongPayload $deleteSongPayload)
     {
-        $command = $this->messageFactory->make(DeleteSong::class, $deleteSongPayload());
+        return $this->dispatchCommand(
+            $this->getCommand($deleteSongPayload, DeleteSong::class),
+            'Song deleted'
+        );
+    }
 
-        return $this->dispatchCommand($command, 'Song deleted');
+    public function getSong(GetSongPayload $getSongPayload)
+    {
+        return $this->dispatchQuery(
+            $this->getQuery($getSongPayload, GetSong::class)
+        );
     }
 }
