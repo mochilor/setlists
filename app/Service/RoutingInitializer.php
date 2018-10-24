@@ -15,7 +15,9 @@ use Setlist\Application\Command\Song\Handler\DeleteSongHandler;
 use Setlist\Application\Command\Song\Handler\UpdateSongHandler;
 use Setlist\Application\Command\Song\UpdateSong;
 use Setlist\Application\Query\Song\GetSong;
+use Setlist\Application\Query\Song\GetSongs;
 use Setlist\Application\Query\Song\Handler\GetSongHandler;
+use Setlist\Application\Query\Song\Handler\GetSongsHandler;
 use Setlist\Domain\Entity\EventBus;
 use Setlist\Domain\Entity\Song\Event\SongWasCreated;
 use Setlist\Infrastructure\Messaging\CommandBus;
@@ -64,5 +66,6 @@ class RoutingInitializer
     private function initQueries()
     {
         $this->queryBus->addHandler(GetSong::class, app(GetSongHandler::class));
+        $this->queryBus->addHandler(GetSongs::class, app(GetSongsHandler::class));
     }
 }

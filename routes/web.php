@@ -24,6 +24,7 @@ $router->group(['prefix' => 'api'], function () use ($router) {
         $router->delete('{id}',  ['uses' => 'SongController@deleteSong']);
         $router->get('{id}',  ['uses' => 'SongController@getSong']);
     });
+    $router->get('songs',  ['uses' => 'SongController@getSongs']);
 
     // Setlist routes
     $router->group(['prefix' => 'setlist'], function () use ($router) {
