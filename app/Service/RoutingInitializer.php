@@ -14,6 +14,10 @@ use Setlist\Application\Command\Song\Handler\CreateSongHandler;
 use Setlist\Application\Command\Song\Handler\DeleteSongHandler;
 use Setlist\Application\Command\Song\Handler\UpdateSongHandler;
 use Setlist\Application\Command\Song\UpdateSong;
+use Setlist\Application\Query\Setlist\GetSetlist;
+use Setlist\Application\Query\Setlist\GetSetlists;
+use Setlist\Application\Query\Setlist\Handler\GetSetlistHandler;
+use Setlist\Application\Query\Setlist\Handler\GetSetlistsHandler;
 use Setlist\Application\Query\Song\GetSong;
 use Setlist\Application\Query\Song\GetSongs;
 use Setlist\Application\Query\Song\Handler\GetSongHandler;
@@ -65,7 +69,12 @@ class RoutingInitializer
 
     private function initQueries()
     {
+        // Song
         $this->queryBus->addHandler(GetSong::class, app(GetSongHandler::class));
         $this->queryBus->addHandler(GetSongs::class, app(GetSongsHandler::class));
+
+        // Setlit
+        $this->queryBus->addHandler(GetSetlist::class, app(GetSetlistHandler::class));
+        $this->queryBus->addHandler(GetSetlists::class, app(GetSetlistsHandler::class));
     }
 }

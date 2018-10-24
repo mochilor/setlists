@@ -12,6 +12,8 @@ class SongRepository implements ApplicationSongRepositoryInterface
     private $PDO;
     private $songFactory;
 
+    use PDOHelper;
+
     public function __construct(PDO $PDO, SongFactory $songFactory)
     {
         $this->PDO = $PDO;
@@ -40,16 +42,9 @@ SQL;
     public function getAllSongs(int $start, int $length): SongCollection
     {
         $sql = <<<SQL
-SELECT * FROM `song`%s;
+SELECT * FROM `song` ORDER BY `creation_date` ASC%s;
 SQL;
-        $limitString = '';
-        if ($length > 0) {
-            $limitString = ' LIMIT ';
-            if ($start > 0) {
-                $limitString .= $start . ', ';
-            }
-            $limitString .= $length;
-        }
+        $limitString = $this->getLimitString($start, $length);
         $sql = sprintf($sql, $limitString);
 
         $query = $this->PDO->prepare($sql);

@@ -1,10 +1,10 @@
 <?php
 
-namespace Setlist\Application\Query\Song;
+namespace Setlist\Application\Query\Setlist;
 
 use Setlist\Application\Query\Query;
 
-class GetSongs extends Query
+class GetSetlists extends Query
 {
     public function start(): string
     {

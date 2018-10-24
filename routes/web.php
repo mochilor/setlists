@@ -31,14 +31,7 @@ $router->group(['prefix' => 'api'], function () use ($router) {
         $router->post('',  ['uses' => 'SetlistController@createSetlist']);
         $router->patch('{id}',  ['uses' => 'SetlistController@updateSetlist']);
         $router->delete('{id}',  ['uses' => 'SetlistController@deleteSetlist']);
+        $router->get('{id}',  ['uses' => 'SetlistController@getSetlist']);
     });
-
-
-//    $router->get('authors/{id}', ['uses' => 'AuthorController@showOneAuthor']);
-//
-//    $router->post('authors', ['uses' => 'AuthorController@create']);
-//
-//    $router->delete('authors/{id}', ['uses' => 'AuthorController@delete']);
-//
-//    $router->put('authors/{id}', ['uses' => 'AuthorController@update']);
+    $router->get('setlists',  ['uses' => 'SetlistController@getSetlists']);
 });
