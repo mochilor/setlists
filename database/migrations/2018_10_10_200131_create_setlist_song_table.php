@@ -19,8 +19,8 @@ class CreateSetlistSongTable extends Migration
             $table->integer('act');
             $table->integer('order');
 
-            $table->foreign('setlist_id')->references('id')->on('setlist');
-            $table->foreign('song_id')->references('id')->on('song');
+            $table->foreign('setlist_id')->references('id')->on('setlist')->onDelete('cascade');
+            $table->foreign('song_id')->references('id')->on('song')->onDelete('cascade');
 
             $table->unique(['setlist_id', 'song_id']);
         });

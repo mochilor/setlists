@@ -37,7 +37,7 @@ class AppServiceProvider extends ServiceProvider
         // Common implementations
         $this->app->bind(
             \Setlist\Domain\Entity\Song\SongRepository::class,
-            \Setlist\Infrastructure\Repository\Domain\PDO\SongRepository::class
+            \Setlist\Infrastructure\Repository\Domain\Eloquent\SongRepository::class
         );
 
         $this->app->bind(

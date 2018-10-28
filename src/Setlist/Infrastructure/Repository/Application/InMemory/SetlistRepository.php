@@ -3,6 +3,7 @@
 namespace Setlist\Infrastructure\Repository\Application\InMemory;
 
 use Setlist\Application\Persistence\Setlist\SetlistRepository as ApplicationSetlistRepositoryInterface;
+use Setlist\Domain\Entity\Setlist\SetlistCollection;
 
 class SetlistRepository implements ApplicationSetlistRepositoryInterface
 {
@@ -16,5 +17,10 @@ class SetlistRepository implements ApplicationSetlistRepositoryInterface
     public function getOtherNames(string $uuid): array
     {
         return [];
+    }
+
+    public function getAllSetlists(int $start, int $length): SetlistCollection
+    {
+        return new SetlistCollection();
     }
 }

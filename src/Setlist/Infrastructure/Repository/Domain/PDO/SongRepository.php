@@ -11,6 +11,7 @@ use Setlist\Domain\Entity\Song\SongFactory;
 use Setlist\Domain\Entity\Song\SongRepository as SongRepositoryInterface;
 use Setlist\Domain\Value\Uuid;
 use PDO;
+use Setlist\Infrastructure\Exception\PersistenceException;
 
 class SongRepository implements SongRepositoryInterface
 {
@@ -22,6 +23,7 @@ class SongRepository implements SongRepositoryInterface
     public function __construct(PDO $PDO, SongFactory $songFactory)
     {
         $this->PDO = $PDO;
+        $this->PDO->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         $this->songFactory = $songFactory;
     }
 
@@ -32,11 +34,18 @@ class SongRepository implements SongRepositoryInterface
 
     public function save(Song $song)
     {
-        $events = $song->events();
-
-        foreach ($events as $event) {
-            $this->runQuery($event);
+        $this->PDO->beginTransaction();
+        try {
+            $events = $song->events();
+            foreach ($events as $event) {
+                $this->runQuery($event);
+            }
+        } catch (\PDOException $e) {
+            $this->PDO->rollBack();
+            throw new PersistenceException('Operation could not be performed on Song.');
         }
+
+        $this->PDO->commit();
     }
 
     public function get(Uuid $uuid): ?Song
@@ -111,6 +120,12 @@ DELETE FROM `%s` WHERE id = :uuid;
 SQL;
         $sql = sprintf($sql, self::TABLE_NAME);
         $query = $this->PDO->prepare($sql);
+        $query->bindValue('uuid', $uuid);
+        $query->execute();
+
+        $setlistSongsSql = "DELETE FROM `setlist_song` WHERE song_id = :uuid;";
+
+        $query = $this->PDO->prepare($setlistSongsSql);
         $query->bindValue('uuid', $uuid);
         $query->execute();
     }

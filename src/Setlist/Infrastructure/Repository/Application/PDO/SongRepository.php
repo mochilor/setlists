@@ -6,6 +6,7 @@ use Setlist\Application\Persistence\Song\SongRepository as ApplicationSongReposi
 use PDO;
 use Setlist\Domain\Entity\Setlist\SongCollection;
 use Setlist\Domain\Entity\Song\SongFactory;
+use Setlist\Infrastructure\Repository\Domain\PDO\PDOHelper;
 
 class SongRepository implements ApplicationSongRepositoryInterface
 {
