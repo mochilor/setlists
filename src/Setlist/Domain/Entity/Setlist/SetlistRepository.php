@@ -8,5 +8,5 @@ interface SetlistRepository
 {
     public function nextIdentity(): Uuid;
     public function save(Setlist $setlist);
-    public function get(Uuid $uuid);
+    public function get(Uuid $uuid): ?Setlist;
 }

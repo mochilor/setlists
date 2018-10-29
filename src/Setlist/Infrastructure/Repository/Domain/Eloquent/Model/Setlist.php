@@ -4,7 +4,7 @@ namespace Setlist\Infrastructure\Repository\Domain\Eloquent\Model;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Song extends Model
+class Setlist extends Model
 {
     const CREATED_AT = 'creation_date';
     const UPDATED_AT = 'update_date';
@@ -12,11 +12,11 @@ class Song extends Model
     public $incrementing = false;
 
     protected $keyType = 'string';
-    protected $table = 'song';
+    protected $table = 'setlist';
     protected $guarded = [];
 
-    public function setlists()
+    public function songs()
     {
-        return $this->belongsToMany(Setlist::class, 'setlist_song');
+        return $this->belongsToMany(Song::class, 'setlist_song')->withPivot('act', 'order');
     }
 }

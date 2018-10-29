@@ -47,7 +47,7 @@ class AppServiceProvider extends ServiceProvider
 
         $this->app->bind(
             \Setlist\Domain\Entity\Setlist\SetlistRepository::class,
-            \Setlist\Infrastructure\Repository\Domain\PDO\SetlistRepository::class
+            \Setlist\Infrastructure\Repository\Domain\Eloquent\SetlistRepository::class
         );
 
         $this->app->bind(
