@@ -17,7 +17,7 @@ class MessageFactoryTest extends TestCase
     /**
      * @test
      */
-    public function factoryCanMakeInstances()
+    public function factoryCanMakeCommandInstances()
     {
         $this->assertInstanceOf(
             DummyCommand::class,
@@ -29,7 +29,7 @@ class MessageFactoryTest extends TestCase
      * @test
      * @expectedException \Setlist\Infrastructure\Exception\InvalidCommandException
      */
-    public function unknownClassThrowsException()
+    public function unknownCommandClassThrowsException()
     {
         $this->messageFactory->makeCommand('UnknownClassName', []);
     }
@@ -41,5 +41,34 @@ class MessageFactoryTest extends TestCase
     public function nonBaseCommandClassThrowsException()
     {
         $this->messageFactory->makeCommand(MessageFactory::class, []);
+    }
+
+    /**
+     * @test
+     */
+    public function factoryCanMakeQueryInstances()
+    {
+        $this->assertInstanceOf(
+            DummyQuery::class,
+            $this->messageFactory->makeQuery(DummyQuery::class, [])
+        );
+    }
+
+    /**
+     * @test
+     * @expectedException \Setlist\Infrastructure\Exception\InvalidQueryException
+     */
+    public function unknownQueryClassThrowsException()
+    {
+        $this->messageFactory->makeQuery('UnknownClassName', []);
+    }
+
+    /**
+     * @test
+     * @expectedException \Setlist\Infrastructure\Exception\InvalidQueryException
+     */
+    public function nonQueryClassThrowsException()
+    {
+        $this->messageFactory->makeQuery(MessageFactory::class, []);
     }
 }
