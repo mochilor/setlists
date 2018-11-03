@@ -8,6 +8,7 @@ use Setlist\Domain\Entity\EventsTrigger;
 use Setlist\Domain\Entity\Setlist\Event\SetlistChangedItsActCollection;
 use Setlist\Domain\Entity\Setlist\Event\SetlistChangedItsDate;
 use Setlist\Domain\Entity\Setlist\Event\SetlistChangedItsName;
+use Setlist\Domain\Entity\Setlist\Event\SetlistWasCreated;
 use Setlist\Domain\Entity\Setlist\Event\SetlistWasDeleted;
 use Setlist\Domain\Exception\Setlist\InvalidActCollectionException;
 use Setlist\Domain\Exception\Setlist\InvalidSetlistNameException;
@@ -30,6 +31,31 @@ class Setlist
     const UPDATE_DATE_FORMAT = 'Y-m-d H:i:s';
 
     public static function create(
+        Uuid $id,
+        ActCollection $actCollection,
+        string $name,
+        DateTime $date,
+        DateTimeImmutable $creationDate,
+        DateTimeImmutable $updateDate,
+        EventsTrigger $eventsTrigger
+    ): self
+    {
+        $setlist = self::restore($id, $actCollection, $name, $date, $updateDate, $creationDate, $eventsTrigger);
+
+        $setlist->eventsTrigger->trigger(
+            SetlistWasCreated::create(
+                $setlist->id(),
+                $setlist->actCollection(),
+                $setlist->name(),
+                $setlist->formattedDate(),
+                $creationDate->format(Setlist::CREATION_DATE_FORMAT)
+            )
+        );
+
+        return $setlist;
+    }
+
+    public static function restore(
         Uuid $id,
         ActCollection $actCollection,
         string $name,

@@ -51,7 +51,7 @@ class SongFactoryTest extends TestCase
         $eventBus = $this->getMockBuilder(EventBus::class)->getMock();
         $eventsTrigger = new EventsTrigger($eventBus);
         $dateTime = DateTimeImmutable::createFromFormat(Song::CREATION_DATE_FORMAT, '2018-01-01 00:00:00');
-        $song = Song::create($uuid, $title, $dateTime, $dateTime, $eventsTrigger);
+        $song = Song::restore($uuid, $title, $dateTime, $dateTime, $eventsTrigger);
         $factory = new SongFactory($eventsTrigger);
         $formattedCreationDate = $dateTime->format(Song::CREATION_DATE_FORMAT);
         $formattedUpdateDate = $dateTime->format(Song::UPDATE_DATE_FORMAT);

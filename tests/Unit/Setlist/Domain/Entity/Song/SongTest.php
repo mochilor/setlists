@@ -45,7 +45,6 @@ class SongTest extends TestCase
         $eventsTrigger = new EventsTrigger($eventBus);
         $uuid = Uuid::random();
         $title = self::SONG_TITLE;
-        $eventsTrigger->trigger(SongWasCreated::create($uuid, $title, self::SONG_DATE_TIME));
 
         return Song::create(
             $uuid,

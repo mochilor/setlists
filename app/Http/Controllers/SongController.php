@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Payload\DeleteSongPayload;
 use App\Http\Payload\GetSongPayload;
+use App\Http\Payload\GetSongsByTitlePayload;
 use App\Http\Payload\GetSongsPayload;
 use App\Http\Payload\UpdateSongPayload;
 use Setlist\Application\Command\Song\CreateSong;
@@ -12,6 +13,7 @@ use Setlist\Application\Command\Song\DeleteSong;
 use Setlist\Application\Command\Song\UpdateSong;
 use Setlist\Application\Query\Song\GetSong;
 use Setlist\Application\Query\Song\GetSongs;
+use Setlist\Application\Query\Song\GetSongsByTitle;
 
 class SongController extends Controller
 {
@@ -50,6 +52,13 @@ class SongController extends Controller
     {
         return $this->dispatchQuery(
             $this->getQuery($getSongsPayload, GetSongs::class)
+        );
+    }
+
+    public function getSongsByTitle(GetSongsByTitlePayload $getSongsByTitlePayload)
+    {
+        return $this->dispatchQuery(
+            $this->getQuery($getSongsByTitlePayload, GetSongsByTitle::class)
         );
     }
 }

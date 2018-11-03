@@ -68,15 +68,6 @@ class SetlistTest extends TestCase
         $updateDate = DateTimeImmutable::createFromFormat(self::DATE_FORMAT, self::FULL_DATETIME);
         $eventBus = $this->getMockBuilder(EventBus::class)->getMock();
         $eventsTrigger = new EventsTrigger($eventBus);
-        $eventsTrigger->trigger(
-            SetlistWasCreated::create(
-                $id,
-                $actCollection,
-                $name,
-                $date->format(Setlist::DATE_TIME_FORMAT),
-                $creationDate->format(Setlist::CREATION_DATE_FORMAT)
-            )
-        );
 
         return Setlist::create($id, $actCollection, $name, $date, $creationDate, $updateDate, $eventsTrigger);
     }

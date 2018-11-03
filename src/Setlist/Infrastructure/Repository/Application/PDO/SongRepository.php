@@ -64,4 +64,28 @@ SQL;
 
         return SongCollection::create(...$songsArray);
     }
+
+    public function getSongsByTitle(string $title): SongCollection
+    {
+        $sql = <<<SQL
+SELECT * FROM `song` WHERE `title` LIKE "%%%s%%" ORDER BY `creation_date` ASC;
+SQL;
+        $sql = sprintf($sql, $title);
+
+        $query = $this->PDO->prepare($sql);
+        $query->execute();
+        $songs = $this->PDO->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+
+        $songsArray = [];
+        foreach ($songs as $songData) {
+            $songsArray[] = $this->songFactory->restore(
+                $songData['id'],
+                $songData['title'],
+                $songData['creation_date'],
+                $songData['update_date']
+            );
+        }
+
+        return SongCollection::create(...$songsArray);
+    }
 }

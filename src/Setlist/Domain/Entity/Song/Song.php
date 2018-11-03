@@ -5,6 +5,7 @@ namespace Setlist\Domain\Entity\Song;
 use DateTimeImmutable;
 use Setlist\Domain\Entity\EventsTrigger;
 use Setlist\Domain\Entity\Song\Event\SongChangedItsTitle;
+use Setlist\Domain\Entity\Song\Event\SongWasCreated;
 use Setlist\Domain\Entity\Song\Event\SongWasDeleted;
 use Setlist\Domain\Exception\Song\InvalidSongTitleException;
 use Setlist\Domain\Value\Uuid;
@@ -29,6 +30,27 @@ class Song
         DateTimeImmutable $updateDate,
         EventsTrigger $eventsTrigger
     ): self
+    {
+        $song = self::restore($id, $title, $creationDate, $updateDate, $eventsTrigger);
+
+        $song->eventsTrigger->trigger(
+            SongWasCreated::create(
+                $song->id(),
+                $song->title(),
+                $song->formattedCreationDate()
+            )
+        );
+
+        return $song;
+    }
+
+    public static function restore(
+        Uuid $id,
+        string $title,
+        DateTimeImmutable $creationDate,
+        DateTimeImmutable $updateDate,
+        EventsTrigger $eventsTrigger
+    )
     {
         $song = new self();
         $song->eventsTrigger = $eventsTrigger;

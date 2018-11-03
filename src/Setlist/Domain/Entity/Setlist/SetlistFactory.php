@@ -5,7 +5,6 @@ namespace Setlist\Domain\Entity\Setlist;
 use DateTime;
 use DateTimeImmutable;
 use Setlist\Domain\Entity\EventsTrigger;
-use Setlist\Domain\Entity\Setlist\Event\SetlistWasCreated;
 use Setlist\Domain\Value\Uuid;
 
 class SetlistFactory
@@ -23,15 +22,6 @@ class SetlistFactory
         $actCollection = ActCollection::create(...$acts);
         $date = DateTime::createFromFormat(Setlist::DATE_TIME_FORMAT, $formattedDate);
         $creationDate = $updateDate = new DateTimeImmutable();
-        $this->eventsTrigger->trigger(
-            SetlistWasCreated::create(
-                $uuid,
-                $actCollection,
-                $name,
-                $date->format(Setlist::DATE_TIME_FORMAT),
-                $creationDate->format(Setlist::CREATION_DATE_FORMAT)
-            )
-        );
 
         return Setlist::create($uuid, $actCollection, $name, $date, $creationDate, $updateDate, $this->eventsTrigger);
     }
@@ -51,6 +41,6 @@ class SetlistFactory
         $creationDate = DateTimeImmutable::createFromFormat(Setlist::CREATION_DATE_FORMAT, $formattedCreationDate);
         $updateDate = DateTimeImmutable::createFromFormat(Setlist::UPDATE_DATE_FORMAT, $formattedUpdateDate);
 
-        return Setlist::create($uuid, $actCollection, $name, $date, $creationDate, $updateDate, $this->eventsTrigger);
+        return Setlist::restore($uuid, $actCollection, $name, $date, $creationDate, $updateDate, $this->eventsTrigger);
     }
 }
