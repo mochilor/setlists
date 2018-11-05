@@ -23,4 +23,9 @@ class SongRepository implements ApplicationSongRepositoryInterface
     {
         return new SongCollection();
     }
+
+    public function getSongsByTitle(string $title): SongCollection
+    {
+        return new SongCollection();
+    }
 }

@@ -54,5 +54,15 @@ class AppServiceProvider extends ServiceProvider
             \Setlist\Application\Persistence\Setlist\SetlistRepository::class,
             \Setlist\Infrastructure\Repository\Application\PDO\SetlistRepository::class
         );
+
+        $this->app->bind(
+            \Setlist\Application\DataTransformer\SongDataTransformer::class,
+            \Setlist\Infrastructure\DataTransformer\SongDataTransformer::class
+        );
+
+        $this->app->bind(
+            \Setlist\Application\DataTransformer\SetlistDataTransformer::class,
+            \Setlist\Infrastructure\DataTransformer\SetlistDataTransformer::class
+        );
     }
 }

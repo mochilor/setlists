@@ -1,6 +1,7 @@
 <?php
 
-use Setlist\Application\DataTransformer\SetlistDataTransformer;
+namespace Tests\Unit\Setlist\Infrastructure\DataTransformer;
+
 use Setlist\Application\DataTransformer\SongDataTransformer;
 use PHPUnit\Framework\TestCase;
 use Setlist\Domain\Entity\Setlist\ActCollection;
@@ -8,6 +9,7 @@ use Setlist\Domain\Entity\Setlist\ActFactory;
 use Setlist\Domain\Entity\Setlist\Setlist;
 use Setlist\Domain\Entity\Song\Song;
 use Setlist\Domain\Value\Uuid;
+use Setlist\Infrastructure\DataTransformer\SetlistDataTransformer;
 
 class SetlistDataTransformerTest extends TestCase
 {
