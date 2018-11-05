@@ -42,7 +42,7 @@ class AppServiceProvider extends ServiceProvider
 
         $this->app->bind(
             \Setlist\Application\Persistence\Song\SongRepository::class,
-            \Setlist\Infrastructure\Repository\Application\PDO\SongRepository::class
+            \Setlist\Infrastructure\Repository\Application\Eloquent\SongRepository::class
         );
 
         $this->app->bind(
@@ -52,7 +52,7 @@ class AppServiceProvider extends ServiceProvider
 
         $this->app->bind(
             \Setlist\Application\Persistence\Setlist\SetlistRepository::class,
-            \Setlist\Infrastructure\Repository\Application\PDO\SetlistRepository::class
+            \Setlist\Infrastructure\Repository\Application\Eloquent\SetlistRepository::class
         );
 
         $this->app->bind(
