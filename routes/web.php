@@ -16,23 +16,27 @@ $router->get('/', function () use ($router) {
 });
 
 $router->group(['prefix' => 'api'], function () use ($router) {
+    // Login
+    $router->post('auth/login',  ['uses' => 'AuthController@login']);
 
-    // Song routes
-    $router->group(['prefix' => 'song'], function () use ($router) {
-        $router->post('',  ['uses' => 'SongController@createSong']);
-        $router->patch('{id}',  ['uses' => 'SongController@updateSong']);
-        $router->delete('{id}',  ['uses' => 'SongController@deleteSong']);
-        $router->get('{id}',  ['uses' => 'SongController@getSong']);
-    });
-    $router->get('songs',  ['uses' => 'SongController@getSongs']);
-    $router->get('songs/title/{title}',  ['uses' => 'SongController@getSongsByTitle']);
+    $router->group(['middleware' => 'auth'], function () use ($router) {
+        // Song routes
+        $router->group(['prefix' => 'song'], function () use ($router) {
+            $router->post('',  ['uses' => 'SongController@createSong']);
+            $router->patch('{id}',  ['uses' => 'SongController@updateSong']);
+            $router->delete('{id}',  ['uses' => 'SongController@deleteSong']);
+            $router->get('{id}',  ['uses' => 'SongController@getSong']);
+        });
+        $router->get('songs',  ['uses' => 'SongController@getSongs']);
+        $router->get('songs/title/{title}',  ['uses' => 'SongController@getSongsByTitle']);
 
-    // Setlist routes
-    $router->group(['prefix' => 'setlist'], function () use ($router) {
-        $router->post('',  ['uses' => 'SetlistController@createSetlist']);
-        $router->patch('{id}',  ['uses' => 'SetlistController@updateSetlist']);
-        $router->delete('{id}',  ['uses' => 'SetlistController@deleteSetlist']);
-        $router->get('{id}',  ['uses' => 'SetlistController@getSetlist']);
+        // Setlist routes
+        $router->group(['prefix' => 'setlist'], function () use ($router) {
+            $router->post('',  ['uses' => 'SetlistController@createSetlist']);
+            $router->patch('{id}',  ['uses' => 'SetlistController@updateSetlist']);
+            $router->delete('{id}',  ['uses' => 'SetlistController@deleteSetlist']);
+            $router->get('{id}',  ['uses' => 'SetlistController@getSetlist']);
+        });
+        $router->get('setlists',  ['uses' => 'SetlistController@getSetlists']);
     });
-    $router->get('setlists',  ['uses' => 'SetlistController@getSetlists']);
 });
