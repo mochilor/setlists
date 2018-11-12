@@ -6,7 +6,7 @@ services:
         build:
             context: ./
             dockerfile: docker/app.dockerfile
-        container_name: docker-repertorios
+        container_name: docker-setlists
         working_dir: /var/www/application
         volumes:
             - .:/var/www/application
@@ -17,7 +17,7 @@ services:
     # The Web Server
     web:
         image: nginx:alpine
-        container_name: docker-repertorios-webserver
+        container_name: docker-setlists-webserver
         working_dir: /var/www/application
         volumes:
             - .:/var/www/application
@@ -28,7 +28,7 @@ services:
     # Mysql
     mysql:
         image: mysql:5.7
-        container_name: docker-repertorios-mysql
+        container_name: docker-setlists-mysql
         working_dir: /var/www/application
         volumes:
         - .:/var/www/application

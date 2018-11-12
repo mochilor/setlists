@@ -9,6 +9,7 @@ use Firebase\JWT\ExpiredException;
 use Firebase\JWT\JWT;
 use Illuminate\Contracts\Auth\Factory as Auth;
 use Illuminate\Http\Request;
+use UnexpectedValueException;
 
 class Authenticate
 {
@@ -46,33 +47,33 @@ class Authenticate
 
         $token = $request->get('token');
         if(!$token) {
-            return response()->json([
-                'error' => 'Unauthorized'
-            ], 401);
+            return $this->response(['error' => 'Unauthorized'], 401);
         }
 
         try {
             $credentials = JWT::decode($token, env('API_KEY'), ['HS256']);
         } catch(ExpiredException $e) {
-            return response()->json([
-                'error' => 'Provided token is expired.'
-            ], 400);
+            return $this->response(['error' => 'Provided token is expired'], 400);
+        } catch(UnexpectedValueException $e) {
+            return $this->response(['error' => 'Invalid token provided'], 400);
         } catch(Exception $e) {
-            return response()->json([
-                'error' => 'An error occurred while decoding token.'
-            ], 400);
+            return $this->response(['error' => 'An error occurred while decoding token'], 500);
         }
 
         $user = User::find($credentials->sub);
         if (!$user) {
-            return response()->json([
-                'error' => 'Unauthorized'
-            ], 401);
+            return $this->response(['error' => 'Unauthorized'], 401);
         }
 
-        // Now let's put the user in the request class so that you can grab it from there
-        //$request->auth = $user;
+        if (!empty($user->token) && $user->token != $token) {
+            return $this->response(['error' => 'Provided token is obsolete'], 400);
+        }
 
         return $next($request);
+    }
+
+    private function response(array $result, int $code)
+    {
+        return response()->json($result, $code);
     }
 }

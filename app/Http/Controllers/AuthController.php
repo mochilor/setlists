@@ -40,7 +40,17 @@ class AuthController extends BaseController
         }
 
         if (Hash::check($this->request->input('password'), $user->password)) {
-            return $this->response(['token' => $this->jwt($user)], 200);
+            $jwt = $this->getJwt($user);
+            $user->token = $jwt;
+            $user->save();
+
+            return $this->response(
+                [
+                    'token' => $jwt,
+                    'name' => $user->name,
+                ],
+                200
+            );
         }
 
         return $this->response(['error' => self::GENERIC_LOGIN_ERROR], 401);
@@ -51,7 +61,7 @@ class AuthController extends BaseController
         return response()->json($result, $code);
     }
 
-    private function jwt(User $user)
+    private function getJwt(User $user)
     {
         $payload = [
             'iss' => "lumen-jwt", // Issuer of the token
