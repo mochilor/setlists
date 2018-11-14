@@ -30,9 +30,13 @@ class SongRepository implements ApplicationSongRepositoryInterface
 
     public function getAllSongs(int $start, int $length): SongCollection
     {
-        $eloquentSongs = EloquentSong::offset($start)
-            ->orderBy('creation_date', 'asc')
-            ->limit($length)
+        $eloquentSongs = EloquentSong::orderBy('creation_date', 'asc')
+            ->when($start > 0, function ($query, $start) {
+                return $query->offset($start);
+            })
+            ->when($length > 0, function ($query, $length) {
+                return $query->limit($length);
+            })
             ->get();
 
         return $this->getSongCollection($eloquentSongs);
