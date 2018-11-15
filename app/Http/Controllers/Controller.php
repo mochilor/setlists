@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use Laravel\Lumen\Routing\Controller as BaseController;
 use Setlist\Application\Command\BaseCommand;
+use Setlist\Application\Exception\ApplicationException;
 use Setlist\Application\Query\Query;
+use Setlist\Domain\Exception\DomainException;
 use Setlist\Infrastructure\Exception\InvalidCommandException;
 use Setlist\Infrastructure\Exception\InvalidQueryException;
 use Setlist\Infrastructure\Messaging\CommandBus;
@@ -58,14 +60,22 @@ class Controller extends BaseController
     {
         $type = 'Result';
         $code = 200;
+        $a = env('APP_DEBUG');
 
         try {
             $this->commandBus->handle($command);
-        } catch (\Exception $e) {
+        } catch (DomainException $e) {
             $type = 'Error';
             $code = $this->isValidHttpCode($e->getCode()) ? $e->getCode() : 500;
             $message = $e->getMessage() ?: self::GENERIC_ERROR_MESSAGE;
-
+        } catch (ApplicationException $e) {
+            $type = 'Error';
+            $code = $this->isValidHttpCode($e->getCode()) ? $e->getCode() : 500;
+            $message = $e->getMessage() ?: self::GENERIC_ERROR_MESSAGE;
+        } catch (\Exception $e) {
+            $type = 'Error';
+            $code = (env('APP_DEBUG') && $this->isValidHttpCode($e->getCode())) ? $e->getCode() : 500;
+            $message = env('APP_DEBUG') && $e->getMessage() ? $e->getMessage() : self::GENERIC_ERROR_MESSAGE;
         } catch (\Throwable $e) {
             $type = 'Error';
             $code = 500;
@@ -81,9 +91,15 @@ class Controller extends BaseController
 
         try {
             $result = $this->queryBus->handle($query);
-        } catch (\Exception $e) {
+        } catch (DomainException $e) {
             $code = $this->isValidHttpCode($e->getCode()) ? $e->getCode() : 500;
             $result = ["Error" => $e->getMessage() ?: self::GENERIC_ERROR_MESSAGE];
+        } catch (ApplicationException $e) {
+            $code = $this->isValidHttpCode($e->getCode()) ? $e->getCode() : 500;
+            $result = ["Error" => $e->getMessage() ?: self::GENERIC_ERROR_MESSAGE];
+        } catch (\Exception $e) {
+            $code = (env('APP_DEBUG') && $this->isValidHttpCode($e->getCode())) ? $e->getCode() : 500;
+            $result = ["Error" => (env('APP_DEBUG') && $e->getMessage()) ? $e->getMessage() : self::GENERIC_ERROR_MESSAGE];
         }
 
         return $this->returnResponse($result, $code);

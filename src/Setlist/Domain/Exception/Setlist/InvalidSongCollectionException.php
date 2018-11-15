@@ -2,7 +2,9 @@
 
 namespace Setlist\Domain\Exception\Setlist;
 
-class InvalidSongCollectionException extends \Exception
+use Setlist\Domain\Exception\DomainException;
+
+class InvalidSongCollectionException extends DomainException
 {
 
 }

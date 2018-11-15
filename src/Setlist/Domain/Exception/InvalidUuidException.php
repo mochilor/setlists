@@ -2,7 +2,7 @@
 
 namespace Setlist\Domain\Exception;
 
-class InvalidUuidException extends \Exception
+class InvalidUuidException extends DomainException
 {
     public $message = 'Invalid identifier';
 }

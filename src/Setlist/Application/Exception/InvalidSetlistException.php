@@ -2,7 +2,7 @@
 
 namespace Setlist\Application\Exception;
 
-class InvalidSetlistException extends \Exception
+class InvalidSetlistException extends ApplicationException
 {
     public $message = 'Invalid setlist provided';
 }

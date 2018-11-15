@@ -60,7 +60,7 @@ class Authenticate
             return $this->response(['error' => 'An error occurred while decoding token'], 500);
         }
 
-        $user = User::find($credentials->sub);
+        $user = User::find($credentials->sub); // Mejor habria que guardar en sub el email
         if (!$user) {
             return $this->response(['error' => 'Unauthorized'], 401);
         }
