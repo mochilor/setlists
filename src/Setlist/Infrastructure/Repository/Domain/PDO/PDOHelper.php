@@ -3,7 +3,7 @@
 namespace Setlist\Infrastructure\Repository\Domain\PDO;
 
 use PDO;
-use Setlist\Domain\Entity\Setlist\Setlist;
+use Setlist\Application\Persistence\Setlist\PersistedSetlist;
 use Setlist\Domain\Value\Uuid;
 
 trait PDOHelper
@@ -22,7 +22,7 @@ trait PDOHelper
         return $limitString;
     }
 
-    public function getSetlistFromData($setlistData): Setlist
+    public function getSetlistFromData($setlistData): PersistedSetlist
     {
         $sql = <<<SQL
 SELECT * FROM `setlist_song` WHERE setlist_id = :uuid ORDER BY act, `order`;
@@ -33,23 +33,23 @@ SQL;
         $setlistSongs = $query->fetchAll(PDO::FETCH_ASSOC);
 
         $currentAct = 0;
-        $acts =
-        $actsForSetlist = [];
+        $acts = [];
         foreach ($setlistSongs as $song) {
             if ($song['act'] != $currentAct) {
                 $currentAct = $song['act'];
             }
 
-            $acts[$currentAct][$song['order']] = $this->songRepository->get(Uuid::create($song['song_id']));
+            $acts[$currentAct][$song['order']] = $this->songRepository->getOneSongById(Uuid::create($song['song_id']));
         }
 
+        $persistedSongCollections = [];
         foreach ($acts as $act) {
-            $actsForSetlist[] = $this->actFactory->make($act);
+            $persistedSongCollections[] = $this->persistedSongCollectionFactory->make($act);
         }
 
-        return $this->setlistFactory->restore(
+        return new PersistedSetlist(
             $setlistData['id'],
-            $actsForSetlist,
+            $persistedSongCollections,
             $setlistData['name'],
             $setlistData['date'],
             $setlistData['creation_date'],

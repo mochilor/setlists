@@ -3,6 +3,7 @@
 namespace Tests\Unit\Setlist\Infrastructure\DataTransformer;
 
 use PHPUnit\Framework\TestCase;
+use Setlist\Application\Persistence\Song\PersistedSong;
 use Setlist\Domain\Entity\Song\Song;
 use Setlist\Domain\Value\Uuid;
 use Setlist\Infrastructure\DataTransformer\SongDataTransformer;
@@ -19,19 +20,12 @@ class SongDataTransformerTest extends TestCase
         $creationDate = '2018-10-10 10:11:22';
         $updateDate = '2018-10-10 10:11:22';
 
-        $song = $this->getMockBuilder(Song::class)->getMock();
-        $song->expects($this->once())
-            ->method('id')
-            ->willReturn($id);
-        $song->expects($this->once())
-            ->method('title')
-            ->willReturn($title);
-        $song->expects($this->once())
-            ->method('formattedCreationDate')
-            ->willReturn($creationDate);
-        $song->expects($this->once())
-            ->method('formattedUpdateDate')
-            ->willReturn($updateDate);
+        $song = new PersistedSong(
+            $id,
+            $title,
+            $creationDate,
+            $updateDate
+        );
 
         $songDataTransformer = new SongDataTransformer();
         $songDataTransformer->write($song);

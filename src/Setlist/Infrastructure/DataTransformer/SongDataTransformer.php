@@ -2,14 +2,14 @@
 
 namespace Setlist\Infrastructure\DataTransformer;
 
-use Setlist\Domain\Entity\Song\Song;
+use Setlist\Application\Persistence\Song\PersistedSong;
 use Setlist\Application\DataTransformer\SongDataTransformer as SongDataTransformerInterface;
 
 class SongDataTransformer implements SongDataTransformerInterface
 {
     private $song;
 
-    public function write(Song $song)
+    public function write(PersistedSong $song)
     {
         $this->song = $song;
     }
@@ -19,8 +19,8 @@ class SongDataTransformer implements SongDataTransformerInterface
         return [
             'id' => (string) $this->song->id(),
             'title' => $this->song->title(),
-            'creation_date' => $this->song->formattedCreationDate(),
-            'update_date' => $this->song->formattedUpdateDate(),
+            'creation_date' => $this->song->creationDate(),
+            'update_date' => $this->song->updateDate(),
         ];
     }
 }

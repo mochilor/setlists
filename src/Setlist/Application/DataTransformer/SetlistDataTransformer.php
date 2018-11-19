@@ -2,10 +2,10 @@
 
 namespace Setlist\Application\DataTransformer;
 
-use Setlist\Domain\Entity\Setlist\Setlist;
+use Setlist\Application\Persistence\Setlist\PersistedSetlist;
 
 interface SetlistDataTransformer
 {
-    public function write(Setlist $setlist);
+    public function write(PersistedSetlist $setlist);
     public function read();
 }

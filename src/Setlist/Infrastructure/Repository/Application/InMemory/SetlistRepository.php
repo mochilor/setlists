@@ -2,8 +2,9 @@
 
 namespace Setlist\Infrastructure\Repository\Application\InMemory;
 
+use Setlist\Application\Persistence\Setlist\PersistedSetlist;
+use Setlist\Application\Persistence\Setlist\PersistedSetlistCollection;
 use Setlist\Application\Persistence\Setlist\SetlistRepository as ApplicationSetlistRepositoryInterface;
-use Setlist\Domain\Entity\Setlist\SetlistCollection;
 
 class SetlistRepository implements ApplicationSetlistRepositoryInterface
 {
@@ -19,8 +20,13 @@ class SetlistRepository implements ApplicationSetlistRepositoryInterface
         return [];
     }
 
-    public function getAllSetlists(int $start, int $length): SetlistCollection
+    public function getAllSetlists(int $start, int $length): PersistedSetlistCollection
     {
-        return new SetlistCollection();
+        return new PersistedSetlistCollection();
+    }
+
+    public function getOneSetlistById(string $id): ?PersistedSetlist
+    {
+        // TODO: Implement getOneSetlistById() method.
     }
 }

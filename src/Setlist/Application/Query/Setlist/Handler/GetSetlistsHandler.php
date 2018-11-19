@@ -3,7 +3,7 @@
 namespace Setlist\Application\Query\Setlist\Handler;
 
 use Setlist\Application\DataTransformer\SetlistDataTransformer;
-use Setlist\Application\Persistence\Setlist\SetlistRepository;
+use Setlist\Application\Persistence\Setlist\SetlistRepository as ApplicationSetlistRepository;
 use Setlist\Application\Query\Setlist\GetSetlists;
 
 class GetSetlistsHandler
@@ -12,7 +12,7 @@ class GetSetlistsHandler
     private $setlistDataTransformer;
 
     public function __construct(
-        SetlistRepository $applicationSetlistRepository,
+        ApplicationSetlistRepository $applicationSetlistRepository,
         SetlistDataTransformer $setlistDataTransformer
     ) {
         $this->applicationSetlistRepository = $applicationSetlistRepository;

@@ -2,23 +2,21 @@
 
 namespace Setlist\Infrastructure\Repository\Application\PDO;
 
+use Setlist\Application\Persistence\Song\PersistedSong;
+use Setlist\Application\Persistence\Song\PersistedSongCollection;
 use Setlist\Application\Persistence\Song\SongRepository as ApplicationSongRepositoryInterface;
 use PDO;
-use Setlist\Domain\Entity\Setlist\SongCollection;
-use Setlist\Domain\Entity\Song\SongFactory;
 use Setlist\Infrastructure\Repository\Domain\PDO\PDOHelper;
 
 class SongRepository implements ApplicationSongRepositoryInterface
 {
     private $PDO;
-    private $songFactory;
 
     use PDOHelper;
 
-    public function __construct(PDO $PDO, SongFactory $songFactory)
+    public function __construct(PDO $PDO)
     {
         $this->PDO = $PDO;
-        $this->songFactory = $songFactory;
     }
 
     public function getAllTitles(): array
@@ -40,7 +38,25 @@ SQL;
         return $query->fetchAll(PDO::FETCH_COLUMN);
     }
 
-    public function getAllSongs(int $start, int $length): SongCollection
+    public function getOneSongById(string $id): ?PersistedSong
+    {
+        $sql = <<<SQL
+SELECT * FROM `song` WHERE `id` = :uuid;
+SQL;
+        $query = $this->PDO->prepare($sql);
+        $query->bindValue('uuid', $id);
+        $query->execute();
+
+        $returnedSong = $query->fetch(PDO::FETCH_ASSOC);
+
+        if ($returnedSong) {
+            return $this->getPersistedSong($returnedSong);
+        }
+
+        return null;
+    }
+
+    public function getAllSongs(int $start, int $length): PersistedSongCollection
     {
         $sql = <<<SQL
 SELECT * FROM `song` ORDER BY `creation_date` ASC%s;
@@ -54,18 +70,13 @@ SQL;
 
         $songsArray = [];
         foreach ($songs as $songData) {
-            $songsArray[] = $this->songFactory->restore(
-                $songData['id'],
-                $songData['title'],
-                $songData['creation_date'],
-                $songData['update_date']
-            );
+            $songsArray[] = $this->getPersistedSong($songData);
         }
 
-        return SongCollection::create(...$songsArray);
+        return PersistedSongCollection::create(...$songsArray);
     }
 
-    public function getSongsByTitle(string $title): SongCollection
+    public function getSongsByTitle(string $title): PersistedSongCollection
     {
         $sql = <<<SQL
 SELECT * FROM `song` WHERE `title` LIKE "%%%s%%" ORDER BY `creation_date` ASC;
@@ -78,14 +89,19 @@ SQL;
 
         $songsArray = [];
         foreach ($songs as $songData) {
-            $songsArray[] = $this->songFactory->restore(
-                $songData['id'],
-                $songData['title'],
-                $songData['creation_date'],
-                $songData['update_date']
-            );
+            $songsArray[] = $this->getPersistedSong($songData);
         }
 
-        return SongCollection::create(...$songsArray);
+        return PersistedSongCollection::create(...$songsArray);
+    }
+
+    private function getPersistedSong($songData): PersistedSong
+    {
+        return new PersistedSong(
+            $songData['id'],
+            $songData['title'],
+            $songData['creation_date'],
+            $songData['update_date']
+        );
     }
 }

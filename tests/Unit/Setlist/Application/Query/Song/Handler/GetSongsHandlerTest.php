@@ -3,12 +3,12 @@
 namespace Tests\Unit\Setlist\Application\Query\Song\Handler;
 
 use Setlist\Application\DataTransformer\SongDataTransformer;
+use Setlist\Application\Persistence\Song\PersistedSong;
+use Setlist\Application\Persistence\Song\PersistedSongCollection;
 use Setlist\Application\Persistence\Song\SongRepository;
 use PHPUnit\Framework\TestCase;
 use Setlist\Application\Query\Song\GetSongs;
 use Setlist\Application\Query\Song\Handler\GetSongsHandler;
-use Setlist\Domain\Entity\Setlist\SongCollection;
-use Setlist\Domain\Entity\Song\Song;
 
 class GetSongsHandlerTest extends TestCase
 {
@@ -34,8 +34,8 @@ class GetSongsHandlerTest extends TestCase
         ];
         $query = new GetSongs($payload);
 
-        $song = $this->getMockBuilder(Song::class)->getMock();
-        $songCollection = SongCollection::create($song);
+        $song = $this->getMockBuilder(PersistedSong::class)->disableOriginalConstructor()->getMock();
+        $songCollection = PersistedSongCollection::create($song);
         $result = [];
         $this->applicationSongRepository
             ->expects($this->once())

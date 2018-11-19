@@ -2,33 +2,21 @@
 
 namespace Setlist\Infrastructure\Repository\Application\Eloquent;
 
+use Setlist\Application\Persistence\Setlist\PersistedSetlist;
+use Setlist\Application\Persistence\Setlist\PersistedSetlistCollection;
 use Setlist\Application\Persistence\Setlist\SetlistRepository as ApplicationSetlistRepositoryInterface;
-use Setlist\Domain\Entity\Setlist\ActFactory;
-use Setlist\Domain\Entity\Song\Song;
-use Setlist\Domain\Entity\Song\SongFactory;
-use \Setlist\Domain\Entity\Song\SongRepository as DomainSongRepositoryInterface;
-use Setlist\Domain\Entity\Setlist\SetlistCollection;
-use Setlist\Domain\Entity\Setlist\SetlistFactory;
+use Setlist\Application\Persistence\Song\PersistedSong;
+use Setlist\Application\Persistence\Song\PersistedSongCollectionFactory;
 use Setlist\Infrastructure\Repository\Domain\Eloquent\Model\Setlist as EloquentSetlist;
 use Setlist\Infrastructure\Repository\Domain\Eloquent\Model\Song as EloquentSong;
 
 class SetlistRepository implements ApplicationSetlistRepositoryInterface
 {
-    private $setlistFactory;
-    private $songFactory;
-    private $songRepository;
-    private $actFactory;
+    private $persistedSongCollectionFactory;
 
-    public function __construct(
-        SetlistFactory $setlistFactory,
-        SongFactory $songFactory,
-        DomainSongRepositoryInterface $songRepository,
-        ActFactory $actFactory
-    ) {
-        $this->setlistFactory = $setlistFactory;
-        $this->songFactory = $songFactory;
-        $this->songRepository = $songRepository;
-        $this->actFactory = $actFactory;
+    public function __construct(PersistedSongCollectionFactory $persistedSongCollectionFactory)
+    {
+        $this->persistedSongCollectionFactory = $persistedSongCollectionFactory;
     }
 
     public function getAllNames(): array
@@ -43,7 +31,16 @@ class SetlistRepository implements ApplicationSetlistRepositoryInterface
             ->all();
     }
 
-    public function getAllSetlists(int $start, int $length): SetlistCollection
+    public function getOneSetlistById(string $id): ?PersistedSetlist
+    {
+        $eloquentSetlist = EloquentSetlist::find($id);
+
+        if ($eloquentSetlist instanceof EloquentSetlist) {
+            return $this->getSetlistFromData($eloquentSetlist);
+        }
+    }
+
+    public function getAllSetlists(int $start, int $length): PersistedSetlistCollection
     {
         $eloquentSetlists = EloquentSetlist::orderBy('creation_date', 'asc')
             ->when($start > 0, function ($query, $start) {
@@ -59,29 +56,29 @@ class SetlistRepository implements ApplicationSetlistRepositoryInterface
             $setlistsForCollection[] = $this->getSetlistFromData($eloquentSetlist);
         }
 
-        return SetlistCollection::create(...$setlistsForCollection);
+        return PersistedSetlistCollection::create(...$setlistsForCollection);
     }
 
-    private function getSetlistFromData($eloquentSetlist)
+    private function getSetlistFromData($eloquentSetlist): PersistedSetlist
     {
         $currentAct = 0;
-        $acts =
-        $actsForSetlist = [];
+        $acts = [];
         foreach ($eloquentSetlist->songs as $eloquentSong) {
             if ($eloquentSong->pivot->act != $currentAct) {
                 $currentAct = $eloquentSong->pivot->act;
             }
 
-            $acts[$currentAct][$eloquentSong->pivot->order] = $this->makeSong($eloquentSong);
+            $acts[$currentAct][$eloquentSong->pivot->order] = $this->getPersistedSong($eloquentSong);
         }
 
+        $persistedSongCollections = [];
         foreach ($acts as $act) {
-            $actsForSetlist[] = $this->actFactory->make($act);
+            $persistedSongCollections[] = $this->persistedSongCollectionFactory->make($act);
         }
 
-        return $this->setlistFactory->restore(
+        return new PersistedSetlist(
             $eloquentSetlist->id,
-            $actsForSetlist,
+            $persistedSongCollections,
             $eloquentSetlist->name,
             $eloquentSetlist->date,
             $eloquentSetlist->creation_date,
@@ -89,9 +86,9 @@ class SetlistRepository implements ApplicationSetlistRepositoryInterface
         );
     }
 
-    private function makeSong(EloquentSong $eloquentSong): Song
+    private function getPersistedSong(EloquentSong $eloquentSong): PersistedSong
     {
-        return $this->songFactory->restore(
+        return new PersistedSong(
             $eloquentSong->id,
             $eloquentSong->title,
             $eloquentSong->creation_date,

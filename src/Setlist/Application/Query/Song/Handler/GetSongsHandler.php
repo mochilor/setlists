@@ -3,7 +3,7 @@
 namespace Setlist\Application\Query\Song\Handler;
 
 use Setlist\Application\DataTransformer\SongDataTransformer;
-use Setlist\Application\Persistence\Song\SongRepository;
+use Setlist\Application\Persistence\Song\SongRepository as ApplicationSongRepository;
 use Setlist\Application\Query\Song\GetSongs;
 
 class GetSongsHandler
@@ -11,7 +11,7 @@ class GetSongsHandler
     private $songDataTransformer;
     private $applicationSongRepository;
 
-    public function __construct(SongRepository $applicationSongRepository, SongDataTransformer $songDataTransformer)
+    public function __construct(ApplicationSongRepository $applicationSongRepository, SongDataTransformer $songDataTransformer)
     {
         $this->applicationSongRepository = $applicationSongRepository;
         $this->songDataTransformer = $songDataTransformer;

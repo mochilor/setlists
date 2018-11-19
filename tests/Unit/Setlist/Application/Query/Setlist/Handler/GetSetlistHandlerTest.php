@@ -3,11 +3,13 @@
 namespace Tests\Unit\Setlist\Application\Query\Setlist\Handler;
 
 use Setlist\Application\DataTransformer\SetlistDataTransformer;
+use Setlist\Application\Persistence\Setlist\PersistedSetlist;
+use Setlist\Application\Persistence\Setlist\SetlistRepository;
 use Setlist\Application\Query\Setlist\GetSetlist;
 use Setlist\Application\Query\Setlist\Handler\GetSetlistHandler;
 use PHPUnit\Framework\TestCase;
-use Setlist\Domain\Entity\Setlist\Setlist;
-use Setlist\Domain\Entity\Setlist\SetlistRepository;
+
+
 use Setlist\Domain\Value\Uuid;
 
 class GetSetlistHandlerTest extends TestCase
@@ -36,11 +38,11 @@ class GetSetlistHandlerTest extends TestCase
         ];
         $query = new GetSetlist($payload);
 
-        $setlist = $this->getMockBuilder(Setlist::class)->getMock();
+        $setlist = $this->getMockBuilder(PersistedSetlist::class)->disableOriginalConstructor()->getMock();
         $result = [];
         $this->setlistRepository
             ->expects($this->once())
-            ->method('get')
+            ->method('getOneSetlistById')
             ->with($uuid)
             ->willReturn($setlist);
         $this->setlistDataTransformer
@@ -68,7 +70,7 @@ class GetSetlistHandlerTest extends TestCase
         $query = new GetSetlist($payload);
         $this->setlistRepository
             ->expects($this->once())
-            ->method('get')
+            ->method('getOneSetlistById')
             ->with($uuid)
             ->willReturn(null);
 

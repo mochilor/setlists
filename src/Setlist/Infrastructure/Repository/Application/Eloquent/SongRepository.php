@@ -2,20 +2,13 @@
 
 namespace Setlist\Infrastructure\Repository\Application\Eloquent;
 
+use Setlist\Application\Persistence\Song\PersistedSong;
+use Setlist\Application\Persistence\Song\PersistedSongCollection;
 use Setlist\Application\Persistence\Song\SongRepository as ApplicationSongRepositoryInterface;
-use Setlist\Domain\Entity\Setlist\SongCollection;
-use Setlist\Domain\Entity\Song\SongFactory;
 use Setlist\Infrastructure\Repository\Domain\Eloquent\Model\Song as EloquentSong;
 
 class SongRepository implements ApplicationSongRepositoryInterface
 {
-    private $songFactory;
-
-    public function __construct(SongFactory $songFactory)
-    {
-        $this->songFactory = $songFactory;
-    }
-
     public function getAllTitles(): array
     {
         return EloquentSong::pluck('title')->all();
@@ -28,7 +21,16 @@ class SongRepository implements ApplicationSongRepositoryInterface
             ->all();
     }
 
-    public function getAllSongs(int $start, int $length): SongCollection
+    public function getOneSongById(string $id): ?PersistedSong
+    {
+        $eloquentSong = EloquentSong::find($id);
+
+        if ($eloquentSong instanceof EloquentSong) {
+            return $this->getPersistedSong($eloquentSong);
+        }
+    }
+
+    public function getAllSongs(int $start, int $length): PersistedSongCollection
     {
         $eloquentSongs = EloquentSong::orderBy('creation_date', 'asc')
             ->when($start > 0, function ($query, $start) {
@@ -42,7 +44,7 @@ class SongRepository implements ApplicationSongRepositoryInterface
         return $this->getSongCollection($eloquentSongs);
     }
 
-    public function getSongsByTitle(string $title): SongCollection
+    public function getSongsByTitle(string $title): PersistedSongCollection
     {
         $eloquentSongs = EloquentSong::where('title', 'like', "%$title%")
             ->orderBy('creation_date', 'asc')
@@ -51,18 +53,23 @@ class SongRepository implements ApplicationSongRepositoryInterface
         return $this->getSongCollection($eloquentSongs);
     }
 
-    private function getSongCollection($eloquentSongs): SongCollection
+    private function getSongCollection($eloquentSongs): PersistedSongCollection
     {
         $songsArray = [];
         foreach ($eloquentSongs as $eloquentSong) {
-            $songsArray[] = $this->songFactory->restore(
-                $eloquentSong->id,
-                $eloquentSong->title,
-                $eloquentSong->creation_date,
-                $eloquentSong->update_date
-            );
+            $songsArray[] = $this->getPersistedSong($eloquentSong);
         }
 
-        return SongCollection::create(...$songsArray);
+        return PersistedSongCollection::create(...$songsArray);
+    }
+
+    private function getPersistedSong(EloquentSong $eloquentSong): PersistedSong
+    {
+        return new PersistedSong(
+            $eloquentSong->id,
+            $eloquentSong->title,
+            $eloquentSong->creation_date,
+            $eloquentSong->update_date
+        );
     }
 }

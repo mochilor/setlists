@@ -3,11 +3,12 @@
 namespace Tests\Unit\Setlist\Application\Query\Song\Handler;
 
 use Setlist\Application\DataTransformer\SongDataTransformer;
+use Setlist\Application\Persistence\Song\PersistedSong;
+use Setlist\Application\Persistence\Song\SongRepository;
 use Setlist\Application\Query\Song\GetSong;
 use Setlist\Application\Query\Song\Handler\GetSongHandler;
 use PHPUnit\Framework\TestCase;
 use Setlist\Domain\Entity\Song\Song;
-use Setlist\Domain\Entity\Song\SongRepository;
 use Setlist\Domain\Value\Uuid;
 
 class GetSongHandlerTest extends TestCase
@@ -34,11 +35,11 @@ class GetSongHandlerTest extends TestCase
         ];
         $query = new GetSong($payload);
 
-        $song = $this->getMockBuilder(Song::class)->getMock();
+        $song = $this->getMockBuilder(PersistedSong::class)->disableOriginalConstructor()->getMock();
         $result = [];
         $this->songRepository
             ->expects($this->once())
-            ->method('get')
+            ->method('getOneSongById')
             ->with($uuid)
             ->willReturn($song);
         $this->songDataTransformer
@@ -66,7 +67,7 @@ class GetSongHandlerTest extends TestCase
         $query = new GetSong($payload);
         $this->songRepository
             ->expects($this->once())
-            ->method('get')
+            ->method('getOneSongById')
             ->with($uuid)
             ->willReturn(null);
 

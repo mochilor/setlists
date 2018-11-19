@@ -2,10 +2,10 @@
 
 namespace Setlist\Application\DataTransformer;
 
-use Setlist\Domain\Entity\Song\Song;
+use Setlist\Application\Persistence\Song\PersistedSong;
 
 interface SongDataTransformer
 {
-    public function write(Song $song);
+    public function write(PersistedSong $song);
     public function read();
 }

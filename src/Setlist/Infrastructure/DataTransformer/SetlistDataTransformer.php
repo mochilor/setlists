@@ -2,7 +2,7 @@
 
 namespace Setlist\Infrastructure\DataTransformer;
 
-use Setlist\Domain\Entity\Setlist\Setlist;
+use Setlist\Application\Persistence\Setlist\PersistedSetlist;
 use Setlist\Application\DataTransformer\SetlistDataTransformer as SetlistDataTransformerInterface;
 use Setlist\Application\DataTransformer\SongDataTransformer as SongDataTransformerInterface;
 
@@ -16,7 +16,7 @@ class SetlistDataTransformer implements SetlistDataTransformerInterface
         $this->songDataTransformer = $songDataTransformer;
     }
 
-    public function write(Setlist $setlist)
+    public function write(PersistedSetlist $setlist)
     {
         $this->setlist = $setlist;
     }
@@ -24,9 +24,9 @@ class SetlistDataTransformer implements SetlistDataTransformerInterface
     public function read(): array
     {
         $acts = [];
-        foreach ($this->setlist->actCollection() as $act) {
+        foreach ($this->setlist->acts() as $songCollection) {
             $currentAct = [];
-            foreach ($act->songCollection() as $song) {
+            foreach ($songCollection as $song) {
                 $this->songDataTransformer->write($song);
                 $currentAct[] = $this->songDataTransformer->read();
             }
@@ -36,10 +36,10 @@ class SetlistDataTransformer implements SetlistDataTransformerInterface
         return [
             'id' => (string) $this->setlist->id(),
             'name' => $this->setlist->name(),
-            'date' => $this->setlist->formattedDate(),
+            'date' => $this->setlist->date(),
             'acts' => $acts,
-            'creation_date' => $this->setlist->formattedCreationDate(),
-            'update_date' => $this->setlist->formattedUpdateDate(),
+            'creation_date' => $this->setlist->creationDate(),
+            'update_date' => $this->setlist->updateDate(),
         ];
     }
 }

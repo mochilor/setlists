@@ -17,7 +17,7 @@ use Setlist\Domain\Value\Uuid;
 class Setlist
 {
     private $id;
-    protected $actCollection;
+    private $actCollection;
     private $name;
     private $date;
     private $eventsTrigger;

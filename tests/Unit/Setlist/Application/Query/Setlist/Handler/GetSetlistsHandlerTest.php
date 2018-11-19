@@ -3,12 +3,12 @@
 namespace Tests\Unit\Setlist\Application\Query\Setlist\Handler;
 
 use Setlist\Application\DataTransformer\SetlistDataTransformer;
+use Setlist\Application\Persistence\Setlist\PersistedSetlist;
+use Setlist\Application\Persistence\Setlist\PersistedSetlistCollection;
 use Setlist\Application\Persistence\Setlist\SetlistRepository;
 use Setlist\Application\Query\Setlist\GetSetlists;
 use PHPUnit\Framework\TestCase;
 use Setlist\Application\Query\Setlist\Handler\GetSetlistsHandler;
-use Setlist\Domain\Entity\Setlist\Setlist;
-use Setlist\Domain\Entity\Setlist\SetlistCollection;
 
 class GetSetlistsHandlerTest extends TestCase
 {
@@ -36,8 +36,8 @@ class GetSetlistsHandlerTest extends TestCase
         ];
         $query = new GetSetlists($payload);
 
-        $setlist = $this->getMockBuilder(Setlist::class)->getMock();
-        $setlistCollection = SetlistCollection::create($setlist);
+        $setlist = $this->getMockBuilder(PersistedSetlist::class)->disableOriginalConstructor()->getMock();
+        $setlistCollection = PersistedSetlistCollection::create($setlist);
         $result = [];
         $this->applicationSetlistRepository
             ->expects($this->once())

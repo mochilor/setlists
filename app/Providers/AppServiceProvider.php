@@ -15,7 +15,14 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        // Singletons
+        $this->registerSingletons();
+        $this->registerDomainRepositories();
+        $this->registerApplicationRepositories();
+        $this->registerDataTransformers();
+    }
+
+    private function registerSingletons()
+    {
         $this->app->singleton(CommandBus::class);
         $this->app->singleton(QueryBus::class);
         $this->app->singleton(
@@ -23,7 +30,7 @@ class AppServiceProvider extends ServiceProvider
             \Setlist\Infrastructure\Messaging\EventBus::class
         );
 
-        $this->app->singleton(\PDO::class, function() {
+        $this->app->singleton(\PDO::class, function () {
             return new \PDO(
                 sprintf(
                     '%s:host=%s;dbname=%s;charset=utf8',
@@ -33,33 +40,42 @@ class AppServiceProvider extends ServiceProvider
                 env('DB_PASSWORD')
             );
         });
+    }
 
-        // Common implementations
+    private function registerDomainRepositories()
+    {
         $this->app->bind(
             \Setlist\Domain\Entity\Song\SongRepository::class,
             \Setlist\Infrastructure\Repository\Domain\Eloquent\SongRepository::class
+            //\Setlist\Infrastructure\Repository\Domain\PDO\SongRepository::class
         );
-
-        $this->app->bind(
-            \Setlist\Application\Persistence\Song\SongRepository::class,
-            \Setlist\Infrastructure\Repository\Application\Eloquent\SongRepository::class
-        );
-
         $this->app->bind(
             \Setlist\Domain\Entity\Setlist\SetlistRepository::class,
             \Setlist\Infrastructure\Repository\Domain\Eloquent\SetlistRepository::class
+            //\Setlist\Infrastructure\Repository\Domain\PDO\SetlistRepository::class
         );
+    }
 
+    private function registerApplicationRepositories()
+    {
+        $this->app->bind(
+            \Setlist\Application\Persistence\Song\SongRepository::class,
+            \Setlist\Infrastructure\Repository\Application\Eloquent\SongRepository::class
+            //\Setlist\Infrastructure\Repository\Application\PDO\SongRepository::class
+        );
         $this->app->bind(
             \Setlist\Application\Persistence\Setlist\SetlistRepository::class,
             \Setlist\Infrastructure\Repository\Application\Eloquent\SetlistRepository::class
+            //\Setlist\Infrastructure\Repository\Application\PDO\SetlistRepository::class
         );
+    }
 
+    private function registerDataTransformers()
+    {
         $this->app->bind(
             \Setlist\Application\DataTransformer\SongDataTransformer::class,
             \Setlist\Infrastructure\DataTransformer\SongDataTransformer::class
         );
-
         $this->app->bind(
             \Setlist\Application\DataTransformer\SetlistDataTransformer::class,
             \Setlist\Infrastructure\DataTransformer\SetlistDataTransformer::class
