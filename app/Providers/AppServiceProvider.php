@@ -65,8 +65,14 @@ class AppServiceProvider extends ServiceProvider
         );
         $this->app->bind(
             \Setlist\Application\Persistence\Setlist\SetlistRepository::class,
-            \Setlist\Infrastructure\Repository\Application\Eloquent\SetlistRepository::class
+            (env('PROJECTIONS') ?
+                \Setlist\Infrastructure\Repository\Application\Eloquent\SetlistProjectionRepository::class :
+                \Setlist\Infrastructure\Repository\Application\Eloquent\SetlistRepository::class)
             //\Setlist\Infrastructure\Repository\Application\PDO\SetlistRepository::class
+        );
+        $this->app->bind(
+            \Setlist\Application\Persistence\Setlist\SetlistProjectorRepository::class,
+            \Setlist\Infrastructure\Repository\Application\Eloquent\SetlistProjectorRepository::class
         );
     }
 

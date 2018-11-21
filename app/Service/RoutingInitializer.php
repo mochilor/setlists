@@ -25,8 +25,18 @@ use Setlist\Application\Query\Song\Handler\GetSongHandler;
 use Setlist\Application\Query\Song\Handler\GetSongsByTitleHandler;
 use Setlist\Application\Query\Song\Handler\GetSongsHandler;
 use Setlist\Domain\Entity\EventBus;
+use Setlist\Domain\Entity\Setlist\Event\SetlistChangedItsActCollection;
+use Setlist\Domain\Entity\Setlist\Event\SetlistChangedItsDate;
+use Setlist\Domain\Entity\Setlist\Event\SetlistChangedItsName;
+use Setlist\Domain\Entity\Setlist\Event\SetlistWasCreated;
+use Setlist\Domain\Entity\Setlist\Event\SetlistWasDeleted;
 use Setlist\Domain\Entity\Song\Event\SongWasCreated;
 use Setlist\Infrastructure\Messaging\CommandBus;
+use Setlist\Infrastructure\Messaging\EventHandler\Setlist\SetlistChangedItsActCollectionHandler;
+use Setlist\Infrastructure\Messaging\EventHandler\Setlist\SetlistChangedItsDateHandler;
+use Setlist\Infrastructure\Messaging\EventHandler\Setlist\SetlistChangedItsNameHandler;
+use Setlist\Infrastructure\Messaging\EventHandler\Setlist\SetlistWasCreatedHandler;
+use Setlist\Infrastructure\Messaging\EventHandler\Setlist\SetlistWasDeletedHandler;
 use Setlist\Infrastructure\Messaging\EventHandler\Song\SongWasCreatedHandler;
 use Setlist\Infrastructure\Messaging\QueryBus;
 
@@ -66,7 +76,16 @@ class RoutingInitializer
     private function initEvents()
     {
         // Song
-        $this->eventBus->addHandler(SongWasCreated::class, app(SongWasCreatedHandler::class));
+        // $this->eventBus->addHandler(SongWasCreated::class, app(SongWasCreatedHandler::class));
+
+        // Setlist
+        if (env('PROJECTIONS')) {
+            $this->eventBus->addHandler(SetlistWasCreated::class, app(SetlistWasCreatedHandler::class));
+            $this->eventBus->addHandler(SetlistChangedItsName::class, app(SetlistChangedItsNameHandler::class));
+            $this->eventBus->addHandler(SetlistChangedItsDate::class, app(SetlistChangedItsDateHandler::class));
+            $this->eventBus->addHandler(SetlistChangedItsActCollection::class, app(SetlistChangedItsActCollectionHandler::class));
+            $this->eventBus->addHandler(SetlistWasDeleted::class, app(SetlistWasDeletedHandler::class));
+        }
     }
 
     private function initQueries()

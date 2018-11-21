@@ -7,10 +7,10 @@ use Setlist\Application\Persistence\Setlist\PersistedSetlistCollection;
 use Setlist\Application\Persistence\Setlist\SetlistRepository as ApplicationSetlistRepositoryInterface;
 use Setlist\Application\Persistence\Song\PersistedSong;
 use Setlist\Application\Persistence\Song\PersistedSongCollectionFactory;
+use Setlist\Infrastructure\Repository\Application\Eloquent\Model\SetlistProjection;
 use Setlist\Infrastructure\Repository\Domain\Eloquent\Model\Setlist as EloquentSetlist;
-use Setlist\Infrastructure\Repository\Domain\Eloquent\Model\Song as EloquentSong;
 
-class SetlistRepository implements ApplicationSetlistRepositoryInterface
+class SetlistProjectionRepository implements ApplicationSetlistRepositoryInterface
 {
     private $persistedSongCollectionFactory;
 
@@ -33,38 +33,40 @@ class SetlistRepository implements ApplicationSetlistRepositoryInterface
 
     public function getOneSetlistById(string $id): ?PersistedSetlist
     {
-        $eloquentSetlist = EloquentSetlist::find($id);
+        $setlist = SetlistProjection::find($id);
 
-        if ($eloquentSetlist instanceof EloquentSetlist) {
-            return $this->getSetlistFromData($eloquentSetlist);
+        if (!$setlist instanceof SetlistProjection) {
+            return null;
         }
+
+        $data = json_decode($setlist->data);
+
+        return $this->getSetlistFromData($data);
     }
 
     public function getAllSetlists(int $start, int $length): PersistedSetlistCollection
     {
-        $eloquentSetlists = EloquentSetlist::orderBy('creation_date', 'asc')
+        $setlists = SetlistProjection::orderBy('created_at', 'asc')
             ->skip($start)
             ->take($length)
             ->get();
 
-        $setlistsForCollection = [];
-        foreach ($eloquentSetlists as $eloquentSetlist) {
-            $setlistsForCollection[] = $this->getSetlistFromData($eloquentSetlist);
+        $setlistsArray = [];
+
+        foreach ($setlists as $setlist) {
+            $setlistsArray[] = $this->getSetlistFromData(json_decode($setlist->data));
         }
 
-        return PersistedSetlistCollection::create(...$setlistsForCollection);
+        return PersistedSetlistCollection::create(...$setlistsArray);
     }
 
-    private function getSetlistFromData($eloquentSetlist): PersistedSetlist
+    private function getSetlistFromData($setlistProjection): PersistedSetlist
     {
-        $currentAct = 0;
         $acts = [];
-        foreach ($eloquentSetlist->songs as $eloquentSong) {
-            if ($eloquentSong->pivot->act != $currentAct) {
-                $currentAct = $eloquentSong->pivot->act;
+        foreach ($setlistProjection->acts as $currentAct => $act) {
+            foreach ($act as $song) {
+                $acts[$currentAct][] = $this->getPersistedSong($song);
             }
-
-            $acts[$currentAct][$eloquentSong->pivot->order] = $this->getPersistedSong($eloquentSong);
         }
 
         $persistedSongCollections = [];
@@ -73,22 +75,22 @@ class SetlistRepository implements ApplicationSetlistRepositoryInterface
         }
 
         return new PersistedSetlist(
-            $eloquentSetlist->id,
+            $setlistProjection->id,
             $persistedSongCollections,
-            $eloquentSetlist->name,
-            $eloquentSetlist->date,
-            $eloquentSetlist->creation_date,
-            $eloquentSetlist->update_date
+            $setlistProjection->name,
+            $setlistProjection->date,
+            $setlistProjection->creation_date,
+            $setlistProjection->update_date
         );
     }
 
-    private function getPersistedSong(EloquentSong $eloquentSong): PersistedSong
+    private function getPersistedSong($song): PersistedSong
     {
         return new PersistedSong(
-            $eloquentSong->id,
-            $eloquentSong->title,
-            $eloquentSong->creation_date,
-            $eloquentSong->update_date
+            $song->id,
+            $song->title,
+            $song->creation_date,
+            $song->update_date
         );
     }
 }
