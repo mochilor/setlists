@@ -5,20 +5,20 @@ namespace Setlist\Application\Command\Song\Handler;
 use Setlist\Application\Command\Song\UpdateSong;
 use Setlist\Application\Exception\SongDoesNotExistException;
 use Setlist\Application\Exception\SongTitleNotUniqueException;
-use Setlist\Application\Persistence\Song\SongRepository as ApplicationSongRespository;
 use Setlist\Domain\Entity\Song\Song;
 use Setlist\Domain\Entity\Song\SongRepository;
+use Setlist\Domain\Entity\Song\SongTitleRepository;
 use Setlist\Domain\Value\Uuid;
 
 class UpdateSongHandler
 {
     private $songRepository;
-    private $applicationSongRepository;
+    private $songTitleRepository;
 
-    public function __construct(SongRepository $songRepository, ApplicationSongRespository $applicationSongRepository)
+    public function __construct(SongRepository $songRepository, SongTitleRepository $songTitleRepository)
     {
         $this->songRepository = $songRepository;
-        $this->applicationSongRepository = $applicationSongRepository;
+        $this->songTitleRepository= $songTitleRepository;
     }
 
     public function __invoke(UpdateSong $command)
@@ -39,8 +39,7 @@ class UpdateSongHandler
             throw new SongDoesNotExistException('Song not found');
         }
 
-        $otherTitles = $this->applicationSongRepository->getOtherTitles($command->uuid());
-        if (in_array($command->title(), $otherTitles)) {
+        if (!$this->songTitleRepository->titleIsUnique($command->title(), $command->uuid())) {
             throw new SongTitleNotUniqueException('Song title already exists');
         }
     }

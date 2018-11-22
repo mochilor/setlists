@@ -33,5 +33,15 @@ class TestAppServiceProvider extends ServiceProvider
             \Setlist\Application\Persistence\Setlist\SetlistRepository::class,
             \Setlist\Infrastructure\Repository\Application\InMemory\SetlistRepository::class
         );
+
+        $this->app->bind(
+            \Setlist\Domain\Entity\Song\SongTitleRepository::class,
+            \Setlist\Infrastructure\Repository\Domain\InMemory\SongTitleRepository::class
+        );
+
+        $this->app->bind(
+            \Setlist\Domain\Entity\Setlist\SetlistNameRepository::class,
+            \Setlist\Infrastructure\Repository\Domain\InMemory\SetlistNameRepository::class
+        );
     }
 }

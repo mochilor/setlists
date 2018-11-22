@@ -8,18 +8,6 @@ use Setlist\Application\Persistence\Song\SongRepository as ApplicationSongReposi
 
 class SongRepository implements ApplicationSongRepositoryInterface
 {
-    public $titles = [];
-
-    public function getAllTitles(): array
-    {
-        return $this->titles;
-    }
-
-    public function getOtherTitles(string $uuid): array
-    {
-        return $this->titles;
-    }
-
     public function getAllSongs(int $start, int $length): PersistedSongCollection
     {
         return new PersistedSongCollection();

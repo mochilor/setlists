@@ -19,18 +19,6 @@ class SetlistRepository implements ApplicationSetlistRepositoryInterface
         $this->persistedSongCollectionFactory = $persistedSongCollectionFactory;
     }
 
-    public function getAllNames(): array
-    {
-        return EloquentSetlist::pluck('name')->all();
-    }
-
-    public function getOtherNames(string $uuid): array
-    {
-        return EloquentSetlist::where('id', '<>', $uuid)
-            ->pluck('name')
-            ->all();
-    }
-
     public function getOneSetlistById(string $id): ?PersistedSetlist
     {
         $eloquentSetlist = EloquentSetlist::find($id);

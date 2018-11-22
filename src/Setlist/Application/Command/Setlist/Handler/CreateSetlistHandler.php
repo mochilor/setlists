@@ -6,35 +6,26 @@ use Setlist\Application\Command\Setlist\CreateSetlist;
 use Setlist\Application\Command\Setlist\Handler\Helper\SetlistHandlerHelper;
 use Setlist\Application\Exception\InvalidSetlistException;
 use Setlist\Application\Exception\SetlistNameNotUniqueException;
-use Setlist\Application\Persistence\Setlist\SetlistRepository as ApplicationSetlistRespository;
 use Setlist\Domain\Entity\Setlist\SetlistFactory;
+use Setlist\Domain\Entity\Setlist\SetlistNameRepository;
 use Setlist\Domain\Entity\Setlist\SetlistRepository;
-use Setlist\Domain\Entity\Song\SongFactory;
-use Setlist\Domain\Entity\Song\SongRepository;
-use Setlist\Domain\Service\Setlist\SetlistNameValidator;
 
 class CreateSetlistHandler
 {
-    private $applicationSetlistRepository;
+    private $setlistNameRepository;
     private $setlistRepository;
-    private $songRepository;
     private $setlistFactory;
-    private $songFactory;
     private $setlistHandlerHelper;
 
     public function __construct(
-        ApplicationSetlistRespository $applicationSetlistRepository,
+        SetlistNameRepository $setlistNameRepository,
         SetlistRepository $setlistRepository,
-        SongRepository $songRepository,
         SetlistFactory $setlistFactory,
-        SongFactory $songFactory,
         SetlistHandlerHelper $setlistHandlerHelper
     ) {
-        $this->applicationSetlistRepository = $applicationSetlistRepository;
+        $this->setlistNameRepository = $setlistNameRepository;
         $this->setlistRepository = $setlistRepository;
         $this->setlistFactory = $setlistFactory;
-        $this->songFactory = $songFactory;
-        $this->songRepository = $songRepository;
         $this->setlistHandlerHelper = $setlistHandlerHelper;
     }
 
@@ -56,9 +47,7 @@ class CreateSetlistHandler
 
     private function guard(CreateSetlist $command)
     {
-        $setlistNames = $this->applicationSetlistRepository->getAllNames();
-        $setlistNameValidator = SetlistNameValidator::create($setlistNames);
-        if (!$setlistNameValidator->setlistNameIsUnique($command->name())) {
+        if (!$this->setlistNameRepository->nameIsAvailable($command->name())) {
             throw new SetlistNameNotUniqueException();
         }
 

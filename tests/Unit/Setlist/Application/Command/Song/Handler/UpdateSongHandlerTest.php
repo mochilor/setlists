@@ -8,19 +8,20 @@ use Setlist\Application\Command\Song\UpdateSong;
 use Setlist\Application\Persistence\Song\SongRepository as ApplicationSongRespository;
 use Setlist\Domain\Entity\Song\Song;
 use Setlist\Domain\Entity\Song\SongRepository;
+use Setlist\Domain\Entity\Song\SongTitleRepository;
 use Setlist\Domain\Value\Uuid;
 
 class UpdateSongHandlerTest extends TestCase
 {
     private $songRepository;
     private $commandHandler;
-    private $applicationSongRepository;
+    private $songTitleRepository;
 
     protected function setUp()
     {
         $this->songRepository = $this->getMockBuilder(SongRepository::class)->getMock();
-        $this->applicationSongRepository = $this->getMockBuilder(ApplicationSongRespository::class)->getMock();
-        $this->commandHandler = new UpdateSongHandler($this->songRepository, $this->applicationSongRepository);
+        $this->songTitleRepository = $this->getMockBuilder(SongTitleRepository::class)->getMock();
+        $this->commandHandler = new UpdateSongHandler($this->songRepository, $this->songTitleRepository);
     }
 
     /**
@@ -38,11 +39,11 @@ class UpdateSongHandlerTest extends TestCase
             ->with($uuid)
             ->willReturn($song);
 
-        $this->applicationSongRepository
+        $this->songTitleRepository
             ->expects($this->once())
-            ->method('getOtherTitles')
-            ->with($command->uuid())
-            ->willReturn([]);
+            ->method('titleIsUnique')
+            ->with($command->title(), $command->uuid())
+            ->willReturn(true);
 
         $song->expects($this->once())
             ->method('changeTitle')
@@ -88,11 +89,11 @@ class UpdateSongHandlerTest extends TestCase
             ->with($uuid)
             ->willReturn($song);
 
-        $this->applicationSongRepository
+        $this->songTitleRepository
             ->expects($this->once())
-            ->method('getOtherTitles')
-            ->with($command->uuid())
-            ->willReturn([$command->title()]);
+            ->method('titleIsUnique')
+            ->with($command->title(), $command->uuid())
+            ->willReturn(false);
 
         ($this->commandHandler)($command);
     }

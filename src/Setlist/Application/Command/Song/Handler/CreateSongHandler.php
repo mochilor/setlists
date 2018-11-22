@@ -4,30 +4,32 @@ namespace Setlist\Application\Command\Song\Handler;
 
 use Setlist\Application\Command\Song\CreateSong;
 use Setlist\Application\Exception\SongTitleNotUniqueException;
-use Setlist\Application\Persistence\Song\SongRepository as ApplicationSongRespository;
 use Setlist\Domain\Entity\Song\SongFactory;
 use Setlist\Domain\Entity\Song\SongRepository;
-use Setlist\Domain\Service\Song\SongTitleValidator;
+use Setlist\Domain\Entity\Song\SongTitleRepository;
+
 
 class CreateSongHandler
 {
+    private $songTitleRepository;
     private $songRepository;
-    private $applicationSongRepository;
     private $songFactory;
 
     public function __construct(
+        SongTitleRepository $songTitleRepository,
         SongRepository $songRepository,
-        ApplicationSongRespository $applicationSongRepository,
         SongFactory $songFactory
     ) {
+        $this->songTitleRepository = $songTitleRepository;
         $this->songRepository = $songRepository;
-        $this->applicationSongRepository = $applicationSongRepository;
         $this->songFactory = $songFactory;
     }
 
     public function __invoke(CreateSong $command)
     {
-        $this->guard($command);
+        if (!$this->songTitleRepository->titleIsAvailable($command->title())) {
+            throw new SongTitleNotUniqueException();
+        }
 
         $song = $this->songFactory->make(
             $this->songRepository->nextIdentity(),
@@ -35,14 +37,5 @@ class CreateSongHandler
         );
 
         $this->songRepository->save($song);
-    }
-
-    private function guard(CreateSong $command)
-    {
-        $songTitles = $this->applicationSongRepository->getAllTitles();
-        $songTitleValidator = SongTitleValidator::create($songTitles);
-        if (!$songTitleValidator->songTitleIsUnique($command->title())) {
-            throw new SongTitleNotUniqueException();
-        }
     }
 }

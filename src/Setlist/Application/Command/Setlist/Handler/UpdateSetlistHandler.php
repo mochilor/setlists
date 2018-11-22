@@ -8,26 +8,26 @@ use Setlist\Application\Command\Setlist\UpdateSetlist;
 use Setlist\Application\Exception\InvalidSetlistException;
 use Setlist\Application\Exception\SetlistDoesNotExistException;
 use Setlist\Application\Exception\SetlistNameNotUniqueException;
-use Setlist\Application\Persistence\Setlist\SetlistRepository as ApplicationSetlistRespository;
 use Setlist\Domain\Entity\Setlist\ActCollection;
 use Setlist\Domain\Entity\Setlist\Setlist;
+use Setlist\Domain\Entity\Setlist\SetlistNameRepository;
 use Setlist\Domain\Entity\Setlist\SetlistRepository;
 use Setlist\Domain\Value\Uuid;
 
 class UpdateSetlistHandler
 {
     private $setlistRepository;
-    private $applicationSetlistRepository;
+    private $setlistNameRepository;
     private $setlistHandlerHelper;
 
     public function __construct(
         SetlistRepository $setlistRepository,
-        ApplicationSetlistRespository $applicationSetlistRepository,
+        SetlistNameRepository $setlistNameRepository,
         SetlistHandlerHelper $setlistHandlerHelper
     ) {
         $this->setlistRepository = $setlistRepository;
+        $this->setlistNameRepository = $setlistNameRepository;
         $this->setlistHandlerHelper = $setlistHandlerHelper;
-        $this->applicationSetlistRepository = $applicationSetlistRepository;
     }
 
     public function __invoke(UpdateSetlist $command)
@@ -54,8 +54,7 @@ class UpdateSetlistHandler
             throw new SetlistDoesNotExistException('Setlist not found');
         }
 
-        $otherNames = $this->applicationSetlistRepository->getOtherNames($command->uuid());
-        if (in_array($command->name(), $otherNames)) {
+        if (!$this->setlistNameRepository->nameIsUnique($command->name(), $command->uuid())) {
             throw new SetlistNameNotUniqueException('Setlist name already exists');
         }
 

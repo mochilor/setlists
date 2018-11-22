@@ -8,7 +8,6 @@ use Setlist\Application\Persistence\Setlist\SetlistRepository as ApplicationSetl
 use Setlist\Application\Persistence\Song\PersistedSong;
 use Setlist\Application\Persistence\Song\PersistedSongCollectionFactory;
 use Setlist\Infrastructure\Repository\Application\Eloquent\Model\SetlistProjection;
-use Setlist\Infrastructure\Repository\Domain\Eloquent\Model\Setlist as EloquentSetlist;
 
 class SetlistProjectionRepository implements ApplicationSetlistRepositoryInterface
 {
@@ -17,18 +16,6 @@ class SetlistProjectionRepository implements ApplicationSetlistRepositoryInterfa
     public function __construct(PersistedSongCollectionFactory $persistedSongCollectionFactory)
     {
         $this->persistedSongCollectionFactory = $persistedSongCollectionFactory;
-    }
-
-    public function getAllNames(): array
-    {
-        return EloquentSetlist::pluck('name')->all();
-    }
-
-    public function getOtherNames(string $uuid): array
-    {
-        return EloquentSetlist::where('id', '<>', $uuid)
-            ->pluck('name')
-            ->all();
     }
 
     public function getOneSetlistById(string $id): ?PersistedSetlist

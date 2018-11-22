@@ -8,18 +8,6 @@ use Setlist\Application\Persistence\Setlist\SetlistRepository as ApplicationSetl
 
 class SetlistRepository implements ApplicationSetlistRepositoryInterface
 {
-    public $names = [];
-
-    public function getAllNames(): array
-    {
-        return $this->names;
-    }
-
-    public function getOtherNames(string $uuid): array
-    {
-        return [];
-    }
-
     public function getAllSetlists(int $start, int $length): PersistedSetlistCollection
     {
         return new PersistedSetlistCollection();

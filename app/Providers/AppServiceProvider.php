@@ -50,9 +50,20 @@ class AppServiceProvider extends ServiceProvider
             //\Setlist\Infrastructure\Repository\Domain\PDO\SongRepository::class
         );
         $this->app->bind(
+            \Setlist\Domain\Entity\Song\SongTitleRepository::class,
+            \Setlist\Infrastructure\Repository\Domain\Eloquent\SongTitleRepository::class
+            //\Setlist\Infrastructure\Repository\Domain\PDO\SongTitleRepository::class
+        );
+
+        $this->app->bind(
             \Setlist\Domain\Entity\Setlist\SetlistRepository::class,
             \Setlist\Infrastructure\Repository\Domain\Eloquent\SetlistRepository::class
             //\Setlist\Infrastructure\Repository\Domain\PDO\SetlistRepository::class
+        );
+        $this->app->bind(
+            \Setlist\Domain\Entity\Setlist\SetlistNameRepository::class,
+            //\Setlist\Infrastructure\Repository\Domain\Eloquent\SetlistNameRepository::class
+            \Setlist\Infrastructure\Repository\Domain\PDO\SetlistNameRepository::class
         );
     }
 

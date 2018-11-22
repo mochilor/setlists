@@ -6,54 +6,36 @@ use Setlist\Application\Command\Setlist\CreateSetlist;
 use Setlist\Application\Command\Setlist\Handler\CreateSetlistHandler;
 use PHPUnit\Framework\TestCase;
 use Setlist\Application\Command\Setlist\Handler\Helper\SetlistHandlerHelper;
-use Setlist\Application\Persistence\Setlist\SetlistRepository as ApplicationSetlistRespository;
-use Setlist\Domain\Entity\EventBus;
-use Setlist\Domain\Entity\EventsTrigger;
 use Setlist\Domain\Entity\Setlist\Act;
 use Setlist\Domain\Entity\Setlist\Setlist;
 use Setlist\Domain\Entity\Setlist\SetlistFactory;
-use Setlist\Domain\Entity\Song\SongFactory;
+use Setlist\Domain\Entity\Setlist\SetlistNameRepository;
 use Setlist\Domain\Entity\Setlist\SetlistRepository;
-use Setlist\Domain\Entity\Song\SongRepository;
 use Setlist\Domain\Value\Uuid;
 
 class CreateSetlistHandlerTest extends TestCase
 {
-    private $applicationSetlistRepository;
+    private $setlistNameRepository;
     private $setlistRepository;
     private $setlistFactory;
-    private $songFactory;
     private $setlistHandlerHelper;
-    private $songRepository;
     private $commandHandler;
-
-    const ALL_NAMES = [
-        'Name 1',
-        'Name 2',
-        'Name 3',
-    ];
 
     protected function setUp()
     {
-        $this->applicationSetlistRepository = $this->getMockBuilder(ApplicationSetlistRespository::class)->getMock();
+        $this->setlistNameRepository = $this->getMockBuilder(SetlistNameRepository::class)->getMock();
         $this->setlistRepository = $this->getMockBuilder(SetlistRepository::class)->getMock();
-        $this->songRepository = $this->getMockBuilder(SongRepository::class)->getMock();
         $this->setlistFactory = $this->getMockBuilder(SetlistFactory::class)
             ->disableOriginalConstructor()
             ->getMock();
 
-        $eventBus = $this->getMockBuilder(EventBus::class)->getMock();
-        $eventsTrigger = new EventsTrigger($eventBus);
-        $this->songFactory = new SongFactory($eventsTrigger);
         $this->setlistHandlerHelper = $this->getMockBuilder(SetlistHandlerHelper::class)
             ->disableOriginalConstructor()
             ->getMock();
         $this->commandHandler = new CreateSetlistHandler(
-            $this->applicationSetlistRepository,
+            $this->setlistNameRepository,
             $this->setlistRepository,
-            $this->songRepository,
             $this->setlistFactory,
-            $this->songFactory,
             $this->setlistHandlerHelper
         );
     }
@@ -81,14 +63,6 @@ class CreateSetlistHandlerTest extends TestCase
             'date' => '2018-10-01',
         ];
 
-//        $songsCount = 0;
-//        array_walk_recursive(
-//            $payload['acts'],
-//            function() use (&$songsCount) {
-//                $songsCount++;
-//            }
-//        );
-
         $actsForSetlist = [];
         foreach ($payload['acts'] as $act) {
             $actsForSetlist[] = $this->getMockBuilder(Act::class)->getMock();
@@ -98,20 +72,16 @@ class CreateSetlistHandlerTest extends TestCase
         $uuid = Uuid::random();
         $setlistMock = $this->getMockBuilder(Setlist::class)->getMock();
 
-        $this->applicationSetlistRepository
+        $this->setlistNameRepository
             ->expects($this->once())
-            ->method('getAllNames')
-            ->willReturn(self::ALL_NAMES);
+            ->method('nameIsAvailable')
+            ->with($command->name())
+            ->willReturn(true);
 
         $this->setlistHandlerHelper
             ->expects($this->once())
             ->method('getActsForSetlist')
             ->willReturn($actsForSetlist);
-
-//        $this->songRepository
-//            ->expects($this->exactly($songsCount))
-//            ->method('get')
-//            ->willReturn($this->getSongMock());
 
         $this->setlistRepository
             ->expects($this->once())
@@ -139,14 +109,15 @@ class CreateSetlistHandlerTest extends TestCase
     public function repeatedTitleThrowsException()
     {
         $payload = [
-            'name' => self::ALL_NAMES[0],
+            'name' => 'Non unique Name',
         ];
         $command = new CreateSetlist($payload);
 
-        $this->applicationSetlistRepository
+        $this->setlistNameRepository
             ->expects($this->once())
-            ->method('getAllNames')
-            ->willReturn(self::ALL_NAMES);
+            ->method('nameIsAvailable')
+            ->with($command->name())
+            ->willReturn(false);
 
         ($this->commandHandler)($command);
     }
@@ -170,10 +141,11 @@ class CreateSetlistHandlerTest extends TestCase
         ];
         $command = new CreateSetlist($payload);
 
-        $this->applicationSetlistRepository
+        $this->setlistNameRepository
             ->expects($this->once())
-            ->method('getAllNames')
-            ->willReturn(self::ALL_NAMES);
+            ->method('nameIsAvailable')
+            ->with($command->name())
+            ->willReturn(true);
 
         ($this->commandHandler)($command);
     }

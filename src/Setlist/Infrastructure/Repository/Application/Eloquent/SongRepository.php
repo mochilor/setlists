@@ -9,18 +9,6 @@ use Setlist\Infrastructure\Repository\Domain\Eloquent\Model\Song as EloquentSong
 
 class SongRepository implements ApplicationSongRepositoryInterface
 {
-    public function getAllTitles(): array
-    {
-        return EloquentSong::pluck('title')->all();
-    }
-
-    public function getOtherTitles(string $uuid): array
-    {
-        return EloquentSong::where('id', '<>', $uuid)
-            ->pluck('title')
-            ->all();
-    }
-
     public function getOneSongById(string $id): ?PersistedSong
     {
         $eloquentSong = EloquentSong::find($id);
