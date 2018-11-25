@@ -31,8 +31,12 @@ class SetlistRepository implements ApplicationSetlistRepositoryInterface
     public function getAllSetlists(int $start, int $length): PersistedSetlistCollection
     {
         $eloquentSetlists = EloquentSetlist::orderBy('creation_date', 'asc')
-            ->skip($start)
-            ->take($length)
+            ->when($start > 0, function ($query) use ($start) {
+                return $query->skip($start);
+            })
+            ->when($length > 0, function ($query) use($length) {
+                return $query->take($length);
+            })
             ->get();
 
         $setlistsForCollection = [];

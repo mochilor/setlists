@@ -21,11 +21,11 @@ class SongRepository implements ApplicationSongRepositoryInterface
     public function getAllSongs(int $start, int $length): PersistedSongCollection
     {
         $eloquentSongs = EloquentSong::orderBy('creation_date', 'asc')
-            ->when($start > 0, function ($query, $start) {
-                return $query->offset($start);
+            ->when($start > 0, function ($query) use ($start) {
+                return $query->skip($start);
             })
-            ->when($length > 0, function ($query, $length) {
-                return $query->limit($length);
+            ->when($length > 0, function ($query) use($length) {
+                return $query->take($length);
             })
             ->get();
 

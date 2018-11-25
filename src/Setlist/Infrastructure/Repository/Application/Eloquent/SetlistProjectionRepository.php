@@ -34,8 +34,12 @@ class SetlistProjectionRepository implements ApplicationSetlistRepositoryInterfa
     public function getAllSetlists(int $start, int $length): PersistedSetlistCollection
     {
         $setlists = SetlistProjection::orderBy('created_at', 'asc')
-            ->skip($start)
-            ->take($length)
+            ->when($start > 0, function ($query) use ($start) {
+                return $query->skip($start);
+            })
+            ->when($length > 0, function ($query) use($length) {
+                return $query->take($length);
+            })
             ->get();
 
         $setlistsArray = [];
