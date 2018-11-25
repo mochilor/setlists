@@ -59,9 +59,11 @@ $app->singleton(
 |
 */
 
-// $app->middleware([
-//    App\Http\Middleware\ExampleMiddleware::class
-// ]);
+if (env('APP_ENV') == 'local') {
+    $app->middleware([
+        App\Http\Middleware\Cors::class
+    ]);
+}
 
  $app->routeMiddleware([
      'auth' => App\Http\Middleware\Authenticate::class,
