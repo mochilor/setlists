@@ -5,6 +5,7 @@ namespace Setlist\Domain\Entity\Setlist;
 use DateTime;
 use DateTimeImmutable;
 use Setlist\Domain\Entity\EventsTrigger;
+use Setlist\Domain\Exception\Setlist\InvalidDateException;
 use Setlist\Domain\Value\Uuid;
 
 class SetlistFactory
@@ -20,7 +21,7 @@ class SetlistFactory
     {
         $uuid = Uuid::create($uuidString);
         $actCollection = ActCollection::create(...$acts);
-        $date = DateTime::createFromFormat(Setlist::DATE_TIME_FORMAT, $formattedDate);
+        $date = $this->getDatetime($formattedDate);
         $creationDate = $updateDate = new DateTimeImmutable();
 
         return Setlist::create($uuid, $actCollection, $name, $date, $creationDate, $updateDate, $this->eventsTrigger);
@@ -37,10 +38,21 @@ class SetlistFactory
     {
         $uuid = Uuid::create($uuidString);
         $actCollection = ActCollection::create(...$acts);
-        $date = DateTime::createFromFormat(Setlist::DATE_TIME_FORMAT, $formattedDate);
+        $date = $this->getDatetime($formattedDate);
         $creationDate = DateTimeImmutable::createFromFormat(Setlist::CREATION_DATE_FORMAT, $formattedCreationDate);
         $updateDate = DateTimeImmutable::createFromFormat(Setlist::UPDATE_DATE_FORMAT, $formattedUpdateDate);
 
         return Setlist::restore($uuid, $actCollection, $name, $date, $creationDate, $updateDate, $this->eventsTrigger);
+    }
+
+    private function getDatetime(string $formattedDate)
+    {
+        $date = DateTime::createFromFormat(Setlist::DATE_TIME_FORMAT, $formattedDate);
+
+        if (empty($date)) {
+            throw new InvalidDateException('Invalid date provided');
+        }
+
+        return $date;
     }
 }

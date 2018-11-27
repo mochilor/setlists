@@ -12,6 +12,7 @@ use Setlist\Domain\Entity\Setlist\ActCollection;
 use Setlist\Domain\Entity\Setlist\Setlist;
 use Setlist\Domain\Entity\Setlist\SetlistNameRepository;
 use Setlist\Domain\Entity\Setlist\SetlistRepository;
+use Setlist\Domain\Exception\Setlist\InvalidDateException;
 use Setlist\Domain\Value\Uuid;
 
 class UpdateSetlistHandler
@@ -40,6 +41,10 @@ class UpdateSetlistHandler
         $acts = $this->setlistHandlerHelper->getActsForSetlist($command->acts());
         $actCollection = ActCollection::create(...$acts);
         $dateTime = DateTime::createFromFormat(Setlist::DATE_TIME_FORMAT, $command->date());
+
+        if (empty($dateTime)) {
+            throw new InvalidDateException('Invalid date provided');
+        }
 
         $setlist->changeName($command->name());
         $setlist->changeActCollection($actCollection);
