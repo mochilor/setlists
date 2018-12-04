@@ -69,7 +69,7 @@ class Setlist
         $setlist->eventsTrigger = $eventsTrigger;
 
         $setlist->setId($id);
-        $setlist->setActCollection($actCollection);
+        $setlist->actCollection = $actCollection; // To prevent crashing while restoring a Setlist with no songs -_-
         $setlist->setName($name);
         $setlist->setDate($date);
         $setlist->setCreationDate($creationDate);
@@ -213,7 +213,7 @@ class Setlist
         }
 
         foreach ($actCollection as $key => $act) {
-            if (!$act->isEqual($this->actCollection()[$key])) {
+            if (!isset($this->actCollection()[$key]) || !$act->isEqual($this->actCollection()[$key])) {
                 $canChange = true;
                 break;
             }

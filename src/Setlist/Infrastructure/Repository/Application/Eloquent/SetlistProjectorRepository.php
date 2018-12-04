@@ -2,17 +2,32 @@
 
 namespace Setlist\Infrastructure\Repository\Application\Eloquent;
 
+use Setlist\Application\Persistence\Setlist\PersistedSetlist;
 use Setlist\Application\Persistence\Setlist\SetlistProjectorRepository as SetlistProjectorRepositoryInterface;
+use Setlist\Application\Persistence\Song\PersistedSong;
+use Setlist\Application\Persistence\Song\PersistedSongCollectionFactory;
 use Setlist\Domain\Entity\Setlist\ActCollection;
 use Setlist\Domain\Entity\Setlist\Event\SetlistChangedItsActCollection;
 use Setlist\Domain\Entity\Setlist\Event\SetlistChangedItsDate;
 use Setlist\Domain\Entity\Setlist\Event\SetlistChangedItsName;
 use Setlist\Domain\Entity\Setlist\Event\SetlistWasCreated;
 use Setlist\Domain\Entity\Setlist\Event\SetlistWasDeleted;
+use Setlist\Domain\Entity\Song\Event\SongChangedItsTitle;
+use Setlist\Domain\Entity\Song\Event\SongWasDeleted;
+use Setlist\Domain\Entity\Song\Event\SongWasHidden;
+use Setlist\Domain\Entity\Song\Event\SongWasUnhidden;
 use Setlist\Infrastructure\Repository\Application\Eloquent\Model\SetlistProjection;
+use Setlist\Infrastructure\Repository\Domain\Eloquent\Model\Setlist as EloquentSetlist;
 
 class SetlistProjectorRepository implements SetlistProjectorRepositoryInterface
 {
+    private $persistedSongCollectionFactory;
+
+    public function __construct(PersistedSongCollectionFactory $persistedSongCollectionFactory)
+    {
+        $this->persistedSongCollectionFactory = $persistedSongCollectionFactory;
+    }
+
     public function save(SetlistWasCreated $event)
     {
         $data = $this->prepareData($event);
@@ -111,5 +126,65 @@ class SetlistProjectorRepository implements SetlistProjectorRepositoryInterface
         }
 
         return $actsArray;
+    }
+
+    public function hideSongInSetlists(SongWasHidden $event)
+    {
+        $this->updateSongsInSetlist($event->id(), false, 'is_visible', $event->formattedUpdateDate(), 0);
+    }
+
+    public function unhideSongInSetlists(SongWasUnhidden $event)
+    {
+        $this->updateSongsInSetlist($event->id(), false, 'is_visible', $event->formattedUpdateDate(), 1);
+    }
+
+    public function changeSongTitleInSetlists(SongChangedItsTitle $event)
+    {
+        $this->updateSongsInSetlist($event->id(), false, 'title', $event->formattedUpdateDate(), $event->title());
+    }
+
+    public function deleteSongInSetlists(SongWasDeleted $event)
+    {
+        $this->updateSongsInSetlist($event->id(), true);
+    }
+
+    private function updateSongsInSetlist(
+        string $id,
+        bool $delete,
+        string $field = null,
+        string $updateDate = null,
+        $value = null
+    ) {
+        $setlists = EloquentSetlist::select('id')
+            ->whereHas('songs', function ($query) use ($id){
+                $query->where('id', $id);
+            })
+            ->get();
+
+        if ($setlists->isEmpty()) {
+            return;
+        }
+
+        $setlistsIds = $setlists->pluck('id')->all();
+        $setlistProjections = SetlistProjection::whereIn('id', $setlistsIds)->get();
+
+        foreach ($setlistProjections as $setlistProjection) {
+            $data = json_decode($setlistProjection->data, true);
+            foreach ($data['acts'] as $keyAct => $act) {
+                foreach ($act as $keySong => $song) {
+                    if ($song['id'] == $id) {
+                        if ($delete) {
+                            unset($data['acts'][$keyAct][$keySong]);
+                        } else {
+                            $data['acts'][$keyAct][$keySong][$field] = $value;
+                            $data['acts'][$keyAct][$keySong]['update_date'] = $updateDate;
+                        }
+                    }
+                }
+            }
+
+            $setlistProjection->data = json_encode($data);
+            $setlistProjection->save();
+        }
     }
 }

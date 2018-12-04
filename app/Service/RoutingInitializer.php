@@ -30,14 +30,22 @@ use Setlist\Domain\Entity\Setlist\Event\SetlistChangedItsDate;
 use Setlist\Domain\Entity\Setlist\Event\SetlistChangedItsName;
 use Setlist\Domain\Entity\Setlist\Event\SetlistWasCreated;
 use Setlist\Domain\Entity\Setlist\Event\SetlistWasDeleted;
+use Setlist\Domain\Entity\Song\Event\SongChangedItsTitle;
 use Setlist\Domain\Entity\Song\Event\SongWasCreated;
+use Setlist\Domain\Entity\Song\Event\SongWasDeleted;
+use Setlist\Domain\Entity\Song\Event\SongWasHidden;
+use Setlist\Domain\Entity\Song\Event\SongWasUnhidden;
 use Setlist\Infrastructure\Messaging\CommandBus;
 use Setlist\Infrastructure\Messaging\EventHandler\Setlist\SetlistChangedItsActCollectionHandler;
 use Setlist\Infrastructure\Messaging\EventHandler\Setlist\SetlistChangedItsDateHandler;
 use Setlist\Infrastructure\Messaging\EventHandler\Setlist\SetlistChangedItsNameHandler;
 use Setlist\Infrastructure\Messaging\EventHandler\Setlist\SetlistWasCreatedHandler;
 use Setlist\Infrastructure\Messaging\EventHandler\Setlist\SetlistWasDeletedHandler;
+use Setlist\Infrastructure\Messaging\EventHandler\Song\SongChangedItsTitleHandler;
 use Setlist\Infrastructure\Messaging\EventHandler\Song\SongWasCreatedHandler;
+use Setlist\Infrastructure\Messaging\EventHandler\Song\SongWasDeletedHandler;
+use Setlist\Infrastructure\Messaging\EventHandler\Song\SongWasHiddenHandler;
+use Setlist\Infrastructure\Messaging\EventHandler\Song\SongWasUnhiddenHandler;
 use Setlist\Infrastructure\Messaging\QueryBus;
 
 class RoutingInitializer
@@ -76,7 +84,10 @@ class RoutingInitializer
     private function initEvents()
     {
         // Song
-        // $this->eventBus->addHandler(SongWasCreated::class, app(SongWasCreatedHandler::class));
+        $this->eventBus->addHandler(SongWasHidden::class, app(SongWasHiddenHandler::class));
+        $this->eventBus->addHandler(SongWasUnhidden::class, app(SongWasUnhiddenHandler::class));
+        $this->eventBus->addHandler(SongChangedItsTitle::class, app(SongChangedItsTitleHandler::class));
+        $this->eventBus->addHandler(SongWasDeleted::class, app(SongWasDeletedHandler::class));
 
         // Setlist
         //if (env('PROJECTIONS')) {
