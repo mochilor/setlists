@@ -26,6 +26,7 @@ class SongFactory
     public function restore(
         string $uuidString,
         string $title,
+        bool $isVisible,
         string $formattedDateTime,
         string $formattedUpdateDate
     ): Song
@@ -34,6 +35,6 @@ class SongFactory
         $creationDate = DateTimeImmutable::createFromFormat(Song::CREATION_DATE_FORMAT, $formattedDateTime);
         $updateDate = DateTimeImmutable::createFromFormat(Song::CREATION_DATE_FORMAT, $formattedUpdateDate);
 
-        return Song::restore($uuid, $title, $creationDate, $updateDate, $this->eventsTrigger);
+        return Song::restore($uuid, $title, $isVisible, $creationDate, $updateDate, $this->eventsTrigger);
     }
 }

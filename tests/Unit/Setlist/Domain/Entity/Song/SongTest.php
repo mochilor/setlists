@@ -8,6 +8,8 @@ use Setlist\Domain\Entity\EventsTrigger;
 use Setlist\Domain\Entity\Song\Event\SongChangedItsTitle;
 use Setlist\Domain\Entity\Song\Event\SongWasCreated;
 use Setlist\Domain\Entity\Song\Event\SongWasDeleted;
+use Setlist\Domain\Entity\Song\Event\SongWasHidden;
+use Setlist\Domain\Entity\Song\Event\SongWasUnhidden;
 use Setlist\Domain\Entity\Song\Song;
 use PHPUnit\Framework\TestCase;
 use Setlist\Domain\Value\Uuid;
@@ -93,7 +95,7 @@ class SongTest extends TestCase
     /**
      * @test
      */
-    public function songHasName()
+    public function songHasTitle()
     {
         $song = $this->getSong();
 
@@ -106,7 +108,20 @@ class SongTest extends TestCase
     /**
      * @test
      */
-    public function songCanChangeItsName()
+    public function songHasVisibility()
+    {
+        $song = $this->getSong();
+
+        $this->assertEquals(
+            true,
+            $song->isVisible()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function songCanChangeItsTitle()
     {
         $song = $this->getSong();
 
@@ -126,6 +141,74 @@ class SongTest extends TestCase
         $this->assertInstanceOf(
             SongChangedItsTitle::class,
             $song->events()[1]
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function songCanChangeItsVisibility()
+    {
+        $song = $this->getSong();
+
+        $visibility = false;
+        $song->changeVisibility($visibility);
+
+        $this->assertEquals(
+            $visibility,
+            $song->isVisible()
+        );
+
+        $this->assertCount(
+            2,
+            $song->events()
+        );
+
+        $this->assertInstanceOf(
+            SongWasHidden::class,
+            $song->events()[1]
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function songCanBeHiddenAndUnhidden()
+    {
+        $song = $this->getSong();
+
+        $song->hide();
+
+        $this->assertEquals(
+            false,
+            $song->isVisible()
+        );
+
+        $this->assertCount(
+            2,
+            $song->events()
+        );
+
+        $this->assertInstanceOf(
+            SongWasHidden::class,
+            $song->events()[1]
+        );
+
+        $song->unhide();
+
+        $this->assertEquals(
+            true,
+            $song->isVisible()
+        );
+
+        $this->assertCount(
+            3,
+            $song->events()
+        );
+
+        $this->assertInstanceOf(
+            SongWasUnhidden::class,
+            $song->events()[2]
         );
     }
 

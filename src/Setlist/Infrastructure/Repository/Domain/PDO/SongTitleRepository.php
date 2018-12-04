@@ -31,7 +31,7 @@ SQL;
     public function titleIsUnique(string $title, string $uuid): bool
     {
         $sql = <<<SQL
-SELECT * FROM `song` WHERE `id` = :uuid AND `title` = :title;
+SELECT * FROM `song` WHERE `id` <> :uuid AND `title` = :title;
 SQL;
 
         $query = $this->PDO->prepare($sql);
@@ -39,7 +39,7 @@ SQL;
         $query->bindValue('uuid', $uuid);
         $query->execute();
 
-        $songsArray = $this->PDO->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+        $songsArray = $query->fetchAll(PDO::FETCH_ASSOC);
 
         return empty($songsArray);
     }

@@ -85,4 +85,26 @@ class SetlistFactoryTest extends TestCase
             $setlist->events()
         );
     }
+
+    /**
+     * @test
+     * @expectedException \Setlist\Domain\Exception\Setlist\InvalidDateException
+     */
+    public function invalidDateThrowsException()
+    {
+        $uuid = Uuid::random();
+        $acts = [
+            $this->getAct(),
+            $this->getAct(),
+            $this->getAct(),
+        ];
+        $name = 'Name';
+        $formattedDate = 'Random string!';
+
+        $eventBus = $this->getMockBuilder(EventBus::class)->getMock();
+        $eventsTrigger = new EventsTrigger($eventBus);
+
+        $factory = new SetlistFactory($eventsTrigger);
+        $factory->make($uuid, $acts, $name, $formattedDate);
+    }
 }

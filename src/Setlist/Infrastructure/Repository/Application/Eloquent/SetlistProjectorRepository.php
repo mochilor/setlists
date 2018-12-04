@@ -101,6 +101,7 @@ class SetlistProjectorRepository implements SetlistProjectorRepositoryInterface
                 $actSongs[] = [
                     'id' => (string)$song->id(),
                     'title' => $song->title(),
+                    'is_visible' => $song->isVisible(),
                     'creation_date' => $song->formattedCreationDate(),
                     'update_date' => $song->formattedUpdateDate(),
                 ];

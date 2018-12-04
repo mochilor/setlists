@@ -56,6 +56,7 @@ class SongRepository implements ApplicationSongRepositoryInterface
         return new PersistedSong(
             $eloquentSong->id,
             $eloquentSong->title,
+            $eloquentSong->is_visible,
             $eloquentSong->creation_date,
             $eloquentSong->update_date
         );

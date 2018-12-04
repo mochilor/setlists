@@ -49,10 +49,13 @@ class UpdateSongHandlerTest extends TestCase
             ->method('changeTitle')
             ->with($command->title());
 
+        $song->expects($this->once())
+            ->method('changeVisibility')
+            ->with($command->isVisible());
+
         $this->songRepository
             ->expects($this->once())
             ->method('save');
-
 
         ($this->commandHandler)($command);
     }
@@ -103,6 +106,7 @@ class UpdateSongHandlerTest extends TestCase
         $payload = [
             'title' => 'New Title',
             'uuid' => '550e8400-e29b-41d4-a716-446655440000',
+            'visibility' => true,
         ];
         $command = new UpdateSong($payload);
 

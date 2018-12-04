@@ -98,6 +98,7 @@ class SetlistRepository implements SetlistRepositoryInterface
         return $this->songFactory->restore(
             $eloquentSong->id,
             $eloquentSong->title,
+            $eloquentSong->is_visible,
             $eloquentSong->creation_date,
             $eloquentSong->update_date
         );

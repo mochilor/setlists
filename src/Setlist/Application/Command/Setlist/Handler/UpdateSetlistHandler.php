@@ -42,10 +42,6 @@ class UpdateSetlistHandler
         $actCollection = ActCollection::create(...$acts);
         $dateTime = DateTime::createFromFormat(Setlist::DATE_TIME_FORMAT, $command->date());
 
-        if (empty($dateTime)) {
-            throw new InvalidDateException('Invalid date provided');
-        }
-
         $setlist->changeName($command->name());
         $setlist->changeActCollection($actCollection);
         $setlist->changeDate($dateTime);
@@ -61,6 +57,10 @@ class UpdateSetlistHandler
 
         if (!$this->setlistNameRepository->nameIsUnique($command->name(), $command->uuid())) {
             throw new SetlistNameNotUniqueException('Setlist name already exists');
+        }
+
+        if (empty(DateTime::createFromFormat(Setlist::DATE_TIME_FORMAT, $command->date()))) {
+            throw new InvalidDateException('Invalid date provided');
         }
 
         $songs = [];

@@ -4,7 +4,6 @@ namespace Tests\Unit\Setlist\Infrastructure\DataTransformer;
 
 use PHPUnit\Framework\TestCase;
 use Setlist\Application\Persistence\Song\PersistedSong;
-use Setlist\Domain\Entity\Song\Song;
 use Setlist\Domain\Value\Uuid;
 use Setlist\Infrastructure\DataTransformer\SongDataTransformer;
 
@@ -23,6 +22,7 @@ class SongDataTransformerTest extends TestCase
         $song = new PersistedSong(
             $id,
             $title,
+            1,
             $creationDate,
             $updateDate
         );

@@ -19,6 +19,7 @@ class SongDataTransformer implements SongDataTransformerInterface
         return [
             'id' => (string) $this->song->id(),
             'title' => $this->song->title(),
+            'is_visible' => $this->song->isVisible(),
             'creation_date' => $this->song->creationDate(),
             'update_date' => $this->song->updateDate(),
         ];

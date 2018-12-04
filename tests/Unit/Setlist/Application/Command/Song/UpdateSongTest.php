@@ -10,6 +10,7 @@ class UpdateSongTest extends TestCase
     const PAYLOAD = [
         'uuid' => '550e8400-e29b-41d4-a716-446655440000',
         'title' => 'A title',
+        'visibility' => false,
     ];
 
     /**
@@ -51,6 +52,18 @@ class UpdateSongTest extends TestCase
         $this->assertEquals(
             self::PAYLOAD['title'],
             $command->title()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function commandHasVisibility()
+    {
+        $command = $this->getCommand();
+        $this->assertEquals(
+            self::PAYLOAD['visibility'],
+            $command->isVisible()
         );
     }
 }

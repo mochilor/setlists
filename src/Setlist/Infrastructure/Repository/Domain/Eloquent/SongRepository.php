@@ -6,6 +6,8 @@ use Setlist\Domain\Entity\DomainEvent;
 use Setlist\Domain\Entity\Song\Event\SongChangedItsTitle;
 use Setlist\Domain\Entity\Song\Event\SongWasCreated;
 use Setlist\Domain\Entity\Song\Event\SongWasDeleted;
+use Setlist\Domain\Entity\Song\Event\SongWasHidden;
+use Setlist\Domain\Entity\Song\Event\SongWasUnhidden;
 use Setlist\Domain\Entity\Song\Song;
 use Setlist\Domain\Entity\Song\SongFactory;
 use Setlist\Domain\Entity\Song\SongRepository as SongRepositoryInterface;
@@ -43,10 +45,16 @@ class SongRepository implements SongRepositoryInterface
     {
         switch (get_class($event)) {
             case SongWasCreated::class:
-                $this->insert($event->id(), $event->title(), $event->formattedCreationDate(), $event->formattedUpdateDate());
+                $this->insert($event->id(), $event->title(), true, $event->formattedCreationDate(), $event->formattedUpdateDate());
                 break;
             case SongChangedItsTitle::class:
                 $this->update($event->id(), $event->title(), $event->formattedUpdateDate());
+                break;
+            case SongWasHidden::class:
+                $this->setVisibility($event->id(), false, $event->formattedUpdateDate());
+                break;
+            case SongWasUnhidden::class:
+                $this->setVisibility($event->id(), true, $event->formattedUpdateDate());
                 break;
             case SongWasDeleted::class:
                 $this->delete($event->id());
@@ -62,6 +70,7 @@ class SongRepository implements SongRepositoryInterface
             return $this->songFactory->restore(
                 $songData->id,
                 $songData->title,
+                $songData->is_visible,
                 $songData->creation_date,
                 $songData->update_date
             );
@@ -70,14 +79,15 @@ class SongRepository implements SongRepositoryInterface
         return null;
     }
 
-    private function insert(string $uuid, string $title, string $formattedCreationDate, string $formattedUpdateDate)
+    private function insert(string $uuid, string $title, bool $isVisible, string $formattedCreationDate, string $formattedUpdateDate)
     {
         EloquentSong::create([
-                'id' => $uuid,
-                'title' => $title,
-                'creation_date' => $formattedCreationDate,
-                'update_date' => $formattedUpdateDate,
-            ]);
+            'id' => $uuid,
+            'title' => $title,
+            'is_visible' => $isVisible,
+            'creation_date' => $formattedCreationDate,
+            'update_date' => $formattedUpdateDate,
+        ]);
     }
 
     private function update(string $uuid, string $title, string $formattedUpdateDate)
@@ -85,6 +95,15 @@ class SongRepository implements SongRepositoryInterface
         EloquentSong::where('id', $uuid)
             ->update([
                 'title' => $title,
+                'update_date' => $formattedUpdateDate,
+            ]);
+    }
+
+    private function setVisibility(string $uuid, bool $visibility, string $formattedUpdateDate)
+    {
+        EloquentSong::where('id', $uuid)
+            ->update([
+                'is_visible' => $visibility,
                 'update_date' => $formattedUpdateDate,
             ]);
     }

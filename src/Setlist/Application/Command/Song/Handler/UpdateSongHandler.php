@@ -29,6 +29,7 @@ class UpdateSongHandler
         $this->guard($command, $song);
 
         $song->changeTitle($command->title());
+        $song->changeVisibility((bool)$command->isVisible());
 
         $this->songRepository->save($song);
     }

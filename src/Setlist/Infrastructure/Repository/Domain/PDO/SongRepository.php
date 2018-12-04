@@ -6,6 +6,8 @@ use Setlist\Domain\Entity\DomainEvent;
 use Setlist\Domain\Entity\Song\Event\SongChangedItsTitle;
 use Setlist\Domain\Entity\Song\Event\SongWasCreated;
 use Setlist\Domain\Entity\Song\Event\SongWasDeleted;
+use Setlist\Domain\Entity\Song\Event\SongWasHidden;
+use Setlist\Domain\Entity\Song\Event\SongWasUnhidden;
 use Setlist\Domain\Entity\Song\Song;
 use Setlist\Domain\Entity\Song\SongFactory;
 use Setlist\Domain\Entity\Song\SongRepository as SongRepositoryInterface;
@@ -63,6 +65,7 @@ SQL;
             return $this->songFactory->restore(
                 $songData['id'],
                 $songData['title'],
+                $songData['is_visible'],
                 $songData['creation_date'],
                 $songData['update_date']
             );
@@ -75,10 +78,16 @@ SQL;
     {
         switch (get_class($event)) {
             case SongWasCreated::class:
-                $this->insert($event->id(), $event->title(), $event->formattedCreationDate(), $event->formattedUpdateDate());
+                $this->insert($event->id(), $event->title(), $event->isVisible(), $event->formattedCreationDate(), $event->formattedUpdateDate());
                 break;
             case SongChangedItsTitle::class:
                 $this->update($event->id(), $event->title(), $event->formattedUpdateDate());
+                break;
+            case SongWasHidden::class:
+                $this->setVisibility($event->id(), false, $event->formattedUpdateDate());
+                break;
+            case SongWasUnhidden::class:
+                $this->setVisibility($event->id(), true, $event->formattedUpdateDate());
                 break;
             case SongWasDeleted::class:
                 $this->delete($event->id());
@@ -86,15 +95,16 @@ SQL;
         }
     }
 
-    private function insert(string $uuid, string $title, string $formattedCreationDate, string $formattedUpdateDate)
+    private function insert(string $uuid, string $title, bool $is_visible, string $formattedCreationDate, string $formattedUpdateDate)
     {
         $sql = <<<SQL
-INSERT INTO `%s` (id, title, creation_date, update_date) VALUES (:uuid, :title, :creation_date, :update_date);
+INSERT INTO `%s` (id, title, is_visible, creation_date, update_date) VALUES (:uuid, :title, :is_visible, :creation_date, :update_date);
 SQL;
         $sql = sprintf($sql, self::TABLE_NAME);
         $query = $this->PDO->prepare($sql);
         $query->bindValue(':uuid', $uuid, PDO::PARAM_STR);
         $query->bindValue(':title', $title, PDO::PARAM_STR);
+        $query->bindValue(':is_visible', $is_visible, PDO::PARAM_INT);
         $query->bindValue(':creation_date', $formattedCreationDate, PDO::PARAM_STR);
         $query->bindValue(':update_date', $formattedUpdateDate, PDO::PARAM_STR);
         $query->execute();
@@ -127,6 +137,19 @@ SQL;
 
         $query = $this->PDO->prepare($setlistSongsSql);
         $query->bindValue('uuid', $uuid);
+        $query->execute();
+    }
+
+    private function setVisibility(string $uuid, bool $visibility, string $formattedUpdateDate)
+    {
+        $sql = <<<SQL
+UPDATE `%s` SET is_visible = :is_visible, update_date = :update_date WHERE id = :uuid;
+SQL;
+        $sql = sprintf($sql, self::TABLE_NAME);
+        $query = $this->PDO->prepare($sql);
+        $query->bindValue('uuid', $uuid);
+        $query->bindValue('is_visible', (int)$visibility, PDO::PARAM_INT);
+        $query->bindValue('update_date', $formattedUpdateDate);
         $query->execute();
     }
 }

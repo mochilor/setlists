@@ -1,6 +1,6 @@
 <?php
 
-namespace Setlist\Infrastructure\Repository\Domain\PDO;
+namespace Setlist\Infrastructure\Repository\Application\PDO;
 
 use PDO;
 use Setlist\Application\Persistence\Setlist\PersistedSetlist;

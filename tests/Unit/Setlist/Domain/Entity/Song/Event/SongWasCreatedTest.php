@@ -34,6 +34,11 @@ class SongWasCreatedTest extends TestCase
         );
 
         $this->assertEquals(
+            true,
+            $event->isVisible()
+        );
+
+        $this->assertEquals(
             $formattedDateTime,
             $event->formattedCreationDate()
         );

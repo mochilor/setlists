@@ -80,6 +80,7 @@ class SetlistProjectionRepository implements ApplicationSetlistRepositoryInterfa
         return new PersistedSong(
             $song->id,
             $song->title,
+            $song->is_visible,
             $song->creation_date,
             $song->update_date
         );

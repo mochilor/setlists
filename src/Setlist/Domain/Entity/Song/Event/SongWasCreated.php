@@ -9,6 +9,7 @@ class SongWasCreated implements DomainEvent
 {
     private $id;
     private $title;
+    private $isVisible;
     private $formattedCreationDate;
     private $formattedUpdateDate;
 
@@ -18,6 +19,7 @@ class SongWasCreated implements DomainEvent
 
         $event->id = $id;
         $event->title = $title;
+        $event->isVisible = true;
         $event->formattedCreationDate = $formattedCreationDate;
         $event->formattedUpdateDate = $formattedCreationDate;
 
@@ -32,6 +34,11 @@ class SongWasCreated implements DomainEvent
     public function title(): string
     {
         return $this->title;
+    }
+
+    public function isVisible(): bool
+    {
+        return $this->isVisible;
     }
 
     public function formattedCreationDate(): string

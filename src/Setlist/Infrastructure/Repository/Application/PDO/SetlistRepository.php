@@ -8,7 +8,6 @@ use Setlist\Application\Persistence\Setlist\SetlistRepository as ApplicationSetl
 use Setlist\Application\Persistence\Song\PersistedSongCollectionFactory;
 use Setlist\Application\Persistence\Song\SongRepository as ApplicationSongRepository;
 use PDO;
-use Setlist\Infrastructure\Repository\Domain\PDO\PDOHelper;
 
 class SetlistRepository implements ApplicationSetlistRepositoryInterface
 {

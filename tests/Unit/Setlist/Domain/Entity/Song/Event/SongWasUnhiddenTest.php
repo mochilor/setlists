@@ -3,10 +3,10 @@
 namespace Tests\Unit\Setlist\Domain\Entity\Song\Event;
 
 use PHPUnit\Framework\TestCase;
-use Setlist\Domain\Entity\Song\Event\SongChangedItsTitle;
+use Setlist\Domain\Entity\Song\Event\SongWasUnhidden;
 use Setlist\Domain\Value\Uuid;
 
-class SongChangedItsTitleTest extends TestCase
+class SongWasUnhiddenTest extends TestCase
 {
     /**
      * @test
@@ -14,12 +14,11 @@ class SongChangedItsTitleTest extends TestCase
     public function domainEventCanBeCreatedAndHasGetters()
     {
         $uuid = Uuid::random();
-        $title = 'A Title';
         $formattedUpdateTime = '2018-01-01 00:00:00';
-        $event = SongChangedItsTitle::create($uuid, $title, $formattedUpdateTime);
+        $event = SongWasUnhidden::create($uuid, $formattedUpdateTime);
 
         $this->assertInstanceOf(
-            SongChangedItsTitle::class,
+            SongWasUnhidden::class,
             $event
         );
 
@@ -29,12 +28,7 @@ class SongChangedItsTitleTest extends TestCase
         );
 
         $this->assertEquals(
-            $title,
-            $event->title()
-        );
-
-        $this->assertInternalType(
-            'string',
+            $formattedUpdateTime,
             $event->formattedUpdateDate()
         );
 

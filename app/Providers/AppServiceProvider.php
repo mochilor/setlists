@@ -8,6 +8,8 @@ use Setlist\Infrastructure\Messaging\QueryBus;
 
 class AppServiceProvider extends ServiceProvider
 {
+    private $driver;
+
     /**
      * Register any application services.
      *
@@ -15,10 +17,20 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
+        $this->setDriver(env('DB_DRIVER'));
         $this->registerSingletons();
         $this->registerDomainRepositories();
         $this->registerApplicationRepositories();
         $this->registerDataTransformers();
+    }
+
+    private function setDriver($driver)
+    {
+        if (strtolower($driver) == 'eloquent') {
+            $this->driver = 'Eloquent';
+        } elseif (strtolower($driver) == 'pdo') {
+            $this->driver = 'PDO';
+        }
     }
 
     private function registerSingletons()
@@ -46,24 +58,22 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->app->bind(
             \Setlist\Domain\Entity\Song\SongRepository::class,
-            \Setlist\Infrastructure\Repository\Domain\Eloquent\SongRepository::class
-            //\Setlist\Infrastructure\Repository\Domain\PDO\SongRepository::class
+            "\Setlist\Infrastructure\Repository\Domain\\$this->driver\SongRepository"
         );
+
         $this->app->bind(
             \Setlist\Domain\Entity\Song\SongTitleRepository::class,
-            \Setlist\Infrastructure\Repository\Domain\Eloquent\SongTitleRepository::class
-            //\Setlist\Infrastructure\Repository\Domain\PDO\SongTitleRepository::class
+            "\Setlist\Infrastructure\Repository\Domain\\$this->driver\SongTitleRepository"
         );
 
         $this->app->bind(
             \Setlist\Domain\Entity\Setlist\SetlistRepository::class,
-            \Setlist\Infrastructure\Repository\Domain\Eloquent\SetlistRepository::class
-            //\Setlist\Infrastructure\Repository\Domain\PDO\SetlistRepository::class
+            "\Setlist\Infrastructure\Repository\Domain\\$this->driver\SetlistRepository"
         );
+
         $this->app->bind(
             \Setlist\Domain\Entity\Setlist\SetlistNameRepository::class,
-            //\Setlist\Infrastructure\Repository\Domain\Eloquent\SetlistNameRepository::class
-            \Setlist\Infrastructure\Repository\Domain\PDO\SetlistNameRepository::class
+            "\Setlist\Infrastructure\Repository\Domain\\$this->driver\SetlistNameRepository"
         );
     }
 
@@ -71,16 +81,16 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->app->bind(
             \Setlist\Application\Persistence\Song\SongRepository::class,
-            \Setlist\Infrastructure\Repository\Application\Eloquent\SongRepository::class
-            //\Setlist\Infrastructure\Repository\Application\PDO\SongRepository::class
+            "\Setlist\Infrastructure\Repository\Application\\$this->driver\SongRepository"
         );
+
         $this->app->bind(
             \Setlist\Application\Persistence\Setlist\SetlistRepository::class,
-            (env('PROJECTIONS') ?
+            env('PROJECTIONS') ?
                 \Setlist\Infrastructure\Repository\Application\Eloquent\SetlistProjectionRepository::class :
-                \Setlist\Infrastructure\Repository\Application\Eloquent\SetlistRepository::class)
-            //\Setlist\Infrastructure\Repository\Application\PDO\SetlistRepository::class
+                "\Setlist\Infrastructure\Repository\Application\\$this->driver\SetlistRepository"
         );
+
         $this->app->bind(
             \Setlist\Application\Persistence\Setlist\SetlistProjectorRepository::class,
             \Setlist\Infrastructure\Repository\Application\Eloquent\SetlistProjectorRepository::class

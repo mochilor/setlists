@@ -15,4 +15,9 @@ class UpdateSong extends BaseCommand
     {
         return $this->payload()['title'];
     }
+
+    public function isVisible(): string
+    {
+        return $this->payload()['visibility'];
+    }
 }

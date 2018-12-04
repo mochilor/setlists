@@ -6,7 +6,6 @@ use Setlist\Application\Persistence\Song\PersistedSong;
 use Setlist\Application\Persistence\Song\PersistedSongCollection;
 use Setlist\Application\Persistence\Song\SongRepository as ApplicationSongRepositoryInterface;
 use PDO;
-use Setlist\Infrastructure\Repository\Domain\PDO\PDOHelper;
 
 class SongRepository implements ApplicationSongRepositoryInterface
 {
@@ -81,6 +80,7 @@ SQL;
         return new PersistedSong(
             $songData['id'],
             $songData['title'],
+            $songData['is_visible'],
             $songData['creation_date'],
             $songData['update_date']
         );

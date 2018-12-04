@@ -7,6 +7,8 @@ use Setlist\Domain\Entity\EventsTrigger;
 use Setlist\Domain\Entity\Song\Event\SongChangedItsTitle;
 use Setlist\Domain\Entity\Song\Event\SongWasCreated;
 use Setlist\Domain\Entity\Song\Event\SongWasDeleted;
+use Setlist\Domain\Entity\Song\Event\SongWasHidden;
+use Setlist\Domain\Entity\Song\Event\SongWasUnhidden;
 use Setlist\Domain\Exception\Song\InvalidSongTitleException;
 use Setlist\Domain\Value\Uuid;
 
@@ -14,9 +16,10 @@ class Song
 {
     private $id;
     private $title;
-    private $eventsTrigger;
+    private $isVisible;
     private $creationDate;
     private $updateDate;
+    private $eventsTrigger;
 
     const MIN_TITLE_LENGTH = 3;
     const MAX_TITLE_LENGTH = 30;
@@ -31,7 +34,7 @@ class Song
         EventsTrigger $eventsTrigger
     ): self
     {
-        $song = self::restore($id, $title, $creationDate, $updateDate, $eventsTrigger);
+        $song = self::restore($id, $title, true, $creationDate, $updateDate, $eventsTrigger);
 
         $song->eventsTrigger->trigger(
             SongWasCreated::create(
@@ -47,6 +50,7 @@ class Song
     public static function restore(
         Uuid $id,
         string $title,
+        bool $isVisible,
         DateTimeImmutable $creationDate,
         DateTimeImmutable $updateDate,
         EventsTrigger $eventsTrigger
@@ -56,6 +60,7 @@ class Song
         $song->eventsTrigger = $eventsTrigger;
         $song->setId($id);
         $song->setTitle($title);
+        $song->setVisibility($isVisible);
         $song->setCreationDate($creationDate);
         $song->setUpdateDate($updateDate);
 
@@ -100,6 +105,11 @@ class Song
         return $this->title;
     }
 
+    public function isVisible()
+    {
+        return $this->isVisible;
+    }
+
     public function creationDate(): DateTimeImmutable
     {
         return $this->creationDate;
@@ -131,6 +141,50 @@ class Song
                 SongChangedItsTitle::create(
                     $this->id(),
                     $title,
+                    $newUpdateDate->format(self::UPDATE_DATE_FORMAT)
+                )
+            );
+        }
+    }
+
+    public function setVisibility(bool $isVisible)
+    {
+        $this->isVisible = $isVisible;
+    }
+
+    public function changeVisibility(bool $isVisible)
+    {
+        if ($isVisible != $this->isVisible()) {
+            $isVisible ? $this->unhide() : $this->hide();
+        }
+    }
+
+    public function hide()
+    {
+        if ($this->isVisible()) {
+            $this->setVisibility(false);
+            $newUpdateDate = new DateTimeImmutable();
+            $this->setUpdateDate($newUpdateDate);
+
+            $this->eventsTrigger->trigger(
+                SongWasHidden::create(
+                    $this->id(),
+                    $newUpdateDate->format(self::UPDATE_DATE_FORMAT)
+                )
+            );
+        }
+    }
+
+    public function unhide()
+    {
+        if (!$this->isVisible()) {
+            $this->setVisibility(true);
+            $newUpdateDate = new DateTimeImmutable();
+            $this->setUpdateDate($newUpdateDate);
+
+            $this->eventsTrigger->trigger(
+                SongWasUnhidden::create(
+                    $this->id(),
                     $newUpdateDate->format(self::UPDATE_DATE_FORMAT)
                 )
             );

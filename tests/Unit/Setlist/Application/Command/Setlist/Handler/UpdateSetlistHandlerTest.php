@@ -120,6 +120,7 @@ class UpdateSetlistHandlerTest extends TestCase
         $payload = [
             'uuid' => $uuid->uuid(),
             'name' => 'New name',
+            'date' => '2018-10-01',
         ];
         $command = new UpdateSetlist($payload);
 
@@ -142,6 +143,7 @@ class UpdateSetlistHandlerTest extends TestCase
         $payload = [
             'uuid' => $uuid->uuid(),
             'name' => 'Non unique name',
+            'date' => '2018-10-01',
         ];
         $command = new UpdateSetlist($payload);
 
@@ -163,6 +165,36 @@ class UpdateSetlistHandlerTest extends TestCase
 
     /**
      * @test
+     * @expectedException \Setlist\Domain\Exception\Setlist\InvalidDateException
+     */
+    public function InvalidDateThrowsException()
+    {
+        $uuid = Uuid::random();
+        $payload = [
+            'uuid' => $uuid->uuid(),
+            'name' => 'New name',
+            'date' => 'Invalid date!',
+        ];
+        $command = new UpdateSetlist($payload);
+
+        $setlistMock = $this->getMockBuilder(Setlist::class)->getMock();
+        $this->setlistRepository
+            ->expects($this->once())
+            ->method('get')
+            ->with($uuid)
+            ->willReturn($setlistMock);
+
+        $this->setlistNameRepository
+            ->expects($this->once())
+            ->method('nameIsUnique')
+            ->with($command->name(), $command->uuid())
+            ->willReturn(true);
+
+        ($this->commandHandler)($command);
+    }
+
+    /**
+     * @test
      * @expectedException \Setlist\Application\Exception\InvalidSetlistException
      * @expectedExceptionMessage Non unique song provided
      */
@@ -172,6 +204,7 @@ class UpdateSetlistHandlerTest extends TestCase
         $payload = [
             'uuid' => $uuid->uuid(),
             'name' => 'New Name',
+            'date' => '2018-10-01',
             'acts' => [
                 [
                     $uuid,

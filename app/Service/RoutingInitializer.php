@@ -79,13 +79,13 @@ class RoutingInitializer
         // $this->eventBus->addHandler(SongWasCreated::class, app(SongWasCreatedHandler::class));
 
         // Setlist
-        if (env('PROJECTIONS')) {
+        //if (env('PROJECTIONS')) {
             $this->eventBus->addHandler(SetlistWasCreated::class, app(SetlistWasCreatedHandler::class));
             $this->eventBus->addHandler(SetlistChangedItsName::class, app(SetlistChangedItsNameHandler::class));
             $this->eventBus->addHandler(SetlistChangedItsDate::class, app(SetlistChangedItsDateHandler::class));
             $this->eventBus->addHandler(SetlistChangedItsActCollection::class, app(SetlistChangedItsActCollectionHandler::class));
             $this->eventBus->addHandler(SetlistWasDeleted::class, app(SetlistWasDeletedHandler::class));
-        }
+        //}
     }
 
     private function initQueries()
