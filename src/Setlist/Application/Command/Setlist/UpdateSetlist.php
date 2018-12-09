@@ -16,6 +16,11 @@ class UpdateSetlist extends BaseCommand
         return $this->payload()['name'];
     }
 
+    public function description(): string
+    {
+        return $this->payload()['description'];
+    }
+
     public function acts(): array
     {
         return $this->payload()['acts'];

@@ -10,6 +10,7 @@ class PersistedSetlist
     private $acts;
     private $name;
     private $date;
+    private $description;
     private $creationDate;
     private $updateDate;
 
@@ -17,6 +18,7 @@ class PersistedSetlist
         string $id,
         array $acts,
         string $name,
+        string $description,
         string $date,
         string $creationDate,
         string $updateDate
@@ -24,6 +26,7 @@ class PersistedSetlist
         $this->id = $id;
         $this->setActs($acts);
         $this->name = $name;
+        $this->description = $description;
         $this->date = $date;
         $this->creationDate = $creationDate;
         $this->updateDate = $updateDate;
@@ -53,6 +56,11 @@ class PersistedSetlist
     public function name(): string
     {
         return $this->name;
+    }
+
+    public function description(): string
+    {
+        return $this->description;
     }
 
     public function date(): string

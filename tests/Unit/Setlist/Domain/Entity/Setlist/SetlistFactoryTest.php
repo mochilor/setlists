@@ -25,13 +25,14 @@ class SetlistFactoryTest extends TestCase
             $this->getAct(),
         ];
         $name = 'Name';
+        $description = 'Description';
         $formattedDate = '2018-10-01';
 
         $eventBus = $this->getMockBuilder(EventBus::class)->getMock();
         $eventsTrigger = new EventsTrigger($eventBus);
 
         $factory = new SetlistFactory($eventsTrigger);
-        $setlist = $factory->make($uuid, $acts, $name, $formattedDate);
+        $setlist = $factory->make($uuid, $acts, $name, $description, $formattedDate);
 
         $this->assertInstanceOf(
             Setlist::class,
@@ -66,6 +67,7 @@ class SetlistFactoryTest extends TestCase
             $this->getAct(),
         ];
         $name = 'Name';
+        $description = 'Description';
         $formattedDate = '2018-10-01';
         $formattedCreationDate = '2018-10-01 15:00:00';
         $formattedUpdateDate = '2018-10-01 15:00:00';
@@ -73,7 +75,7 @@ class SetlistFactoryTest extends TestCase
         $eventsTrigger = new EventsTrigger($eventBus);
 
         $factory = new SetlistFactory($eventsTrigger);
-        $setlist = $factory->restore($uuid, $acts, $name, $formattedDate, $formattedCreationDate, $formattedUpdateDate);
+        $setlist = $factory->restore($uuid, $acts, $name, $description, $formattedDate, $formattedCreationDate, $formattedUpdateDate);
 
         $this->assertInstanceOf(
             Setlist::class,
@@ -99,12 +101,13 @@ class SetlistFactoryTest extends TestCase
             $this->getAct(),
         ];
         $name = 'Name';
+        $description = 'Description';
         $formattedDate = 'Random string!';
 
         $eventBus = $this->getMockBuilder(EventBus::class)->getMock();
         $eventsTrigger = new EventsTrigger($eventBus);
 
         $factory = new SetlistFactory($eventsTrigger);
-        $factory->make($uuid, $acts, $name, $formattedDate);
+        $factory->make($uuid, $acts, $name, $description, $formattedDate);
     }
 }

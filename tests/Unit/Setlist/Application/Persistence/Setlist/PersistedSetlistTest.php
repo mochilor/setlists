@@ -19,11 +19,12 @@ class PersistedSetlistTest extends TestCase
             $persistedSetlistCollection
         ];
         $name = 'Name';
+        $description = 'Description';
         $date = '2018-01-04';
         $creationDate = '2018-01-01 10:00:00';
         $updateDate = '2018-01-01 10:00:00';
 
-        $persistedSetlist = new PersistedSetlist($id, $acts, $name, $date, $creationDate, $updateDate);
+        $persistedSetlist = new PersistedSetlist($id, $acts, $name, $description, $date, $creationDate, $updateDate);
 
         $this->assertInstanceOf(
             PersistedSetlist::class,
@@ -43,6 +44,11 @@ class PersistedSetlistTest extends TestCase
         $this->assertEquals(
             $name,
             $persistedSetlist->name()
+        );
+
+        $this->assertEquals(
+            $description,
+            $persistedSetlist->description()
         );
 
         $this->assertEquals(

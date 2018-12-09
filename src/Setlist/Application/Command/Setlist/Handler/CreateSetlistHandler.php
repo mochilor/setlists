@@ -39,6 +39,7 @@ class CreateSetlistHandler
             $this->setlistRepository->nextIdentity(),
             $actsForSetlist,
             $command->name(),
+            $command->description(),
             $command->date()
         );
 

@@ -47,6 +47,7 @@ class CreateSetlistHandlerTest extends TestCase
     {
         $payload = [
             'name' => 'New Name',
+            'description' => 'Description',
             'acts' => [
                 [
                     Uuid::random()->uuid(),
@@ -91,7 +92,7 @@ class CreateSetlistHandlerTest extends TestCase
         $this->setlistFactory
             ->expects($this->once())
             ->method('make')
-            ->with($uuid, $actsForSetlist, $command->name(), $command->date())
+            ->with($uuid, $actsForSetlist, $command->name(), $command->description(), $command->date())
             ->willReturn($setlistMock);
 
         $this->setlistRepository
@@ -132,6 +133,7 @@ class CreateSetlistHandlerTest extends TestCase
         $uuid = Uuid::random()->uuid();
         $payload = [
             'name' => 'New Name',
+            'description' => 'Description',
             'acts' => [
                 [
                     $uuid,

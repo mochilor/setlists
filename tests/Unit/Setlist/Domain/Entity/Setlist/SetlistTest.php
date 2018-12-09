@@ -10,6 +10,7 @@ use Setlist\Domain\Entity\EventsTrigger;
 use Setlist\Domain\Entity\Setlist\Act;
 use Setlist\Domain\Entity\Setlist\Event\SetlistChangedItsActCollection;
 use Setlist\Domain\Entity\Setlist\Event\SetlistChangedItsDate;
+use Setlist\Domain\Entity\Setlist\Event\SetlistChangedItsDescription;
 use Setlist\Domain\Entity\Setlist\Event\SetlistChangedItsName;
 use Setlist\Domain\Entity\Setlist\Event\SetlistWasCreated;
 use Setlist\Domain\Entity\Setlist\Event\SetlistWasDeleted;
@@ -21,6 +22,7 @@ class SetlistTest extends TestCase
 {
     const SETLIST_NAME = 'Setlist name';
     const BAD_SETLIST_NAME = 'KK';
+    const DESCRIPTION = 'Description';
     const DATE_FORMAT = 'Y-m-d H:i:s';
     const FULL_DATETIME = '2017-08-31 00:00:00';
     const FORMATTED_DATE = '2017-08-31';
@@ -41,7 +43,7 @@ class SetlistTest extends TestCase
      */
     public function setlistCanBeCreated()
     {
-        $setList = $this->getSetlist([$this->getAct()], self::SETLIST_NAME);
+        $setList = $this->getSetlist([$this->getAct()], self::SETLIST_NAME, self::DESCRIPTION);
 
         $this->assertInstanceOf(
             Setlist::class,
@@ -59,7 +61,20 @@ class SetlistTest extends TestCase
         );
     }
 
-    private function getSetlist(array $acts, string $name): Setlist
+    /**
+     * @test
+     */
+    public function setlistCanBeCreatedWithEmptyDescription()
+    {
+        $setList = $this->getSetlist([$this->getAct()], self::SETLIST_NAME, '');
+
+        $this->assertInstanceOf(
+            Setlist::class,
+            $setList
+        );
+    }
+
+    private function getSetlist(array $acts, string $name, string $description): Setlist
     {
         $id = Uuid::random();
         $actCollection = ActCollection::create(...$acts);
@@ -69,7 +84,7 @@ class SetlistTest extends TestCase
         $eventBus = $this->getMockBuilder(EventBus::class)->getMock();
         $eventsTrigger = new EventsTrigger($eventBus);
 
-        return Setlist::create($id, $actCollection, $name, $date, $creationDate, $updateDate, $eventsTrigger);
+        return Setlist::create($id, $actCollection, $name, $description, $date, $creationDate, $updateDate, $eventsTrigger);
     }
 
     /**
@@ -78,7 +93,7 @@ class SetlistTest extends TestCase
      */
     public function setlistWithWrongNameThrowsException()
     {
-        $this->getSetlist([$this->getAct()], self::BAD_SETLIST_NAME);
+        $this->getSetlist([$this->getAct()], self::BAD_SETLIST_NAME, self::DESCRIPTION);
     }
 
     /**
@@ -87,7 +102,7 @@ class SetlistTest extends TestCase
      */
     public function setlistWithEmptyActCollectionThrowsException()
     {
-        $this->getSetlist([], self::SETLIST_NAME);
+        $this->getSetlist([], self::SETLIST_NAME, self::DESCRIPTION);
     }
 
     /**
@@ -95,7 +110,7 @@ class SetlistTest extends TestCase
      */
     public function setlisHasId()
     {
-        $setList = $this->getSetlist([$this->getAct()], self::SETLIST_NAME);
+        $setList = $this->getSetlist([$this->getAct()], self::SETLIST_NAME, self::DESCRIPTION);
 
         $this->assertInstanceOf(
             Uuid::class,
@@ -108,7 +123,7 @@ class SetlistTest extends TestCase
      */
     public function setlistHasName()
     {
-        $setList = $this->getSetlist([$this->getAct()], self::SETLIST_NAME);
+        $setList = $this->getSetlist([$this->getAct()], self::SETLIST_NAME, self::DESCRIPTION);
 
         $this->assertEquals(
             self::SETLIST_NAME,
@@ -121,7 +136,7 @@ class SetlistTest extends TestCase
      */
     public function setlistHasFullName()
     {
-        $setList = $this->getSetlist([$this->getAct()], self::SETLIST_NAME);
+        $setList = $this->getSetlist([$this->getAct()], self::SETLIST_NAME, self::DESCRIPTION);
 
         $this->assertEquals(
             sprintf('%s - %s', self::FORMATTED_DATE, self::SETLIST_NAME),
@@ -134,7 +149,7 @@ class SetlistTest extends TestCase
      */
     public function setlistHasSongCollection()
     {
-        $setList = $this->getSetlist([$this->getAct()], self::SETLIST_NAME);
+        $setList = $this->getSetlist([$this->getAct()], self::SETLIST_NAME, self::DESCRIPTION);
 
         $this->assertInstanceOf(
             ActCollection::class,
@@ -147,7 +162,7 @@ class SetlistTest extends TestCase
      */
     public function setlistHasDate()
     {
-        $setList = $this->getSetlist([$this->getAct()], self::SETLIST_NAME);
+        $setList = $this->getSetlist([$this->getAct()], self::SETLIST_NAME, self::DESCRIPTION);
 
         $this->assertInstanceOf(
             DateTime::class,
@@ -160,7 +175,7 @@ class SetlistTest extends TestCase
      */
     public function setlistHasFormattedDate()
     {
-        $setList = $this->getSetlist([$this->getAct()], self::SETLIST_NAME);
+        $setList = $this->getSetlist([$this->getAct()], self::SETLIST_NAME, self::DESCRIPTION);
 
         $this->assertEquals(
             self::FORMATTED_DATE,
@@ -173,7 +188,7 @@ class SetlistTest extends TestCase
      */
     public function setlistCanChangeItsName()
     {
-        $setList = $this->getSetlist([$this->getAct()], self::SETLIST_NAME);
+        $setList = $this->getSetlist([$this->getAct()], self::SETLIST_NAME, self::DESCRIPTION);
 
         $newName = "New name";
         $setList->changeName($newName);
@@ -197,9 +212,35 @@ class SetlistTest extends TestCase
     /**
      * @test
      */
+    public function setlistCanChangeItsDescription()
+    {
+        $setList = $this->getSetlist([$this->getAct()], self::SETLIST_NAME, self::DESCRIPTION);
+
+        $newDescription = "New description";
+        $setList->changeDescription($newDescription);
+
+        $this->assertEquals(
+            $newDescription,
+            $setList->description()
+        );
+
+        $this->assertCount(
+            2,
+            $setList->events()
+        );
+
+        $this->assertInstanceOf(
+            SetlistChangedItsDescription::class,
+            $setList->events()[1]
+        );
+    }
+
+    /**
+     * @test
+     */
     public function setlistCanChangeItsDate()
     {
-        $setList = $this->getSetlist([$this->getAct()], self::SETLIST_NAME);
+        $setList = $this->getSetlist([$this->getAct()], self::SETLIST_NAME, self::DESCRIPTION);
 
         $newDate = DateTime::createFromFormat(self::DATE_FORMAT, '2017-08-30 00:00:00');
         $setList->changeDate($newDate);
@@ -228,7 +269,7 @@ class SetlistTest extends TestCase
     {
         $newActCollection = ActCollection::create(...$actArray2);
 
-        $setList = $this->getSetlist($actArray1, self::SETLIST_NAME);
+        $setList = $this->getSetlist($actArray1, self::SETLIST_NAME, self::DESCRIPTION);
 
         $setList->changeActCollection($newActCollection);
 
@@ -281,7 +322,7 @@ class SetlistTest extends TestCase
      */
     public function setlistHasUpdateDate()
     {
-        $setList = $this->getSetlist([$this->getAct()], self::SETLIST_NAME);
+        $setList = $this->getSetlist([$this->getAct()], self::SETLIST_NAME, self::DESCRIPTION);
         $dateTime = DateTimeImmutable::createFromFormat(Setlist::UPDATE_DATE_FORMAT, self::FULL_DATETIME);
 
         $this->assertEquals(
@@ -295,7 +336,7 @@ class SetlistTest extends TestCase
      */
     public function setlistHasFormattedUpdateDate()
     {
-        $setList = $this->getSetlist([$this->getAct()], self::SETLIST_NAME);
+        $setList = $this->getSetlist([$this->getAct()], self::SETLIST_NAME, self::DESCRIPTION);
 
         $this->assertEquals(
             self::FULL_DATETIME,
@@ -308,7 +349,7 @@ class SetlistTest extends TestCase
      */
     public function setlistHasCreationDate()
     {
-        $setList = $this->getSetlist([$this->getAct()], self::SETLIST_NAME);
+        $setList = $this->getSetlist([$this->getAct()], self::SETLIST_NAME, self::DESCRIPTION);
         $dateTime = DateTimeImmutable::createFromFormat(Setlist::CREATION_DATE_FORMAT, self::FULL_DATETIME);
 
         $this->assertEquals(
@@ -322,7 +363,7 @@ class SetlistTest extends TestCase
      */
     public function setlistHasFormattedCreationDate()
     {
-        $setList = $this->getSetlist([$this->getAct()], self::SETLIST_NAME);
+        $setList = $this->getSetlist([$this->getAct()], self::SETLIST_NAME, self::DESCRIPTION);
 
         $this->assertEquals(
             self::FULL_DATETIME,
@@ -335,7 +376,7 @@ class SetlistTest extends TestCase
      */
     public function setlistCanBeDeleted()
     {
-        $setList = $this->getSetlist([$this->getAct()], self::SETLIST_NAME);
+        $setList = $this->getSetlist([$this->getAct()], self::SETLIST_NAME, self::DESCRIPTION);
 
         $setList->delete();
 

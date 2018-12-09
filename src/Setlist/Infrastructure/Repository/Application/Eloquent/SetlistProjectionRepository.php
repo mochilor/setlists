@@ -51,10 +51,10 @@ class SetlistProjectionRepository implements ApplicationSetlistRepositoryInterfa
         return PersistedSetlistCollection::create(...$setlistsArray);
     }
 
-    private function getSetlistFromData($setlistProjection): PersistedSetlist
+    private function getSetlistFromData($data): PersistedSetlist
     {
         $acts = [];
-        foreach ($setlistProjection->acts as $currentAct => $act) {
+        foreach ($data->acts as $currentAct => $act) {
             foreach ($act as $song) {
                 $acts[$currentAct][] = $this->getPersistedSong($song);
             }
@@ -66,12 +66,13 @@ class SetlistProjectionRepository implements ApplicationSetlistRepositoryInterfa
         }
 
         return new PersistedSetlist(
-            $setlistProjection->id,
+            $data->id,
             $persistedSongCollections,
-            $setlistProjection->name,
-            $setlistProjection->date,
-            $setlistProjection->creation_date,
-            $setlistProjection->update_date
+            $data->name,
+            $data->description,
+            $data->date,
+            $data->creation_date,
+            $data->update_date
         );
     }
 

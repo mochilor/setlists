@@ -7,6 +7,7 @@ use DateTimeImmutable;
 use Setlist\Domain\Entity\EventsTrigger;
 use Setlist\Domain\Entity\Setlist\Event\SetlistChangedItsActCollection;
 use Setlist\Domain\Entity\Setlist\Event\SetlistChangedItsDate;
+use Setlist\Domain\Entity\Setlist\Event\SetlistChangedItsDescription;
 use Setlist\Domain\Entity\Setlist\Event\SetlistChangedItsName;
 use Setlist\Domain\Entity\Setlist\Event\SetlistWasCreated;
 use Setlist\Domain\Entity\Setlist\Event\SetlistWasDeleted;
@@ -19,6 +20,7 @@ class Setlist
     private $id;
     private $actCollection;
     private $name;
+    private $description;
     private $date;
     private $eventsTrigger;
     private $creationDate;
@@ -34,19 +36,30 @@ class Setlist
         Uuid $id,
         ActCollection $actCollection,
         string $name,
+        string $description,
         DateTime $date,
         DateTimeImmutable $creationDate,
         DateTimeImmutable $updateDate,
         EventsTrigger $eventsTrigger
     ): self
     {
-        $setlist = self::restore($id, $actCollection, $name, $date, $updateDate, $creationDate, $eventsTrigger);
+        $setlist = new static();
+        $setlist->eventsTrigger = $eventsTrigger;
+
+        $setlist->setId($id);
+        $setlist->setActCollection($actCollection);
+        $setlist->setName($name);
+        $setlist->setDescription($description);
+        $setlist->setDate($date);
+        $setlist->setCreationDate($creationDate);
+        $setlist->setUpdateDate($updateDate);
 
         $setlist->eventsTrigger->trigger(
             SetlistWasCreated::create(
                 $setlist->id(),
                 $setlist->actCollection(),
                 $setlist->name(),
+                $setlist->description(),
                 $setlist->formattedDate(),
                 $creationDate->format(Setlist::CREATION_DATE_FORMAT)
             )
@@ -59,6 +72,7 @@ class Setlist
         Uuid $id,
         ActCollection $actCollection,
         string $name,
+        string $description,
         DateTime $date,
         DateTimeImmutable $creationDate,
         DateTimeImmutable $updateDate,
@@ -71,6 +85,7 @@ class Setlist
         $setlist->setId($id);
         $setlist->actCollection = $actCollection; // To prevent crashing while restoring a Setlist with no songs -_-
         $setlist->setName($name);
+        $setlist->setDescription($description);
         $setlist->setDate($date);
         $setlist->setCreationDate($creationDate);
         $setlist->setUpdateDate($updateDate);
@@ -81,11 +96,6 @@ class Setlist
     private function setId(Uuid $id)
     {
         $this->id = $id;
-    }
-
-    public function id(): Uuid
-    {
-        return $this->id;
     }
 
     protected function setActCollection(ActCollection $actCollection)
@@ -110,6 +120,11 @@ class Setlist
         }
     }
 
+    public function setDescription(string $description)
+    {
+        $this->description = $description;
+    }
+
     private function setDate(DateTime $date)
     {
         $this->date = $date;
@@ -130,9 +145,19 @@ class Setlist
         return $this->actCollection;
     }
 
+    public function id(): Uuid
+    {
+        return $this->id;
+    }
+
     public function name(): string
     {
         return $this->name;
+    }
+
+    public function description(): string
+    {
+        return $this->description;
     }
 
     public function fullName(): string
@@ -181,6 +206,23 @@ class Setlist
                 SetlistChangedItsName::create(
                     $this->id(),
                     $name,
+                    $this->formattedUpdateDate()
+                )
+            );
+        }
+    }
+
+    public function changeDescription(string $description)
+    {
+        if ($description != $this->description()) {
+            $this->setDescription($description);
+            $newUpdateDate = new DateTimeImmutable();
+            $this->setUpdateDate($newUpdateDate);
+
+            $this->eventsTrigger->trigger(
+                SetlistChangedItsDescription::create(
+                    $this->id(),
+                    $description,
                     $this->formattedUpdateDate()
                 )
             );

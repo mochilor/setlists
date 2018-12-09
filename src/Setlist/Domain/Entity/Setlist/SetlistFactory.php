@@ -17,20 +17,36 @@ class SetlistFactory
         $this->eventsTrigger = $eventsTrigger;
     }
 
-    public function make(string $uuidString, array $acts, string $name, string $formattedDate): Setlist
+    public function make(
+        string $uuidString,
+        array $acts,
+        string $name,
+        string $description,
+        string $formattedDate
+    ): Setlist
     {
         $uuid = Uuid::create($uuidString);
         $actCollection = ActCollection::create(...$acts);
         $date = $this->getDatetime($formattedDate);
         $creationDate = $updateDate = new DateTimeImmutable();
 
-        return Setlist::create($uuid, $actCollection, $name, $date, $creationDate, $updateDate, $this->eventsTrigger);
+        return Setlist::create(
+            $uuid,
+            $actCollection,
+            $name,
+            $description,
+            $date,
+            $creationDate,
+            $updateDate,
+            $this->eventsTrigger
+        );
     }
 
     public function restore(
         string $uuidString,
         array $acts,
         string $name,
+        string $description,
         string $formattedDate,
         string $formattedCreationDate,
         string $formattedUpdateDate
@@ -42,7 +58,16 @@ class SetlistFactory
         $creationDate = DateTimeImmutable::createFromFormat(Setlist::CREATION_DATE_FORMAT, $formattedCreationDate);
         $updateDate = DateTimeImmutable::createFromFormat(Setlist::UPDATE_DATE_FORMAT, $formattedUpdateDate);
 
-        return Setlist::restore($uuid, $actCollection, $name, $date, $creationDate, $updateDate, $this->eventsTrigger);
+        return Setlist::restore(
+            $uuid,
+            $actCollection,
+            $name,
+            $description,
+            $date,
+            $creationDate,
+            $updateDate,
+            $this->eventsTrigger
+        );
     }
 
     private function getDatetime(string $formattedDate)

@@ -51,6 +51,7 @@ SQL;
             $setlistData['id'],
             $persistedSongCollections,
             $setlistData['name'],
+            $setlistData['description'],
             $setlistData['date'],
             $setlistData['creation_date'],
             $setlistData['update_date']

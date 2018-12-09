@@ -7,6 +7,7 @@ use Setlist\Domain\Entity\Setlist\ActCollection;
 use Setlist\Domain\Entity\Setlist\ActFactory;
 use Setlist\Domain\Entity\Setlist\Event\SetlistChangedItsActCollection;
 use Setlist\Domain\Entity\Setlist\Event\SetlistChangedItsDate;
+use Setlist\Domain\Entity\Setlist\Event\SetlistChangedItsDescription;
 use Setlist\Domain\Entity\Setlist\Event\SetlistChangedItsName;
 use Setlist\Domain\Entity\Setlist\Event\SetlistWasCreated;
 use Setlist\Domain\Entity\Setlist\Event\SetlistWasDeleted;
@@ -87,6 +88,7 @@ class SetlistRepository implements SetlistRepositoryInterface
             $eloquentSetlist->id,
             $actsForSetlist,
             $eloquentSetlist->name,
+            $eloquentSetlist->description,
             $eloquentSetlist->date,
             $eloquentSetlist->creation_date,
             $eloquentSetlist->update_date
@@ -111,19 +113,23 @@ class SetlistRepository implements SetlistRepositoryInterface
                 $this->insert(
                     $event->id(),
                     $event->name(),
+                    $event->description(),
                     $event->actCollection(),
                     $event->formattedDate(),
                     $event->formattedCreationDate()
                 );
                 break;
             case SetlistChangedItsName::class:
-                $this->update($event->id(), $event->formattedUpdateDate(), $event->name(), null, null);
+                $this->update($event->id(), $event->formattedUpdateDate(), $event->name());
+                break;
+            case SetlistChangedItsDescription::class:
+                $this->update($event->id(), $event->formattedUpdateDate(), null, $event->description());
                 break;
             case SetlistChangedItsDate::class:
-                $this->update($event->id(), $event->formattedUpdateDate(), null, $event->formattedDate(), null);
+                $this->update($event->id(), $event->formattedUpdateDate(), null, null, $event->formattedDate());
                 break;
             case SetlistChangedItsActCollection::class:
-                $this->update($event->id(), $event->formattedUpdateDate(), null, null, $event->actCollection());
+                $this->update($event->id(), $event->formattedUpdateDate(), null, null, null, $event->actCollection());
                 break;
             case SetlistWasDeleted::class:
                 $this->delete($event->id());
@@ -134,6 +140,7 @@ class SetlistRepository implements SetlistRepositoryInterface
     private function insert(
         string $uuid,
         string $name,
+        string $description,
         ActCollection $actCollection,
         string $formattedDate,
         string $formattedCreationDate
@@ -141,6 +148,7 @@ class SetlistRepository implements SetlistRepositoryInterface
         $setlist = EloquentSetlist::create([
             'id' => $uuid,
             'name' => $name,
+            'description' => $description,
             'date' => $formattedDate,
             'creation_date' => $formattedCreationDate,
         ]);
@@ -154,6 +162,7 @@ class SetlistRepository implements SetlistRepositoryInterface
         string $uuid,
         string $formattedUpdateDate,
         string $name = null,
+        string $description = null,
         string $formattedDate = null,
         ActCollection $actCollection = null
     ) {
@@ -166,6 +175,10 @@ class SetlistRepository implements SetlistRepositoryInterface
 
             if ($name !== null) {
                 $this->setlistForUpdate->name = $name;
+            }
+
+            if ($description !== null) {
+                $this->setlistForUpdate->description = $description;
             }
 
             if ($formattedDate !== null) {

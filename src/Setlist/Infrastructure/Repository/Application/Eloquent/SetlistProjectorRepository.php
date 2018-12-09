@@ -2,13 +2,12 @@
 
 namespace Setlist\Infrastructure\Repository\Application\Eloquent;
 
-use Setlist\Application\Persistence\Setlist\PersistedSetlist;
 use Setlist\Application\Persistence\Setlist\SetlistProjectorRepository as SetlistProjectorRepositoryInterface;
-use Setlist\Application\Persistence\Song\PersistedSong;
 use Setlist\Application\Persistence\Song\PersistedSongCollectionFactory;
 use Setlist\Domain\Entity\Setlist\ActCollection;
 use Setlist\Domain\Entity\Setlist\Event\SetlistChangedItsActCollection;
 use Setlist\Domain\Entity\Setlist\Event\SetlistChangedItsDate;
+use Setlist\Domain\Entity\Setlist\Event\SetlistChangedItsDescription;
 use Setlist\Domain\Entity\Setlist\Event\SetlistChangedItsName;
 use Setlist\Domain\Entity\Setlist\Event\SetlistWasCreated;
 use Setlist\Domain\Entity\Setlist\Event\SetlistWasDeleted;
@@ -43,6 +42,7 @@ class SetlistProjectorRepository implements SetlistProjectorRepositoryInterface
         $data = [
             'id' => (string) $event->id(),
             'name' => $event->name(),
+            'description' => $event->description(),
             'date' => $event->formattedDate(),
             'creation_date' => $event->formattedCreationDate(),
             'update_date' => $event->formattedUpdateDate(),
@@ -66,6 +66,21 @@ class SetlistProjectorRepository implements SetlistProjectorRepositoryInterface
 
         $data = json_decode($setlistProjection->data, true);
         $data['name'] = $event->name();
+        $setlistProjection->data = json_encode($data);
+        $setlistProjection->save();
+    }
+
+    public function changeDescription(SetlistChangedItsDescription $event)
+    {
+        $setlistProjection = SetlistProjection::find($event->id());
+
+        if (!$setlistProjection) {
+            // Throw Exception?
+            return;
+        }
+
+        $data = json_decode($setlistProjection->data, true);
+        $data['description'] = $event->description();
         $setlistProjection->data = json_encode($data);
         $setlistProjection->save();
     }

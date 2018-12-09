@@ -43,6 +43,7 @@ class UpdateSetlistHandler
         $dateTime = DateTime::createFromFormat(Setlist::DATE_TIME_FORMAT, $command->date());
 
         $setlist->changeName($command->name());
+        $setlist->changeDescription($command->description());
         $setlist->changeActCollection($actCollection);
         $setlist->changeDate($dateTime);
 

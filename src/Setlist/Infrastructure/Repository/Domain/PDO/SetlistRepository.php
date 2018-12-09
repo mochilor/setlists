@@ -7,6 +7,7 @@ use Setlist\Domain\Entity\Setlist\ActCollection;
 use Setlist\Domain\Entity\Setlist\ActFactory;
 use Setlist\Domain\Entity\Setlist\Event\SetlistChangedItsActCollection;
 use Setlist\Domain\Entity\Setlist\Event\SetlistChangedItsDate;
+use Setlist\Domain\Entity\Setlist\Event\SetlistChangedItsDescription;
 use Setlist\Domain\Entity\Setlist\Event\SetlistChangedItsName;
 use Setlist\Domain\Entity\Setlist\Event\SetlistWasCreated;
 use Setlist\Domain\Entity\Setlist\Event\SetlistWasDeleted;
@@ -87,6 +88,7 @@ SQL;
                 $this->insert(
                     $event->id(),
                     $event->name(),
+                    $event->description(),
                     $event->actCollection(),
                     $event->formattedDate(),
                     $event->formattedCreationDate()
@@ -94,6 +96,9 @@ SQL;
                 break;
             case SetlistChangedItsName::class:
                 $this->update($event->id(), 'name', $event->name(), $event->formattedUpdateDate());
+                break;
+            case SetlistChangedItsDescription::class:
+                $this->update($event->id(), 'description', $event->description(), $event->formattedUpdateDate());
                 break;
             case SetlistChangedItsDate::class:
                 $this->update($event->id(), 'date', $event->formattedDate(), $event->formattedUpdateDate());
@@ -110,17 +115,19 @@ SQL;
     private function insert(
         string $uuid,
         string $name,
+        string $description,
         ActCollection $actCollection,
         string $formattedDate,
         string $formattedCreationDate
     ) {
         $sql = <<<SQL
-INSERT INTO `%s` (id, name, date, creation_date, update_date) VALUES (:uuid, :name, :date, :creation_date, :update_date);
+INSERT INTO `%s` (id, name, description, date, creation_date, update_date) VALUES (:uuid, :name, :description, :date, :creation_date, :update_date);
 SQL;
         $sql = sprintf($sql, self::TABLE_NAME);
         $query = $this->PDO->prepare($sql);
         $query->bindValue(':uuid', $uuid, PDO::PARAM_STR);
         $query->bindValue(':name', $name, PDO::PARAM_STR);
+        $query->bindValue(':description', $description, PDO::PARAM_STR);
         $query->bindValue(':date', $formattedDate, PDO::PARAM_STR);
         $query->bindValue(':creation_date', $formattedCreationDate, PDO::PARAM_STR);
         $query->bindValue(':update_date', $formattedCreationDate, PDO::PARAM_STR);
@@ -228,6 +235,7 @@ SQL;
             $setlistData['id'],
             $actsForSetlist,
             $setlistData['name'],
+            $setlistData['description'],
             $setlistData['date'],
             $setlistData['creation_date'],
             $setlistData['update_date']

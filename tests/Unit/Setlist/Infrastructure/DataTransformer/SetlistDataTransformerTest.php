@@ -27,6 +27,7 @@ class SetlistDataTransformerTest extends TestCase
 
         $id = Uuid::random();
         $name = 'Setlist name';
+        $description = 'Setlist description';
         $date = '2018-01-01';
         $creationDate =
         $updateDate = '2018-01-01 00:00:00';
@@ -34,6 +35,7 @@ class SetlistDataTransformerTest extends TestCase
             $id,
             $acts,
             $name,
+            $description,
             $date,
             $creationDate,
             $updateDate
@@ -74,6 +76,11 @@ class SetlistDataTransformerTest extends TestCase
         $this->assertEquals(
             $setlistArray['name'],
             $name
+        );
+
+        $this->assertEquals(
+            $setlistArray['description'],
+            $description
         );
 
         $this->assertEquals(

@@ -44,6 +44,7 @@ class UpdateSetlistHandlerTest extends TestCase
         $payload = [
             'uuid' => $uuid->uuid(),
             'name' => 'New Name',
+            'description' => 'Description',
             'acts' => [
                 [
                     Uuid::random()->uuid(),
@@ -99,6 +100,11 @@ class UpdateSetlistHandlerTest extends TestCase
 
         $setlistMock
             ->expects($this->once())
+            ->method('changeDescription')
+            ->with($command->description());
+
+        $setlistMock
+            ->expects($this->once())
             ->method('changeActCollection')
             ->with($actCollection);
 
@@ -120,6 +126,7 @@ class UpdateSetlistHandlerTest extends TestCase
         $payload = [
             'uuid' => $uuid->uuid(),
             'name' => 'New name',
+            'description' => 'Description',
             'date' => '2018-10-01',
         ];
         $command = new UpdateSetlist($payload);
@@ -143,6 +150,7 @@ class UpdateSetlistHandlerTest extends TestCase
         $payload = [
             'uuid' => $uuid->uuid(),
             'name' => 'Non unique name',
+            'description' => 'Description',
             'date' => '2018-10-01',
         ];
         $command = new UpdateSetlist($payload);
@@ -173,6 +181,7 @@ class UpdateSetlistHandlerTest extends TestCase
         $payload = [
             'uuid' => $uuid->uuid(),
             'name' => 'New name',
+            'description' => 'Description',
             'date' => 'Invalid date!',
         ];
         $command = new UpdateSetlist($payload);
@@ -204,6 +213,7 @@ class UpdateSetlistHandlerTest extends TestCase
         $payload = [
             'uuid' => $uuid->uuid(),
             'name' => 'New Name',
+            'description' => 'Description',
             'date' => '2018-10-01',
             'acts' => [
                 [

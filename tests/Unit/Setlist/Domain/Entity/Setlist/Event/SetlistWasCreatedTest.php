@@ -17,8 +17,9 @@ class SetlistWasCreatedTest extends TestCase
         $uuid = Uuid::random();
         $actCollection = $this->getMockBuilder(ActCollection::class)->getMock();
         $name = 'A Name';
+        $description = 'A Description';
         $formattedDateTime = $formattedUpdateDate = '2018-01-01';
-        $event = SetlistWasCreated::create($uuid, $actCollection, $name, $formattedDateTime, $formattedUpdateDate);
+        $event = SetlistWasCreated::create($uuid, $actCollection, $name, $description, $formattedDateTime, $formattedUpdateDate);
 
         $this->assertInstanceOf(
             SetlistWasCreated::class,
@@ -33,6 +34,11 @@ class SetlistWasCreatedTest extends TestCase
         $this->assertEquals(
             $name,
             $event->name()
+        );
+
+        $this->assertEquals(
+            $description,
+            $event->description()
         );
 
         $this->assertEquals(
