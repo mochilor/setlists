@@ -4,7 +4,7 @@ namespace Setlist\Application\Command\Song;
 
 use Setlist\Application\Command\BaseCommand;
 
-class DeleteSong extends BaseCommand
+class ForceDeleteSong extends BaseCommand
 {
     public function uuid(): string
     {

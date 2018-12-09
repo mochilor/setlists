@@ -3,12 +3,12 @@
 namespace Tests\Unit\Setlist\Application\Command\Song\Handler;
 
 use PHPUnit\Framework\TestCase;
-use Setlist\Application\Command\Song\DeleteSong;
-use Setlist\Application\Command\Song\Handler\DeleteSongHandler;
+use Setlist\Application\Command\Song\ForceDeleteSong;
+use Setlist\Application\Command\Song\Handler\ForceDeleteSongHandler;
 use Setlist\Domain\Entity\Song\Song;
 use Setlist\Domain\Entity\Song\SongRepository;
 
-class DeleteSongHandlerTest extends TestCase
+class ForceDeleteSongHandlerTest extends TestCase
 {
     private $songRepository;
     private $commandHandler;
@@ -16,7 +16,7 @@ class DeleteSongHandlerTest extends TestCase
     protected function setUp()
     {
         $this->songRepository = $this->getMockBuilder(SongRepository::class)->getMock();
-        $this->commandHandler = new DeleteSongHandler($this->songRepository);
+        $this->commandHandler = new ForceDeleteSongHandler($this->songRepository);
     }
 
     /**
@@ -59,12 +59,12 @@ class DeleteSongHandlerTest extends TestCase
         ($this->commandHandler)($command);
     }
 
-    private function getCommand(): DeleteSong
+    private function getCommand(): ForceDeleteSong
     {
         $payload = [
             'uuid' => '550e8400-e29b-41d4-a716-446655440000'
         ];
 
-        return new DeleteSong($payload);
+        return new ForceDeleteSong($payload);
     }
 }

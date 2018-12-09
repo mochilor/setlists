@@ -10,6 +10,7 @@ use App\Http\Payload\UpdateSongPayload;
 use Setlist\Application\Command\Song\CreateSong;
 use App\Http\Payload\CreateSongPayload;
 use Setlist\Application\Command\Song\DeleteSong;
+use Setlist\Application\Command\Song\ForceDeleteSong;
 use Setlist\Application\Command\Song\UpdateSong;
 use Setlist\Application\Query\Song\GetSong;
 use Setlist\Application\Query\Song\GetSongs;
@@ -37,6 +38,14 @@ class SongController extends Controller
     {
         return $this->dispatchCommand(
             $this->getCommand($deleteSongPayload, DeleteSong::class),
+            'Song deleted'
+        );
+    }
+
+    public function forceDeleteSong(DeleteSongPayload $deleteSongPayload)
+    {
+        return $this->dispatchCommand(
+            $this->getCommand($deleteSongPayload, ForceDeleteSong::class),
             'Song deleted'
         );
     }

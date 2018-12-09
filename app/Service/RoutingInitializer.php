@@ -9,9 +9,9 @@ use Setlist\Application\Command\Setlist\Handler\DeleteSetlistHandler;
 use Setlist\Application\Command\Setlist\Handler\UpdateSetlistHandler;
 use Setlist\Application\Command\Setlist\UpdateSetlist;
 use Setlist\Application\Command\Song\CreateSong;
-use Setlist\Application\Command\Song\DeleteSong;
+use Setlist\Application\Command\Song\ForceDeleteSong;
 use Setlist\Application\Command\Song\Handler\CreateSongHandler;
-use Setlist\Application\Command\Song\Handler\DeleteSongHandler;
+use Setlist\Application\Command\Song\Handler\ForceDeleteSongHandler;
 use Setlist\Application\Command\Song\Handler\UpdateSongHandler;
 use Setlist\Application\Command\Song\UpdateSong;
 use Setlist\Application\Query\Setlist\GetSetlist;
@@ -73,7 +73,7 @@ class RoutingInitializer
         // Song
         $this->commandBus->addHandler(CreateSong::class, app(CreateSongHandler::class));
         $this->commandBus->addHandler(UpdateSong::class, app(UpdateSongHandler::class));
-        $this->commandBus->addHandler(DeleteSong::class, app(DeleteSongHandler::class));
+        $this->commandBus->addHandler(ForceDeleteSong::class, app(ForceDeleteSongHandler::class));
 
         // Setlist
         $this->commandBus->addHandler(CreateSetlist::class, app(CreateSetlistHandler::class));
