@@ -80,15 +80,20 @@ class AppServiceProvider extends ServiceProvider
     private function registerApplicationRepositories()
     {
         $this->app->bind(
-            \Setlist\Application\Persistence\Song\SongRepository::class,
-            "\Setlist\Infrastructure\Repository\Application\\$this->driver\SongRepository"
+            \Setlist\Application\Persistence\Song\PersistedSongRepository::class,
+            "\Setlist\Infrastructure\Repository\Application\\$this->driver\PersistedSongRepository"
         );
 
         $this->app->bind(
             \Setlist\Application\Persistence\Setlist\SetlistRepository::class,
+            "\Setlist\Infrastructure\Repository\Application\\$this->driver\SetlistRepository"
+        );
+
+        $this->app->bind(
+            \Setlist\Application\Persistence\Setlist\PersistedSetlistRepository::class,
             env('PROJECTIONS') ?
                 \Setlist\Infrastructure\Repository\Application\Eloquent\SetlistProjectionRepository::class :
-                "\Setlist\Infrastructure\Repository\Application\\$this->driver\SetlistRepository"
+                "\Setlist\Infrastructure\Repository\Application\\$this->driver\PersistedSetlistRepository"
         );
 
         $this->app->bind(

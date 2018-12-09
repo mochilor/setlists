@@ -10,4 +10,9 @@ class CreateSong extends BaseCommand
     {
         return $this->payload()['title'];
     }
+
+    public function successCode(): int
+    {
+        return 201;
+    }
 }

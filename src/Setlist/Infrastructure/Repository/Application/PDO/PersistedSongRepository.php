@@ -4,10 +4,10 @@ namespace Setlist\Infrastructure\Repository\Application\PDO;
 
 use Setlist\Application\Persistence\Song\PersistedSong;
 use Setlist\Application\Persistence\Song\PersistedSongCollection;
-use Setlist\Application\Persistence\Song\SongRepository as ApplicationSongRepositoryInterface;
+use Setlist\Application\Persistence\Song\PersistedSongRepository as ApplicationSongRepositoryInterface;
 use PDO;
 
-class SongRepository implements ApplicationSongRepositoryInterface
+class PersistedSongRepository implements ApplicationSongRepositoryInterface
 {
     private $PDO;
 

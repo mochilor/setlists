@@ -4,10 +4,10 @@ namespace Setlist\Infrastructure\Repository\Application\Eloquent;
 
 use Setlist\Application\Persistence\Song\PersistedSong;
 use Setlist\Application\Persistence\Song\PersistedSongCollection;
-use Setlist\Application\Persistence\Song\SongRepository as ApplicationSongRepositoryInterface;
+use Setlist\Application\Persistence\Song\PersistedSongRepository as ApplicationSongRepositoryInterface;
 use Setlist\Infrastructure\Repository\Domain\Eloquent\Model\Song as EloquentSong;
 
-class SongRepository implements ApplicationSongRepositoryInterface
+class PersistedSongRepository implements ApplicationSongRepositoryInterface
 {
     public function getOneSongById(string $id): ?PersistedSong
     {

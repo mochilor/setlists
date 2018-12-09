@@ -3,10 +3,9 @@
 namespace Tests\Unit\Setlist\Application\Command\Song;
 
 use PHPUnit\Framework\TestCase;
-use Setlist\Application\Command\Song\DeleteSong;
 use Setlist\Application\Command\Song\ForceDeleteSong;
 
-class DeleteSongTest extends TestCase
+class ForceDeleteSongTest extends TestCase
 {
     const PAYLOAD = [
         'uuid' => '550e8400-e29b-41d4-a716-446655440000',
@@ -20,14 +19,14 @@ class DeleteSongTest extends TestCase
         $command = $this->getCommand();
 
         $this->assertInstanceOf(
-            DeleteSong::class,
+            ForceDeleteSong::class,
             $command
         );
     }
 
     private function getCommand()
     {
-        return new DeleteSong(self::PAYLOAD);
+        return new ForceDeleteSong(self::PAYLOAD);
     }
 
     /**

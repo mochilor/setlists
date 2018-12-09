@@ -5,7 +5,7 @@ namespace Tests\Unit\Setlist\Application\Command\Song\Handler;
 use PHPUnit\Framework\TestCase;
 use Setlist\Application\Command\Song\Handler\UpdateSongHandler;
 use Setlist\Application\Command\Song\UpdateSong;
-use Setlist\Application\Persistence\Song\SongRepository as ApplicationSongRespository;
+use Setlist\Application\Persistence\Song\PersistedSongRepository as ApplicationSongRespository;
 use Setlist\Domain\Entity\Song\Song;
 use Setlist\Domain\Entity\Song\SongRepository;
 use Setlist\Domain\Entity\Song\SongTitleRepository;

@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Setlist\Application\Command\Song;
 
+use Setlist\Application\Command\BaseCommand;
 use Setlist\Application\Command\Song\CreateSong;
 use PHPUnit\Framework\TestCase;
 
@@ -38,6 +39,18 @@ class CreateSongTest extends TestCase
         $this->assertEquals(
             self::PAYLOAD['title'],
             $command->title()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function commandHasDifferentSuccessCode()
+    {
+        $command = $this->getCommand();
+        $this->assertNotEquals(
+            BaseCommand::SUCCESS_CODE,
+            $command->successCode()
         );
     }
 }

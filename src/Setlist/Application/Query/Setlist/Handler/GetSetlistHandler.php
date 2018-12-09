@@ -5,7 +5,7 @@ namespace Setlist\Application\Query\Setlist\Handler;
 use Setlist\Application\DataTransformer\SetlistDataTransformer;
 use Setlist\Application\Exception\SetlistDoesNotExistException;
 use Setlist\Application\Persistence\Setlist\PersistedSetlist;
-use Setlist\Application\Persistence\Setlist\SetlistRepository as ApplicationSetlistRepository;
+use Setlist\Application\Persistence\Setlist\PersistedSetlistRepository as ApplicationSetlistRepository;
 use Setlist\Application\Query\Setlist\GetSetlist;
 use Setlist\Domain\Value\Uuid;
 

@@ -4,9 +4,9 @@ namespace Setlist\Infrastructure\Repository\Application\InMemory;
 
 use Setlist\Application\Persistence\Setlist\PersistedSetlist;
 use Setlist\Application\Persistence\Setlist\PersistedSetlistCollection;
-use Setlist\Application\Persistence\Setlist\SetlistRepository as ApplicationSetlistRepositoryInterface;
+use Setlist\Application\Persistence\Setlist\PersistedSetlistRepository as ApplicationSetlistRepositoryInterface;
 
-class SetlistRepository implements ApplicationSetlistRepositoryInterface
+class PersistedSetlistRepository implements ApplicationSetlistRepositoryInterface
 {
     public function getAllSetlists(int $start, int $length): PersistedSetlistCollection
     {

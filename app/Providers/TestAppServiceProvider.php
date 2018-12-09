@@ -20,8 +20,8 @@ class TestAppServiceProvider extends ServiceProvider
         );
 
         $this->app->bind(
-            \Setlist\Application\Persistence\Song\SongRepository::class,
-            \Setlist\Infrastructure\Repository\Application\InMemory\SongRepository::class
+            \Setlist\Application\Persistence\Song\PersistedSongRepository::class,
+            \Setlist\Infrastructure\Repository\Application\InMemory\PersistedSongRepository::class
         );
 
         $this->app->bind(
@@ -30,8 +30,8 @@ class TestAppServiceProvider extends ServiceProvider
         );
 
         $this->app->bind(
-            \Setlist\Application\Persistence\Setlist\SetlistRepository::class,
-            \Setlist\Infrastructure\Repository\Application\InMemory\SetlistRepository::class
+            \Setlist\Application\Persistence\Setlist\PersistedSetlistRepository::class,
+            \Setlist\Infrastructure\Repository\Application\InMemory\PersistedSetlistRepository::class
         );
 
         $this->app->bind(

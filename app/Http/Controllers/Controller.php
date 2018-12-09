@@ -59,8 +59,7 @@ class Controller extends BaseController
     protected function dispatchCommand(BaseCommand $command, string $message)
     {
         $type = 'Result';
-        $code = 200;
-        $a = env('APP_DEBUG');
+        $code = $command->successCode();
 
         try {
             $this->commandBus->handle($command);

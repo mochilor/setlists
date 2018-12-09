@@ -4,7 +4,7 @@ namespace Tests\Unit\Setlist\Application\Query\Setlist\Handler;
 
 use Setlist\Application\DataTransformer\SetlistDataTransformer;
 use Setlist\Application\Persistence\Setlist\PersistedSetlist;
-use Setlist\Application\Persistence\Setlist\SetlistRepository;
+use Setlist\Application\Persistence\Setlist\PersistedSetlistRepository;
 use Setlist\Application\Query\Setlist\GetSetlist;
 use Setlist\Application\Query\Setlist\Handler\GetSetlistHandler;
 use PHPUnit\Framework\TestCase;
@@ -20,7 +20,7 @@ class GetSetlistHandlerTest extends TestCase
 
     protected function setUp()
     {
-        $this->setlistRepository = $this->getMockBuilder(SetlistRepository::class)->getMock();
+        $this->setlistRepository = $this->getMockBuilder(PersistedSetlistRepository::class)->getMock();
         $this->setlistDataTransformer = $this->getMockBuilder(SetlistDataTransformer::class)
             ->disableOriginalConstructor()
             ->getMock();

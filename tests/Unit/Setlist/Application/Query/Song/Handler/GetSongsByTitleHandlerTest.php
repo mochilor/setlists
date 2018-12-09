@@ -5,7 +5,7 @@ namespace Tests\Unit\Setlist\Application\Query\Song\Handler;
 use Setlist\Application\DataTransformer\SongDataTransformer;
 use Setlist\Application\Persistence\Song\PersistedSong;
 use Setlist\Application\Persistence\Song\PersistedSongCollection;
-use Setlist\Application\Persistence\Song\SongRepository;
+use Setlist\Application\Persistence\Song\PersistedSongRepository;
 use PHPUnit\Framework\TestCase;
 use Setlist\Application\Query\Song\GetSongsByTitle;
 use Setlist\Application\Query\Song\Handler\GetSongsByTitleHandler;
@@ -18,7 +18,7 @@ class GetSongsByTitleHandlerTest extends TestCase
 
     protected function setUp()
     {
-        $this->applicationSongRepository = $this->getMockBuilder(SongRepository::class)->getMock();
+        $this->applicationSongRepository = $this->getMockBuilder(PersistedSongRepository::class)->getMock();
         $this->songDataTransformer = $this->getMockBuilder(SongDataTransformer::class)->getMock();
         $this->getSongHandler = new GetSongsByTitleHandler($this->applicationSongRepository, $this->songDataTransformer);
     }

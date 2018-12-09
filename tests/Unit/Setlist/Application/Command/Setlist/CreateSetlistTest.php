@@ -3,6 +3,7 @@
 namespace Tests\Unit\Setlist\Application\Command\Setlist;
 
 use PHPUnit\Framework\TestCase;
+use Setlist\Application\Command\BaseCommand;
 use Setlist\Application\Command\Setlist\CreateSetlist;
 
 class CreateSetlistTest extends TestCase
@@ -64,6 +65,18 @@ class CreateSetlistTest extends TestCase
         $this->assertEquals(
             self::PAYLOAD['date'],
             $command->date()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function commandHasDifferentSuccessCode()
+    {
+        $command = $this->getCommand();
+        $this->assertNotEquals(
+            BaseCommand::SUCCESS_CODE,
+            $command->successCode()
         );
     }
 }

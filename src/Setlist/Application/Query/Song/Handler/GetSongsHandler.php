@@ -3,7 +3,7 @@
 namespace Setlist\Application\Query\Song\Handler;
 
 use Setlist\Application\DataTransformer\SongDataTransformer;
-use Setlist\Application\Persistence\Song\SongRepository as ApplicationSongRepository;
+use Setlist\Application\Persistence\Song\PersistedSongRepository as ApplicationSongRepository;
 use Setlist\Application\Query\Song\GetSongs;
 
 class GetSongsHandler

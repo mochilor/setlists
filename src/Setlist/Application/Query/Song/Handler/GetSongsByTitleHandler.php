@@ -4,7 +4,7 @@ namespace Setlist\Application\Query\Song\Handler;
 
 use Setlist\Application\DataTransformer\SongDataTransformer;
 use Setlist\Application\Query\Song\GetSongsByTitle;
-use Setlist\Application\Persistence\Song\SongRepository as ApplicationSongRepository;
+use Setlist\Application\Persistence\Song\PersistedSongRepository as ApplicationSongRepository;
 
 class GetSongsByTitleHandler
 {

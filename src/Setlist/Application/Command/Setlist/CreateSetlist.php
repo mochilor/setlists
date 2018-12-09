@@ -25,4 +25,9 @@ class CreateSetlist extends BaseCommand
     {
         return $this->payload()['date'];
     }
+
+    public function successCode(): int
+    {
+        return 201;
+    }
 }

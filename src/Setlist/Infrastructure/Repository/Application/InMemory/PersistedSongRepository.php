@@ -4,9 +4,9 @@ namespace Setlist\Infrastructure\Repository\Application\InMemory;
 
 use Setlist\Application\Persistence\Song\PersistedSong;
 use Setlist\Application\Persistence\Song\PersistedSongCollection;
-use Setlist\Application\Persistence\Song\SongRepository as ApplicationSongRepositoryInterface;
+use Setlist\Application\Persistence\Song\PersistedSongRepository as ApplicationSongRepositoryInterface;
 
-class SongRepository implements ApplicationSongRepositoryInterface
+class PersistedSongRepository implements ApplicationSongRepositoryInterface
 {
     public function getAllSongs(int $start, int $length): PersistedSongCollection
     {

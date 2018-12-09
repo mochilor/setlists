@@ -4,7 +4,7 @@ namespace Setlist\Infrastructure\Repository\Application\Eloquent;
 
 use Setlist\Application\Persistence\Setlist\PersistedSetlist;
 use Setlist\Application\Persistence\Setlist\PersistedSetlistCollection;
-use Setlist\Application\Persistence\Setlist\SetlistRepository as ApplicationSetlistRepositoryInterface;
+use Setlist\Application\Persistence\Setlist\PersistedSetlistRepository as ApplicationSetlistRepositoryInterface;
 use Setlist\Application\Persistence\Song\PersistedSong;
 use Setlist\Application\Persistence\Song\PersistedSongCollectionFactory;
 use Setlist\Infrastructure\Repository\Application\Eloquent\Model\SetlistProjection;
