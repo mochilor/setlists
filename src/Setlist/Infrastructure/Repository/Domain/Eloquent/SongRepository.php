@@ -40,19 +40,19 @@ class SongRepository implements SongRepositoryInterface
     {
         switch (get_class($event)) {
             case SongWasCreated::class:
-                $this->insert($event->id(), $event->title(), true, $event->formattedCreationDate(), $event->formattedUpdateDate());
+                $this->insert($event->id()->value(), $event->title(), true, $event->formattedCreationDate(), $event->formattedUpdateDate());
                 break;
             case SongChangedItsTitle::class:
-                $this->update($event->id(), $event->title(), $event->formattedUpdateDate());
+                $this->update($event->id()->value(), $event->title(), $event->formattedUpdateDate());
                 break;
             case SongWasHidden::class:
-                $this->setVisibility($event->id(), false, $event->formattedUpdateDate());
+                $this->setVisibility($event->id()->value(), false, $event->formattedUpdateDate());
                 break;
             case SongWasUnhidden::class:
-                $this->setVisibility($event->id(), true, $event->formattedUpdateDate());
+                $this->setVisibility($event->id()->value(), true, $event->formattedUpdateDate());
                 break;
             case SongWasDeleted::class:
-                $this->delete($event->id());
+                $this->delete($event->id()->value());
                 break;
         }
     }

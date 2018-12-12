@@ -12,9 +12,14 @@
         "vlucas/phpdotenv": "~2.2"
     },
     "require-dev": {
+        "behat/behat": "^3.5",
+        "behat/mink": "^1.7",
+        "behat/mink-extension": "^2.3",
         "fzaninotto/faker": "~1.4",
+        "mockery/mockery": "~1.0",
         "phpunit/phpunit": "~7.0",
-        "mockery/mockery": "~1.0"
+        "teoble/behat-lumen-extension": "dev-master",
+        "guzzlehttp/guzzle": "~6.0"
     },
     "autoload": {
         "classmap": [
