@@ -37,11 +37,6 @@ class SetlistRepository implements SetlistRepositoryInterface
         $this->setlistFactory = $setlistFactory;
     }
 
-    public function nextIdentity(): Uuid
-    {
-        return Uuid::random();
-    }
-
     public function save(Setlist $setlist)
     {
         app('db')->transaction(function () use($setlist) {
@@ -196,7 +191,7 @@ class SetlistRepository implements SetlistRepositoryInterface
         $setlistSongs = [];
         foreach ($actCollection as $keyAct => $act) {
             foreach ($act->songCollection() as $keySong => $song) {
-                $setlistSongs[$song->id()->uuid()] = [
+                $setlistSongs[$song->id()->value()] = [
                     'act' => $keyAct,
                     'order' => $keySong,
                 ];

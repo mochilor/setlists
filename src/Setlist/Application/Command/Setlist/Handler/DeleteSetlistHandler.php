@@ -6,19 +6,21 @@ use Setlist\Application\Command\Setlist\DeleteSetlist;
 use Setlist\Application\Exception\SetlistDoesNotExistException;
 use Setlist\Domain\Entity\Setlist\Setlist;
 use Setlist\Domain\Entity\Setlist\SetlistRepository;
-use Setlist\Domain\Value\Uuid;
+use Setlist\Domain\Value\UuidGenerator;
 
 class DeleteSetlistHandler
 {
     private $setlistRepository;
+    private $uuidGenerator;
 
-    public function __construct(SetlistRepository $setlistRepository) {
+    public function __construct(SetlistRepository $setlistRepository, UuidGenerator $uuidGenerator) {
         $this->setlistRepository = $setlistRepository;
+        $this->uuidGenerator = $uuidGenerator;
     }
 
     public function __invoke(DeleteSetlist $command)
     {
-        $uuid = Uuid::create($command->uuid());
+        $uuid = $this->uuidGenerator->fromString($command->uuid());
         $setlist = $this->setlistRepository->get($uuid);
 
         $this->guard($setlist);

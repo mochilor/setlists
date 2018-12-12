@@ -13,7 +13,7 @@ class SongChangedItsTitleTest extends TestCase
      */
     public function domainEventCanBeCreatedAndHasGetters()
     {
-        $uuid = Uuid::random();
+        $uuid = $this->getMockBuilder(Uuid::class)->getMock();
         $title = 'A Title';
         $formattedUpdateTime = '2018-01-01 00:00:00';
         $event = SongChangedItsTitle::create($uuid, $title, $formattedUpdateTime);

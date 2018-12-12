@@ -8,22 +8,27 @@ use Setlist\Application\Exception\SongTitleNotUniqueException;
 use Setlist\Domain\Entity\Song\Song;
 use Setlist\Domain\Entity\Song\SongRepository;
 use Setlist\Domain\Entity\Song\SongTitleRepository;
-use Setlist\Domain\Value\Uuid;
+use Setlist\Domain\Value\UuidGenerator;
 
 class UpdateSongHandler
 {
     private $songRepository;
     private $songTitleRepository;
+    private $uuidGenerator;
 
-    public function __construct(SongRepository $songRepository, SongTitleRepository $songTitleRepository)
-    {
+    public function __construct(
+        SongRepository $songRepository,
+        SongTitleRepository $songTitleRepository,
+        UuidGenerator $uuidGenerator
+    ) {
         $this->songRepository = $songRepository;
         $this->songTitleRepository= $songTitleRepository;
+        $this->uuidGenerator = $uuidGenerator;
     }
 
     public function __invoke(UpdateSong $command)
     {
-        $uuid = Uuid::create($command->uuid());
+        $uuid = $this->uuidGenerator->fromString($command->uuid());
         $song = $this->songRepository->get($uuid);
 
         $this->guard($command, $song);

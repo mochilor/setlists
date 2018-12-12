@@ -13,8 +13,7 @@ class SetlistChangedItsDateTest extends TestCase
      */
     public function domainEventCanBeCreatedAndHasGetters()
     {
-        // public static function create(Uuid $id, string $formattedDate, string $formattedUpdateDate): self
-        $uuid = Uuid::random();
+        $uuid = $this->getMockBuilder(Uuid::class)->getMock();
         $formattedDate = $formattedUpdateDate = '2018-01-01';
         $event = SetlistChangedItsDate::create($uuid, $formattedDate, $formattedUpdateDate);
 

@@ -32,7 +32,7 @@ class SetlistProjectorRepository implements SetlistProjectorRepositoryInterface
         $data = $this->prepareData($event);
 
         $setlistProjection = new SetlistProjection();
-        $setlistProjection->id = (string) $event->id();
+        $setlistProjection->id = $event->id()->value();
         $setlistProjection->data = $data;
         $setlistProjection->save();
     }
@@ -40,7 +40,7 @@ class SetlistProjectorRepository implements SetlistProjectorRepositoryInterface
     private function prepareData(SetlistWasCreated $event): string
     {
         $data = [
-            'id' => (string) $event->id(),
+            'id' => $event->id()->value(),
             'name' => $event->name(),
             'description' => $event->description(),
             'date' => $event->formattedDate(),
@@ -129,7 +129,7 @@ class SetlistProjectorRepository implements SetlistProjectorRepositoryInterface
             $actSongs = [];
             foreach ($act->songCollection() as $song) {
                 $actSongs[] = [
-                    'id' => (string)$song->id(),
+                    'id' => $song->id()->value(),
                     'title' => $song->title(),
                     'is_visible' => $song->isVisible(),
                     'creation_date' => $song->formattedCreationDate(),

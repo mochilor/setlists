@@ -36,7 +36,7 @@ class CreateSetlistHandler
         $actsForSetlist = $this->setlistHandlerHelper->getActsForSetlist($command->acts());
 
         $setlist = $this->setlistFactory->make(
-            $this->setlistRepository->nextIdentity(),
+            $command->uuid(),
             $actsForSetlist,
             $command->name(),
             $command->description(),

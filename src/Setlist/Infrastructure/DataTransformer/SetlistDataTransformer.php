@@ -34,7 +34,7 @@ class SetlistDataTransformer implements SetlistDataTransformerInterface
         }
 
         return [
-            'id' => (string) $this->setlist->id(),
+            'id' => $this->setlist->id(),
             'name' => $this->setlist->name(),
             'description' => $this->setlist->description(),
             'date' => $this->setlist->date(),

@@ -6,6 +6,11 @@ use Setlist\Application\Command\BaseCommand;
 
 class CreateSetlist extends BaseCommand
 {
+    public function uuid(): string
+    {
+        return $this->payload()['uuid'];
+    }
+
     public function name(): string
     {
         return $this->payload()['name'];

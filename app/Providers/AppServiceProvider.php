@@ -22,6 +22,7 @@ class AppServiceProvider extends ServiceProvider
         $this->registerDomainRepositories();
         $this->registerApplicationRepositories();
         $this->registerDataTransformers();
+        $this->registerUuidGenerator();
     }
 
     private function setDriver($driver)
@@ -111,6 +112,14 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(
             \Setlist\Application\DataTransformer\SetlistDataTransformer::class,
             \Setlist\Infrastructure\DataTransformer\SetlistDataTransformer::class
+        );
+    }
+
+    private function registerUuidGenerator()
+    {
+        $this->app->bind(
+            \Setlist\Domain\Value\UuidGenerator::class,
+            \Setlist\Infrastructure\Value\UuidGenerator::class
         );
     }
 }

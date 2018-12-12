@@ -13,6 +13,7 @@ use Setlist\Domain\Entity\Setlist\Setlist;
 use Setlist\Domain\Entity\Setlist\SetlistNameRepository;
 use Setlist\Domain\Entity\Setlist\SetlistRepository;
 use Setlist\Domain\Value\Uuid;
+use Setlist\Infrastructure\Value\UuidGenerator;
 
 class UpdateSetlistHandlerTest extends TestCase
 {
@@ -20,6 +21,9 @@ class UpdateSetlistHandlerTest extends TestCase
     private $setlistRepository;
     private $setlistHandlerHelper;
     private $commandHandler;
+    private $uuidGenerator;
+
+    const UUID_VALUE = '8ffd680a-ff57-41f3-ac5e-bf1d877f6950';
 
     protected function setUp()
     {
@@ -28,10 +32,13 @@ class UpdateSetlistHandlerTest extends TestCase
         $this->setlistHandlerHelper = $this->getMockBuilder(SetlistHandlerHelper::class)
             ->disableOriginalConstructor()
             ->getMock();
+        $this->uuidGenerator = $this->getMockBuilder(UuidGenerator::class)->getMock();
+
         $this->commandHandler = new UpdateSetlistHandler(
             $this->setlistRepository,
             $this->setlistNameRepository,
-            $this->setlistHandlerHelper
+            $this->setlistHandlerHelper,
+            $this->uuidGenerator
         );
     }
 
@@ -40,22 +47,24 @@ class UpdateSetlistHandlerTest extends TestCase
      */
     public function commandHandlerCanBeInvoked()
     {
-        $uuid = Uuid::random();
+        $uuid = '8ffd680a-ff57-41f3-ac5e-bf1d877f6950';
+        $uuidObject = $this->getMockBuilder(Uuid::class)->getMock();
+
         $payload = [
-            'uuid' => $uuid->uuid(),
+            'uuid' => $uuid,
             'name' => 'New Name',
             'description' => 'Description',
             'acts' => [
                 [
-                    Uuid::random()->uuid(),
-                    Uuid::random()->uuid(),
-                    Uuid::random()->uuid(),
-                    Uuid::random()->uuid(),
+                    '8ffd680a-ff57-41f3-ac5e-bf1d877f6951',
+                    '8ffd680a-ff57-41f3-ac5e-bf1d877f6952',
+                    '8ffd680a-ff57-41f3-ac5e-bf1d877f6953',
+                    '8ffd680a-ff57-41f3-ac5e-bf1d877f6954',
                 ],
                 [
-                    Uuid::random()->uuid(),
-                    Uuid::random()->uuid(),
-                    Uuid::random()->uuid(),
+                    '8ffd680a-ff57-41f3-ac5e-bf1d877f6955',
+                    '8ffd680a-ff57-41f3-ac5e-bf1d877f6956',
+                    '8ffd680a-ff57-41f3-ac5e-bf1d877f6957',
                 ],
             ],
             'date' => '2018-10-01',
@@ -67,14 +76,26 @@ class UpdateSetlistHandlerTest extends TestCase
             $actsForSetlist[] = $this->getMockBuilder(Act::class)->getMock();
         }
         $actCollection = ActCollection::create(...$actsForSetlist);
-        $dateTime = DateTime::createFromFormat(Setlist::DATE_TIME_FORMAT, $command->date());
+        // $dateTime = DateTime::createFromFormat(Setlist::DATE_TIME_FORMAT, $command->date());
 
         $setlistMock = $this->getMockBuilder(Setlist::class)->getMock();
+
+        $this->uuidGenerator
+            ->expects($this->once())
+            ->method('fromString')
+            ->with($payload['uuid'])
+            ->willReturn($uuidObject);
+
+        $this->setlistRepository
+            ->expects($this->once())
+            ->method('get')
+            ->with($uuidObject)
+            ->willReturn($setlistMock);
 
         $this->setlistNameRepository
             ->expects($this->once())
             ->method('nameIsUnique')
-            ->with($command->name(), $command->uuid())
+            ->with($payload['name'], $payload['uuid'])
             ->willReturn(true);
 
         $this->setlistHandlerHelper
@@ -82,12 +103,6 @@ class UpdateSetlistHandlerTest extends TestCase
             ->method('getActsForSetlist')
             ->with($command->acts())
             ->willReturn($actsForSetlist);
-
-        $this->setlistRepository
-            ->expects($this->once())
-            ->method('get')
-            ->with($uuid)
-            ->willReturn($setlistMock);
 
         $this->setlistRepository
             ->expects($this->once())
@@ -111,7 +126,8 @@ class UpdateSetlistHandlerTest extends TestCase
         $setlistMock
             ->expects($this->once())
             ->method('changeDate')
-            ->with($dateTime);
+            //->with($dateTime) // This can lead to mismatches when execution start on a second and ends on the next one!
+        ;
 
         ($this->commandHandler)($command);
     }
@@ -122,19 +138,27 @@ class UpdateSetlistHandlerTest extends TestCase
      */
     public function notFoundSetlistThrowsException()
     {
-        $uuid = Uuid::random();
+        $uuid = '8ffd680a-ff57-41f3-ac5e-bf1d877f6950';
+        $uuidObject = $this->getMockBuilder(Uuid::class)->getMock();
+
         $payload = [
-            'uuid' => $uuid->uuid(),
+            'uuid' => $uuid,
             'name' => 'New name',
             'description' => 'Description',
             'date' => '2018-10-01',
         ];
         $command = new UpdateSetlist($payload);
 
+        $this->uuidGenerator
+            ->expects($this->once())
+            ->method('fromString')
+            ->with($payload['uuid'])
+            ->willReturn($uuidObject);
+
         $this->setlistRepository
             ->expects($this->once())
             ->method('get')
-            ->with($uuid)
+            ->with($uuidObject)
             ->willReturn(null);
 
         ($this->commandHandler)($command);
@@ -146,9 +170,11 @@ class UpdateSetlistHandlerTest extends TestCase
      */
     public function repeatedTitleThrowsException()
     {
-        $uuid = Uuid::random();
+        $uuid = '8ffd680a-ff57-41f3-ac5e-bf1d877f6950';
+        $uuidObject = $this->getMockBuilder(Uuid::class)->getMock();
+
         $payload = [
-            'uuid' => $uuid->uuid(),
+            'uuid' => $uuid,
             'name' => 'Non unique name',
             'description' => 'Description',
             'date' => '2018-10-01',
@@ -156,10 +182,17 @@ class UpdateSetlistHandlerTest extends TestCase
         $command = new UpdateSetlist($payload);
 
         $setlistMock = $this->getMockBuilder(Setlist::class)->getMock();
+
+        $this->uuidGenerator
+            ->expects($this->once())
+            ->method('fromString')
+            ->with($payload['uuid'])
+            ->willReturn($uuidObject);
+
         $this->setlistRepository
             ->expects($this->once())
             ->method('get')
-            ->with($uuid)
+            ->with($uuidObject)
             ->willReturn($setlistMock);
 
         $this->setlistNameRepository
@@ -177,9 +210,11 @@ class UpdateSetlistHandlerTest extends TestCase
      */
     public function InvalidDateThrowsException()
     {
-        $uuid = Uuid::random();
+        $uuid = '8ffd680a-ff57-41f3-ac5e-bf1d877f6950';
+        $uuidObject = $this->getMockBuilder(Uuid::class)->getMock();
+
         $payload = [
-            'uuid' => $uuid->uuid(),
+            'uuid' => $uuid,
             'name' => 'New name',
             'description' => 'Description',
             'date' => 'Invalid date!',
@@ -187,10 +222,17 @@ class UpdateSetlistHandlerTest extends TestCase
         $command = new UpdateSetlist($payload);
 
         $setlistMock = $this->getMockBuilder(Setlist::class)->getMock();
+
+        $this->uuidGenerator
+            ->expects($this->once())
+            ->method('fromString')
+            ->with($payload['uuid'])
+            ->willReturn($uuidObject);
+
         $this->setlistRepository
             ->expects($this->once())
             ->method('get')
-            ->with($uuid)
+            ->with($uuidObject)
             ->willReturn($setlistMock);
 
         $this->setlistNameRepository
@@ -209,9 +251,11 @@ class UpdateSetlistHandlerTest extends TestCase
      */
     public function repeatedSongUuidThrowsException()
     {
-        $uuid = Uuid::random();
+        $uuid = '8ffd680a-ff57-41f3-ac5e-bf1d877f6950';
+        $uuidObject = $this->getMockBuilder(Uuid::class)->getMock();
+
         $payload = [
-            'uuid' => $uuid->uuid(),
+            'uuid' => $uuid,
             'name' => 'New Name',
             'description' => 'Description',
             'date' => '2018-10-01',
@@ -225,10 +269,17 @@ class UpdateSetlistHandlerTest extends TestCase
         $command = new UpdateSetlist($payload);
 
         $setlistMock = $this->getMockBuilder(Setlist::class)->getMock();
+
+        $this->uuidGenerator
+            ->expects($this->once())
+            ->method('fromString')
+            ->with($payload['uuid'])
+            ->willReturn($uuidObject);
+
         $this->setlistRepository
             ->expects($this->once())
             ->method('get')
-            ->with($uuid)
+            ->with($uuidObject)
             ->willReturn($setlistMock);
 
         $this->setlistNameRepository

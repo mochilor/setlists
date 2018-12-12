@@ -10,6 +10,7 @@ use Setlist\Domain\Entity\Song\Song;
 use PHPUnit\Framework\TestCase;
 use Setlist\Domain\Entity\Song\SongFactory;
 use Setlist\Domain\Value\Uuid;
+use Setlist\Domain\Value\UuidGenerator;
 
 class SongFactoryTest extends TestCase
 {
@@ -18,11 +19,19 @@ class SongFactoryTest extends TestCase
      */
     public function factoryCanMakeInstances()
     {
-        $uuid = Uuid::random();
+        $uuid = '8ffd680a-ff57-41f3-ac5e-bf1d877f6950';
+        $uuidObject = $this->getMockBuilder(Uuid::class)->getMock();
         $title = 'Title';
         $eventBus = $this->getMockBuilder(EventBus::class)->getMock();
         $eventsTrigger = new EventsTrigger($eventBus);
-        $factory = new SongFactory($eventsTrigger);
+        $uuidGenerator = $this->getMockBuilder(UuidGenerator::class)->getMock();
+        $uuidGenerator
+            ->expects($this->once())
+            ->method('fromString')
+            ->with($uuid)
+            ->willReturn($uuidObject);
+
+        $factory = new SongFactory($eventsTrigger, $uuidGenerator);
         $song = $factory->make($uuid, $title);
 
         $this->assertInstanceOf(
@@ -46,13 +55,21 @@ class SongFactoryTest extends TestCase
      */
     public function factoryCanRestoreInstances()
     {
-        $uuid = Uuid::random();
+        $uuid = '8ffd680a-ff57-41f3-ac5e-bf1d877f6950';
+        $uuidObject = $this->getMockBuilder(Uuid::class)->getMock();
         $title = 'Title';
         $eventBus = $this->getMockBuilder(EventBus::class)->getMock();
         $eventsTrigger = new EventsTrigger($eventBus);
         $dateTime = DateTimeImmutable::createFromFormat(Song::CREATION_DATE_FORMAT, '2018-01-01 00:00:00');
-        $song = Song::restore($uuid, $title, true, $dateTime, $dateTime, $eventsTrigger);
-        $factory = new SongFactory($eventsTrigger);
+        $song = Song::restore($uuidObject, $title, true, $dateTime, $dateTime, $eventsTrigger);
+        $uuidGenerator = $this->getMockBuilder(UuidGenerator::class)->getMock();
+        $uuidGenerator
+            ->expects($this->once())
+            ->method('fromString')
+            ->with($uuid)
+            ->willReturn($uuidObject);
+
+        $factory = new SongFactory($eventsTrigger, $uuidGenerator);
         $formattedCreationDate = $dateTime->format(Song::CREATION_DATE_FORMAT);
         $formattedUpdateDate = $dateTime->format(Song::UPDATE_DATE_FORMAT);
 

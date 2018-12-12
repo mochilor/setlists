@@ -13,7 +13,7 @@ class SetlistWasDeletedTest extends TestCase
      */
     public function domainEventCanBeCreatedAndHasGetters()
     {
-        $uuid = Uuid::random();
+        $uuid = $this->getMockBuilder(Uuid::class)->getMock();
         $event = SetlistWasDeleted::create($uuid);
 
         $this->assertInstanceOf(

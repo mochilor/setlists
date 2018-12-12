@@ -7,7 +7,6 @@ use PHPUnit\Framework\TestCase;
 use Setlist\Application\Persistence\Setlist\PersistedSetlist;
 use Setlist\Application\Persistence\Song\PersistedSong;
 use Setlist\Application\Persistence\Song\PersistedSongCollection;
-use Setlist\Domain\Value\Uuid;
 use Setlist\Infrastructure\DataTransformer\SetlistDataTransformer;
 
 class SetlistDataTransformerTest extends TestCase
@@ -25,7 +24,7 @@ class SetlistDataTransformerTest extends TestCase
             PersistedSongCollection::create(...$songs),
         ];
 
-        $id = Uuid::random();
+        $id = '8ffd680a-ff57-41f3-ac5e-bf1d877f6950';
         $name = 'Setlist name';
         $description = 'Setlist description';
         $date = '2018-01-01';
@@ -70,7 +69,7 @@ class SetlistDataTransformerTest extends TestCase
 
         $this->assertEquals(
             $setlistArray['id'],
-            $id->uuid()
+            $id
         );
 
         $this->assertEquals(

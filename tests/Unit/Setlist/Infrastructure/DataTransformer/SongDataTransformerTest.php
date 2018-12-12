@@ -4,7 +4,6 @@ namespace Tests\Unit\Setlist\Infrastructure\DataTransformer;
 
 use PHPUnit\Framework\TestCase;
 use Setlist\Application\Persistence\Song\PersistedSong;
-use Setlist\Domain\Value\Uuid;
 use Setlist\Infrastructure\DataTransformer\SongDataTransformer;
 
 class SongDataTransformerTest extends TestCase
@@ -14,7 +13,7 @@ class SongDataTransformerTest extends TestCase
      */
     public function dataTransformerCanBeWritenAndReaded()
     {
-        $id = Uuid::random();
+        $id = '8ffd680a-ff57-41f3-ac5e-bf1d877f6950';
         $title = 'Song Title';
         $creationDate = '2018-10-10 10:11:22';
         $updateDate = '2018-10-10 10:11:22';
@@ -39,7 +38,7 @@ class SongDataTransformerTest extends TestCase
 
         $this->assertEquals(
             $songArray['id'],
-            $id->uuid()
+            $id
         );
 
         $this->assertEquals(

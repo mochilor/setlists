@@ -13,7 +13,7 @@ class SongWasUnhiddenTest extends TestCase
      */
     public function domainEventCanBeCreatedAndHasGetters()
     {
-        $uuid = Uuid::random();
+        $uuid = $this->getMockBuilder(Uuid::class)->getMock();
         $formattedUpdateTime = '2018-01-01 00:00:00';
         $event = SongWasUnhidden::create($uuid, $formattedUpdateTime);
 

@@ -25,11 +25,6 @@ class SongRepository implements SongRepositoryInterface
         $this->songFactory = $songFactory;
     }
 
-    public function nextIdentity(): Uuid
-    {
-        return Uuid::random();
-    }
-
     public function save(Song $song)
     {
         app('db')->transaction(function () use($song) {

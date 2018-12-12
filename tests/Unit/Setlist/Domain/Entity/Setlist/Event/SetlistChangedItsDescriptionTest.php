@@ -13,7 +13,7 @@ class SetlistChangedItsDescriptionTest extends TestCase
      */
     public function domainEventCanBeCreatedAndHasGetters()
     {
-        $uuid = Uuid::random();
+        $uuid = $this->getMockBuilder(Uuid::class)->getMock();
         $description = 'A Description';
         $formattedUpdateDate = '2018-01-01';
         $event = SetlistChangedItsDescription::create($uuid, $description, $formattedUpdateDate);

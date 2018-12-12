@@ -14,7 +14,7 @@ class SetlistWasCreatedTest extends TestCase
      */
     public function domainEventCanBeCreatedAndHasGetters()
     {
-        $uuid = Uuid::random();
+        $uuid = $this->getMockBuilder(Uuid::class)->getMock();
         $actCollection = $this->getMockBuilder(ActCollection::class)->getMock();
         $name = 'A Name';
         $description = 'A Description';

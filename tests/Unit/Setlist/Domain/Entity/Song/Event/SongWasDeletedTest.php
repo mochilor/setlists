@@ -13,7 +13,7 @@ class SongWasDeletedTest extends TestCase
      */
     public function domainEventCanBeCreatedAndHasGetters()
     {
-        $uuid = Uuid::random();
+        $uuid = $this->getMockBuilder(Uuid::class)->getMock();
         $event = SongWasDeleted::create($uuid);
 
         $this->assertInstanceOf(

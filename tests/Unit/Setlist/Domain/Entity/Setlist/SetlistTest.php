@@ -76,7 +76,7 @@ class SetlistTest extends TestCase
 
     private function getSetlist(array $acts, string $name, string $description): Setlist
     {
-        $id = Uuid::random();
+        $id = $this->getMockBuilder(Uuid::class)->getMock();
         $actCollection = ActCollection::create(...$acts);
         $date = DateTime::createFromFormat(self::DATE_FORMAT, self::FULL_DATETIME);
         $creationDate = DateTimeImmutable::createFromFormat(self::DATE_FORMAT, self::FULL_DATETIME);

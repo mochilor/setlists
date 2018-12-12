@@ -7,16 +7,20 @@ use Setlist\Application\Command\Song\ForceDeleteSong;
 use Setlist\Application\Command\Song\Handler\ForceDeleteSongHandler;
 use Setlist\Domain\Entity\Song\Song;
 use Setlist\Domain\Entity\Song\SongRepository;
+use Setlist\Domain\Value\Uuid;
+use Setlist\Domain\Value\UuidGenerator;
 
 class ForceDeleteSongHandlerTest extends TestCase
 {
     private $songRepository;
     private $commandHandler;
+    private $uuidGenerator;
 
     protected function setUp()
     {
         $this->songRepository = $this->getMockBuilder(SongRepository::class)->getMock();
-        $this->commandHandler = new ForceDeleteSongHandler($this->songRepository);
+        $this->uuidGenerator = $this->getMockBuilder(UuidGenerator::class)->getMock();
+        $this->commandHandler = new ForceDeleteSongHandler($this->songRepository, $this->uuidGenerator);
     }
 
     /**
@@ -26,14 +30,21 @@ class ForceDeleteSongHandlerTest extends TestCase
     {
         $command = $this->getCommand();
         $song = $this->getMockBuilder(Song::class)->getMock();
+        $uuid = $this->getMockBuilder(Uuid::class)->getMock();
 
-        $song->expects($this->once())
-            ->method('delete');
+        $this->uuidGenerator
+            ->expects($this->once())
+            ->method('fromString')
+            ->with($command->uuid())
+            ->willReturn($uuid);
 
         $this->songRepository
             ->expects($this->once())
             ->method('get')
             ->willReturn($song);
+
+        $song->expects($this->once())
+            ->method('delete');
 
         $this->songRepository
             ->expects($this->once())

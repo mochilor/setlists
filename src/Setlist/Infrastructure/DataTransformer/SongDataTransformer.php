@@ -17,7 +17,7 @@ class SongDataTransformer implements SongDataTransformerInterface
     public function read(): array
     {
         return [
-            'id' => (string) $this->song->id(),
+            'id' => $this->song->id(),
             'title' => $this->song->title(),
             'is_visible' => $this->song->isVisible(),
             'creation_date' => $this->song->creationDate(),

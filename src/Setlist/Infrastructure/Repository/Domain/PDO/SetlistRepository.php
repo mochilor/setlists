@@ -16,6 +16,7 @@ use Setlist\Domain\Entity\Setlist\Setlist;
 use Setlist\Domain\Entity\Setlist\SetlistRepository as SetlistRepositoryInterface;
 use Setlist\Domain\Value\Uuid;
 use PDO;
+use Setlist\Domain\Value\UuidGenerator;
 use Setlist\Infrastructure\Exception\PersistenceException;
 
 class SetlistRepository implements SetlistRepositoryInterface
@@ -24,6 +25,7 @@ class SetlistRepository implements SetlistRepositoryInterface
     private $setlistFactory;
     private $songRepository;
     private $actFactory;
+    private $uuidGenerator;
 
     const TABLE_NAME = 'setlist';
 
@@ -31,18 +33,15 @@ class SetlistRepository implements SetlistRepositoryInterface
         PDO $PDO,
         SetlistFactory $setlistFactory,
         SongRepository $songRepository,
-        ActFactory $actFactory
+        ActFactory $actFactory,
+        UuidGenerator $uuidGenerator
     ) {
         $this->PDO = $PDO;
         $this->PDO->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         $this->setlistFactory = $setlistFactory;
         $this->songRepository = $songRepository;
         $this->actFactory = $actFactory;
-    }
-
-    public function nextIdentity(): Uuid
-    {
-        return Uuid::random();
+        $this->uuidGenerator = $uuidGenerator;
     }
 
     public function save(Setlist $setlist)
@@ -224,7 +223,8 @@ SQL;
                 $currentAct = $song['act'];
             }
 
-            $acts[$currentAct][$song['order']] = $this->songRepository->get(Uuid::create($song['song_id']));
+            $id = $this->uuidGenerator->fromString($song['song_id']);
+            $acts[$currentAct][$song['order']] = $this->songRepository->get($id);
         }
 
         foreach ($acts as $act) {

@@ -13,7 +13,7 @@ class SongWasCreatedTest extends TestCase
      */
     public function domainEventCanBeCreatedAndHasGetters()
     {
-        $uuid = Uuid::random();
+        $uuid = $this->getMockBuilder(Uuid::class)->getMock();
         $title = 'A Title';
         $formattedDateTime = '2018-01-01 00:00:00';
         $event = SongWasCreated::create($uuid, $title, $formattedDateTime);

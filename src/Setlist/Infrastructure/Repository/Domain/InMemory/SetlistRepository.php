@@ -18,11 +18,6 @@ class SetlistRepository implements SetlistRepositoryInterface
         $this->setlistFactory = $setlistFactory;
     }
 
-    public function nextIdentity(): Uuid
-    {
-        return Uuid::random();
-    }
-
     public function save(Setlist $setlist)
     {
         $events = $setlist->events();

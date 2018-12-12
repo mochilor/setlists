@@ -7,22 +7,28 @@ use Setlist\Application\Exception\SongCanNotBeDeletedException;
 use Setlist\Application\Exception\SongDoesNotExistException;
 use Setlist\Domain\Entity\Song\Song;
 use Setlist\Domain\Entity\Song\SongRepository;
-use Setlist\Domain\Value\Uuid;
 use Setlist\Application\Persistence\Setlist\SetlistRepository as ApplicationSetlistRepository;
+use Setlist\Domain\Value\UuidGenerator;
 
 class DeleteSongHandler
 {
     private $songRepository;
     private $setlistRepository;
+    private $uuidGenerator;
 
-    public function __construct(SongRepository $songRepository, ApplicationSetlistRepository $setlistRepository) {
+    public function __construct(
+        SongRepository $songRepository,
+        ApplicationSetlistRepository $setlistRepository,
+        UuidGenerator $uuidGenerator
+    ) {
         $this->songRepository = $songRepository;
         $this->setlistRepository = $setlistRepository;
+        $this->uuidGenerator = $uuidGenerator;
     }
 
     public function __invoke(DeleteSong $command)
     {
-        $uuid = Uuid::create($command->uuid());
+        $uuid = $this->uuidGenerator->fromString($command->uuid());
         $song = $this->songRepository->get($uuid);
 
         if (!$song instanceof Song) {

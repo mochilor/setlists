@@ -4,7 +4,6 @@ namespace Setlist\Infrastructure\Repository\Application\PDO;
 
 use PDO;
 use Setlist\Application\Persistence\Setlist\PersistedSetlist;
-use Setlist\Domain\Value\Uuid;
 
 trait PDOHelper
 {
@@ -39,7 +38,7 @@ SQL;
                 $currentAct = $song['act'];
             }
 
-            $acts[$currentAct][$song['order']] = $this->songRepository->getOneSongById(Uuid::create($song['song_id']));
+            $acts[$currentAct][$song['order']] = $this->songRepository->getOneSongById($song['song_id']);
         }
 
         $persistedSongCollections = [];

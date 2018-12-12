@@ -6,15 +6,17 @@ use DateTime;
 use DateTimeImmutable;
 use Setlist\Domain\Entity\EventsTrigger;
 use Setlist\Domain\Exception\Setlist\InvalidDateException;
-use Setlist\Domain\Value\Uuid;
+use Setlist\Domain\Value\UuidGenerator;
 
 class SetlistFactory
 {
     private $eventsTrigger;
+    private $uuidGenerator;
 
-    public function __construct(EventsTrigger $eventsTrigger)
+    public function __construct(EventsTrigger $eventsTrigger, UuidGenerator $uuidGenerator)
     {
         $this->eventsTrigger = $eventsTrigger;
+        $this->uuidGenerator = $uuidGenerator;
     }
 
     public function make(
@@ -25,7 +27,7 @@ class SetlistFactory
         string $formattedDate
     ): Setlist
     {
-        $uuid = Uuid::create($uuidString);
+        $uuid = $this->uuidGenerator->fromString($uuidString);
         $actCollection = ActCollection::create(...$acts);
         $date = $this->getDatetime($formattedDate);
         $creationDate = $updateDate = new DateTimeImmutable();
@@ -52,7 +54,7 @@ class SetlistFactory
         string $formattedUpdateDate
     ): Setlist
     {
-        $uuid = Uuid::create($uuidString);
+        $uuid = $this->uuidGenerator->fromString($uuidString);
         $actCollection = ActCollection::create(...$acts);
         $date = $this->getDatetime($formattedDate);
         $creationDate = DateTimeImmutable::createFromFormat(Setlist::CREATION_DATE_FORMAT, $formattedCreationDate);

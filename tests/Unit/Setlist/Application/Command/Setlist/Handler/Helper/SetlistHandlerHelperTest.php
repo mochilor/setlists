@@ -9,19 +9,26 @@ use Setlist\Domain\Entity\Setlist\ActFactory;
 use Setlist\Domain\Entity\Song\Song;
 use Setlist\Domain\Entity\Song\SongRepository;
 use Setlist\Domain\Value\Uuid;
+use Setlist\Infrastructure\Value\UuidGenerator;
 
 class SetlistHandlerHelperTest extends TestCase
 {
     private $songRepository;
     private $actFactory;
     private $setlistHandlerHelper;
+    private $uuidGenerator;
 
     public function setUp()
     {
         $this->songRepository = $this->getMockBuilder(SongRepository::class)->getMock();
         $this->actFactory = $this->getMockBuilder(ActFactory::class)->getMock();
+        $this->uuidGenerator = $this->getMockBuilder(UuidGenerator::class)->getMock();
 
-        $this->setlistHandlerHelper = new SetlistHandlerHelper($this->songRepository, $this->actFactory);
+        $this->setlistHandlerHelper = new SetlistHandlerHelper(
+            $this->songRepository,
+            $this->actFactory,
+            $this->uuidGenerator
+        );
     }
 
     /**
@@ -38,10 +45,16 @@ class SetlistHandlerHelperTest extends TestCase
             $songs = [];
             foreach ($act as $keySong => $songUuid) {
                 $song = $this->getMockBuilder(Song::class)->getMock();
+                $uuidObject = $this->getMockBuilder(Uuid::class)->getMock();
+                $this->uuidGenerator
+                    ->expects($this->at($n))
+                    ->method('fromString')
+                    ->with($songUuid)
+                    ->willReturn($uuidObject);
                 $this->songRepository
                     ->expects($this->at($n))
                     ->method('get')
-                    ->with($songUuid)
+                    ->with($uuidObject)
                     ->willReturn($song);
 
                 $songs[] = $song;
@@ -122,16 +135,24 @@ class SetlistHandlerHelperTest extends TestCase
      */
     public function invalidSongThrowsException()
     {
+        $uuid ='c88e9355-939d-4160-9570-97560b475710';
         $acts = [
             [
-                'c88e9355-939d-4160-9570-97560b475710',
+                $uuid,
             ],
         ];
+
+        $uuidObject = $this->getMockBuilder(Uuid::class)->getMock();
+        $this->uuidGenerator
+            ->expects($this->once())
+            ->method('fromString')
+            ->with($uuid)
+            ->willReturn($uuidObject);
 
         $this->songRepository
             ->expects($this->once())
             ->method('get')
-            ->with($acts[0][0])
+            ->with($uuidObject)
             ->willReturn(null);
 
         $this->setlistHandlerHelper->getActsForSetlist($acts);

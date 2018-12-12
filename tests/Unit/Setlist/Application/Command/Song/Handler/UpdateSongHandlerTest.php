@@ -5,23 +5,29 @@ namespace Tests\Unit\Setlist\Application\Command\Song\Handler;
 use PHPUnit\Framework\TestCase;
 use Setlist\Application\Command\Song\Handler\UpdateSongHandler;
 use Setlist\Application\Command\Song\UpdateSong;
-use Setlist\Application\Persistence\Song\PersistedSongRepository as ApplicationSongRespository;
 use Setlist\Domain\Entity\Song\Song;
 use Setlist\Domain\Entity\Song\SongRepository;
 use Setlist\Domain\Entity\Song\SongTitleRepository;
 use Setlist\Domain\Value\Uuid;
+use Setlist\Domain\Value\UuidGenerator;
 
 class UpdateSongHandlerTest extends TestCase
 {
     private $songRepository;
     private $commandHandler;
     private $songTitleRepository;
+    private $uuidGenerator;
 
     protected function setUp()
     {
         $this->songRepository = $this->getMockBuilder(SongRepository::class)->getMock();
         $this->songTitleRepository = $this->getMockBuilder(SongTitleRepository::class)->getMock();
-        $this->commandHandler = new UpdateSongHandler($this->songRepository, $this->songTitleRepository);
+        $this->uuidGenerator = $this->getMockBuilder(UuidGenerator::class)->getMock();
+        $this->commandHandler = new UpdateSongHandler(
+            $this->songRepository,
+            $this->songTitleRepository,
+            $this->uuidGenerator
+        );
     }
 
     /**
@@ -31,7 +37,13 @@ class UpdateSongHandlerTest extends TestCase
     {
         $command = $this->getCommand();
         $song = $this->getMockBuilder(Song::class)->getMock();
-        $uuid = Uuid::create($command->uuid());
+        $uuid = $this->getMockBuilder(Uuid::class)->getMock();
+
+        $this->uuidGenerator
+            ->expects($this->once())
+            ->method('fromString')
+            ->with($command->uuid())
+            ->willReturn($uuid);
 
         $this->songRepository
             ->expects($this->once())
@@ -67,6 +79,13 @@ class UpdateSongHandlerTest extends TestCase
     public function unknownUuidThrowsException()
     {
         $command = $this->getCommand();
+        $uuid = $this->getMockBuilder(Uuid::class)->getMock();
+
+        $this->uuidGenerator
+            ->expects($this->once())
+            ->method('fromString')
+            ->with($command->uuid())
+            ->willReturn($uuid);
 
         $this->songRepository
             ->expects($this->once())
@@ -84,7 +103,13 @@ class UpdateSongHandlerTest extends TestCase
     {
         $command = $this->getCommand();
         $song = $this->getMockBuilder(Song::class)->getMock();
-        $uuid = Uuid::create($command->uuid());
+        $uuid = $this->getMockBuilder(Uuid::class)->getMock();
+
+        $this->uuidGenerator
+            ->expects($this->once())
+            ->method('fromString')
+            ->with($command->uuid())
+            ->willReturn($uuid);
 
         $this->songRepository
             ->expects($this->once())

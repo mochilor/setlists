@@ -45,7 +45,7 @@ class SongTest extends TestCase
     {
         $eventBus = $this->getMockBuilder(EventBus::class)->getMock();
         $eventsTrigger = new EventsTrigger($eventBus);
-        $uuid = Uuid::random();
+        $uuid = $this->getMockBuilder(Uuid::class)->getMock();
         $title = self::SONG_TITLE;
 
         return Song::create(
@@ -63,7 +63,7 @@ class SongTest extends TestCase
      */
     public function badTitleThrowsException()
     {
-        $uuid = Uuid::random();
+        $uuid = $this->getMockBuilder(Uuid::class)->getMock();
         $title = 'A';
 
         $eventBus = $this->getMockBuilder(EventBus::class)->getMock();
@@ -263,7 +263,7 @@ class SongTest extends TestCase
     {
         $eventBus = $this->getMockBuilder(EventBus::class)->getMock();
         $eventsTrigger = new EventsTrigger($eventBus);
-        $uuid = Uuid::random();
+        $uuid = $this->getMockBuilder(Uuid::class)->getMock();
         $title = 'Another song title';
         $eventsTrigger->trigger(SongWasCreated::create($uuid, $title, self::SONG_DATE_TIME));
 

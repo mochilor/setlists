@@ -5,12 +5,9 @@ namespace Tests\Unit\Setlist\Application\Command\Song\Handler;
 use Setlist\Application\Command\Song\CreateSong;
 use Setlist\Application\Command\Song\Handler\CreateSongHandler;
 use PHPUnit\Framework\TestCase;
-use Setlist\Domain\Entity\EventBus;
-use Setlist\Domain\Entity\EventsTrigger;
 use Setlist\Domain\Entity\Song\SongFactory;
 use Setlist\Domain\Entity\Song\SongRepository;
 use Setlist\Domain\Entity\Song\SongTitleRepository;
-use Setlist\Domain\Value\Uuid;
 
 class CreateSongHandlerTest extends TestCase
 {
@@ -19,13 +16,14 @@ class CreateSongHandlerTest extends TestCase
     private $commandHandler;
     private $songFactory;
 
+    const UUID_VALUE = '8ffd680a-ff57-41f3-ac5e-bf1d877f6950';
+
     protected function setUp()
     {
-        $this->songRepository = $this->getMockBuilder(SongRepository::class)->getMock();
         $this->songTitleRepository = $this->getMockBuilder(SongTitleRepository::class)->getMock();
-        $eventBus = $this->getMockBuilder(EventBus::class)->getMock();
-        $eventsTrigger = new EventsTrigger($eventBus);
-        $this->songFactory = new SongFactory($eventsTrigger);
+        $this->songRepository = $this->getMockBuilder(SongRepository::class)->getMock();
+        $this->songFactory = $this->getMockBuilder(SongFactory::class)->disableOriginalConstructor()->getMock();
+
         $this->commandHandler = new CreateSongHandler(
             $this->songTitleRepository,
             $this->songRepository,
@@ -39,10 +37,10 @@ class CreateSongHandlerTest extends TestCase
     public function commandHandlerCanBeInvoked()
     {
         $payload = [
+            'uuid' => self::UUID_VALUE,
             'title' => 'New Title',
         ];
         $command = new CreateSong($payload);
-        $uuid = Uuid::random();
 
         $this->songTitleRepository
             ->expects($this->once())
@@ -50,10 +48,10 @@ class CreateSongHandlerTest extends TestCase
             ->with($command->title())
             ->willReturn(true);
 
-        $this->songRepository
+        $this->songFactory
             ->expects($this->once())
-            ->method('nextIdentity')
-            ->willReturn($uuid);
+            ->method('make')
+            ->with($payload['uuid'], $payload['title']);
 
         $this->songRepository
             ->expects($this->once())
@@ -69,6 +67,7 @@ class CreateSongHandlerTest extends TestCase
     public function repeatedTitleThrowsException()
     {
         $payload = [
+            'uuid' => self::UUID_VALUE,
             'title' => 'Non unique title',
         ];
         $command = new CreateSong($payload);

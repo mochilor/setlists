@@ -32,7 +32,7 @@ class CreateSongHandler
         }
 
         $song = $this->songFactory->make(
-            $this->songRepository->nextIdentity(),
+            $command->uuid(),
             $command->title()
         );
 

@@ -10,6 +10,7 @@ use Setlist\Domain\Entity\Setlist\Setlist;
 use Setlist\Domain\Entity\Setlist\SetlistFactory;
 use PHPUnit\Framework\TestCase;
 use Setlist\Domain\Value\Uuid;
+use Setlist\Domain\Value\UuidGenerator;
 
 class SetlistFactoryTest extends TestCase
 {
@@ -18,7 +19,8 @@ class SetlistFactoryTest extends TestCase
      */
     public function factoryCanMakeInstances()
     {
-        $uuid = Uuid::random();
+        $uuid = '8ffd680a-ff57-41f3-ac5e-bf1d877f6950';
+        $uuidObject = $this->getMockBuilder(Uuid::class)->getMock();
         $acts = [
             $this->getAct(),
             $this->getAct(),
@@ -30,8 +32,14 @@ class SetlistFactoryTest extends TestCase
 
         $eventBus = $this->getMockBuilder(EventBus::class)->getMock();
         $eventsTrigger = new EventsTrigger($eventBus);
+        $uuidGenerator = $this->getMockBuilder(UuidGenerator::class)->getMock();
+        $uuidGenerator
+            ->expects($this->once())
+            ->method('fromString')
+            ->with($uuid)
+            ->willReturn($uuidObject);
 
-        $factory = new SetlistFactory($eventsTrigger);
+        $factory = new SetlistFactory($eventsTrigger, $uuidGenerator);
         $setlist = $factory->make($uuid, $acts, $name, $description, $formattedDate);
 
         $this->assertInstanceOf(
@@ -50,17 +58,13 @@ class SetlistFactoryTest extends TestCase
         );
     }
 
-    protected function getAct()
-    {
-        return $this->getMockBuilder(Act::class)->getMock();
-    }
-
     /**
      * @test
      */
     public function factoryCanRestoreInstances()
     {
-        $uuid = Uuid::random();
+        $uuid = '8ffd680a-ff57-41f3-ac5e-bf1d877f6950';
+        $uuidObject = $this->getMockBuilder(Uuid::class)->getMock();
         $acts = [
             $this->getAct(),
             $this->getAct(),
@@ -72,9 +76,16 @@ class SetlistFactoryTest extends TestCase
         $formattedCreationDate = '2018-10-01 15:00:00';
         $formattedUpdateDate = '2018-10-01 15:00:00';
         $eventBus = $this->getMockBuilder(EventBus::class)->getMock();
+        $uuidGenerator = $this->getMockBuilder(UuidGenerator::class)->getMock();
+        $uuidGenerator
+            ->expects($this->once())
+            ->method('fromString')
+            ->with($uuid)
+            ->willReturn($uuidObject);
+
         $eventsTrigger = new EventsTrigger($eventBus);
 
-        $factory = new SetlistFactory($eventsTrigger);
+        $factory = new SetlistFactory($eventsTrigger, $uuidGenerator);
         $setlist = $factory->restore($uuid, $acts, $name, $description, $formattedDate, $formattedCreationDate, $formattedUpdateDate);
 
         $this->assertInstanceOf(
@@ -94,7 +105,8 @@ class SetlistFactoryTest extends TestCase
      */
     public function invalidDateThrowsException()
     {
-        $uuid = Uuid::random();
+        $uuid = '8ffd680a-ff57-41f3-ac5e-bf1d877f6950';
+        $uuidObject = $this->getMockBuilder(Uuid::class)->getMock();
         $acts = [
             $this->getAct(),
             $this->getAct(),
@@ -106,8 +118,19 @@ class SetlistFactoryTest extends TestCase
 
         $eventBus = $this->getMockBuilder(EventBus::class)->getMock();
         $eventsTrigger = new EventsTrigger($eventBus);
+        $uuidGenerator = $this->getMockBuilder(UuidGenerator::class)->getMock();
+        $uuidGenerator
+            ->expects($this->once())
+            ->method('fromString')
+            ->with($uuid)
+            ->willReturn($uuidObject);
 
-        $factory = new SetlistFactory($eventsTrigger);
+        $factory = new SetlistFactory($eventsTrigger, $uuidGenerator);
         $factory->make($uuid, $acts, $name, $description, $formattedDate);
+    }
+
+    protected function getAct()
+    {
+        return $this->getMockBuilder(Act::class)->getMock();
     }
 }

@@ -14,7 +14,7 @@ class SetlistChangedItsActCollectionTest extends TestCase
      */
     public function domainEventCanBeCreatedAndHasGetters()
     {
-        $uuid = Uuid::random();
+        $uuid = $this->getMockBuilder(Uuid::class)->getMock();
         $actCollection = ActCollection::create(...[]);
         $formattedUpdateDate = '2018-01-01';
         $event = SetlistChangedItsActCollection::create($uuid, $actCollection, $formattedUpdateDate);
