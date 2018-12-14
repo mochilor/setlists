@@ -1,8 +1,11 @@
 <?php
 
 use Behat\Behat\Context\Context;
+use Behat\Behat\Tester\Exception\PendingException;
+use Behat\Gherkin\Node\TableNode;
 use Behat\MinkExtension\Context\MinkContext;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ServerException;
 use Illuminate\Support\Facades\Artisan;
 use PHPUnit\Framework\Assert;
 
@@ -12,14 +15,9 @@ use PHPUnit\Framework\Assert;
 class FeatureContext extends MinkContext implements Context
 {
     /**
-     * @var string
+     * @var array
      */
-    private $songTitle;
-
-    /**
-     * @var string
-     */
-    private $songId;
+    private $songs = [];
 
     /**
      * @var Client
@@ -32,9 +30,14 @@ class FeatureContext extends MinkContext implements Context
     private $apiUrl;
 
     /**
-     * @var bool
+     * @var int
      */
-    private static $readyDB = false;
+    private $expectedCode = 200;
+
+    /**
+     * @var int
+     */
+    private $responseCode = 200;
 
     /**
      * Initializes context.
@@ -45,92 +48,254 @@ class FeatureContext extends MinkContext implements Context
      */
     public function __construct()
     {
-        $this->prepareDB();
         $this->client = new Client();
         $this->apiUrl = env('API_URL');
     }
 
-    private function prepareDB()
+    /**
+     * @static
+     * @BeforeScenario
+     */
+    public static function prepareDatabase()
     {
-        if (!self::$readyDB) {
-            echo "Preparing database...\n\n";
-            Artisan::call('migrate:fresh');
-            self::$readyDB = true;
+        echo "Preparing database...\n\n";
+        Artisan::call('migrate:fresh');
+    }
+
+    /**
+     * @Given I want to create songs with values:
+     * @param TableNode $table
+     */
+    public function iWantToCreateSongsWithValues(TableNode $table)
+    {
+        foreach ($table as $row) {
+            $song = [];
+            if (isset($row['id'])) {
+                $song['id'] = $row['id'];
+            }
+            if (isset($row['title'])) {
+                $song['title'] = $row['title'];
+            }
+
+            if (!isset($row['id']) || !isset($row['title'])) {
+                $this->expectedCode = 500;
+            } else {
+                $this->expectedCode = 201;
+            }
+
+            foreach ($this->songs as $key => $storedSong) {
+                if ($storedSong['id'] == $song['id'] || $storedSong['title'] == $song['title']) {
+                    $this->expectedCode = 409;
+                    unset($this->songs[$key]);
+                }
+            }
+
+            $this->songs[] = $song;
         }
     }
 
     /**
-     * @static
-     * @beforeSuite
+     * @When I request the api service to create the songs
      */
-    public static function bootstrapLaravel()
+    public function iRequestTheApiServiceToCreateTheSongs()
     {
-        // Example!
+        foreach ($this->songs as $song) {
+            $params = [];
+
+            if (isset($song['id'])) {
+                $params['id'] = $song['id'];
+            }
+            if (isset($song['title'])) {
+                $params['title'] = $song['title'];
+            }
+
+            $options = ['form_params' => $params];
+
+            $this->request(
+                'post',
+                $this->apiUrl . '/song',
+                $this->expectedCode,
+                $options
+            );
+        }
     }
 
     /**
-     * @Given I want to create a song with title :arg1 and id :arg2
+     * @Then the api must show me any of the songs if I request them by their id
      */
-    public function iWantToCreateASongWithTitleAndId($arg1, $arg2)
+    public function theApiMustShowMeAnyOfTheSongsIfIRequestThemByTheirId()
     {
-        $this->songTitle = $arg1;
-        $this->songId = $arg2;
+        foreach ($this->songs as $song) {
+            $result = $this->request(
+                'get',
+                $this->apiUrl . '/song/' . $song['id']
+            );
+
+            Assert::assertJson($result);
+
+            $responseSong = json_decode($result, true);
+
+            Assert::assertArrayHasKey('id', $responseSong);
+            Assert::assertArrayHasKey('title', $responseSong);
+            Assert::assertArrayHasKey('is_visible', $responseSong);
+            Assert::assertArrayHasKey('creation_date', $responseSong);
+            Assert::assertArrayHasKey('update_date', $responseSong);
+
+            Assert::assertEquals(
+                $responseSong['id'],
+                $song['id']
+            );
+
+            Assert::assertEquals(
+                $responseSong['title'],
+                $song['title']
+            );
+        }
     }
 
     /**
-     * @When I request the api service to create the song
+     * @Then the api must show me all the songs if I request them
      */
-    public function iRequestTheApiServiceToCreateTheSong()
+    public function theApiMustShowMeAllTheSongsIfIRequestThem()
     {
-        $options = [
-            'form_params' => [
-                'id' => $this->songId,
-                'title' => $this->songTitle,
-            ],
-        ];
-
-        $this->request('post', $this->apiUrl . '/song', $options);
-    }
-
-    /**
-     * @Then the song should have been created
-     */
-    public function theSongShouldHaveBeenCreated()
-    {
-        $result = $this->request('get', $this->apiUrl . '/song/' . $this->songId);
-
-        Assert::assertJson($result);
-
-        $song = json_decode($result, true);
-
-        Assert::assertArrayHasKey('id', $song);
-        Assert::assertArrayHasKey('title', $song);
-        Assert::assertArrayHasKey('is_visible', $song);
-        Assert::assertArrayHasKey('creation_date', $song);
-        Assert::assertArrayHasKey('update_date', $song);
-
-        Assert::assertEquals(
-            $song['id'],
-            $this->songId
+        $result = $this->request(
+            'get',
+            $this->apiUrl . '/songs'
         );
 
-        Assert::assertEquals(
-            $song['title'],
-            $this->songTitle
+        $this->checkMultipleSongs($result, count($this->songs));
+    }
+
+    /**
+     * @Then the api must be able to show me a list with songs from: :arg1 to: :arg2
+     */
+    public function theApiMustBeAbleToShowMeAListWithSongsFromTo($arg1, $arg2)
+    {
+        $result = $this->request(
+            'get',
+            $this->apiUrl . '/songs?interval=' . $arg1 . ',' . $arg2
         );
+
+        $this->checkMultipleSongs($result, $arg2 - $arg1);
+    }
+
+    /**
+     * @Then the api must be able to show me a list with songs from: :arg1 to the end
+     */
+    public function theApiMustBeAbleToShowMeAListWithSongsFromToTheEnd($arg1)
+    {
+        $result = $this->request(
+            'get',
+            $this->apiUrl . '/songs?interval=' . $arg1 . ',999'
+        );
+
+        $this->checkMultipleSongs($result, count($this->songs) - $arg1);
     }
 
     /**
      * @param string $verb
      * @param string $url
+     * @param int $expectedCode
      * @param array $options
      * @return string
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    private function request(string $verb, string $url, array $options = [])
+    private function request(string $verb, string $url, int $expectedCode = 200, array $options = [])
     {
-        $result = $this->client->request($verb, $url, $options);
+        try {
+            $result = $this->client->request($verb, $url, $options);
+            $this->responseCode = $result->getStatusCode();
+            $result = (string) $result->getBody();
+        } catch (RuntimeException $e) {
+            $this->responseCode = $e->getResponse()->getStatusCode();
+            $result = '';
+        }
 
-        return (string) $result->getBody();
+        Assert::assertEquals(
+            $expectedCode,
+            $this->responseCode
+        );
+
+        return $result;
+    }
+
+    /**
+     * @param string $result
+     * @param int $songsCount
+     */
+    private function checkMultipleSongs(string $result, int $songsCount): void
+    {
+        Assert::assertJson($result);
+
+        $responseSongs = json_decode($result, true);
+
+        Assert::assertEquals(
+            $songsCount,
+            count($responseSongs)
+        );
+
+        $count = 0;
+        foreach ($responseSongs as $responseSong) {
+
+            Assert::assertArrayHasKey('id', $responseSong);
+            Assert::assertArrayHasKey('title', $responseSong);
+            Assert::assertArrayHasKey('is_visible', $responseSong);
+            Assert::assertArrayHasKey('creation_date', $responseSong);
+            Assert::assertArrayHasKey('update_date', $responseSong);
+
+            foreach ($this->songs as $song) {
+                if ($responseSong['id'] == $song['id']) {
+                    Assert::assertEquals(
+                        $responseSong['id'],
+                        $song['id']
+                    );
+
+                    Assert::assertEquals(
+                        $responseSong['title'],
+                        $song['title']
+                    );
+
+                    $count++;
+                }
+            }
+        }
+
+        Assert::assertEquals(
+            $count,
+            count($responseSongs)
+        );
+    }
+
+    /**
+     * @Then the api must return an error response with code: :arg1
+     */
+    public function theApiMustReturnAnErrorResponseWithCode($arg1)
+    {
+        Assert::assertEquals(
+            $arg1,
+            $this->responseCode
+        );
+    }
+
+    /**
+     * @Then the api must not return any song when I request all the stored songs
+     */
+    public function theApiMustNotReturnAnySongWhenIRequestAllTheStoredSongs()
+    {
+        $result = $this->request(
+            'get',
+            $this->apiUrl . '/songs'
+        );
+
+        $this->checkMultipleSongs($result, 0);
+    }
+
+    /**
+     * @Given the following song exists:
+     */
+    public function theFollowingSongExists(TableNode $table)
+    {
+        $this->iWantToCreateSongsWithValues($table);
+        $this->iRequestTheApiServiceToCreateTheSongs();
     }
 }
