@@ -2,9 +2,9 @@
 
 namespace Setlist\Infrastructure\Repository\Domain\InMemory;
 
-use Setlist\Domain\Entity\Song\SongTitleRepository as SongTitleRepositoryInterface;
+use Setlist\Domain\Entity\Song\SongAvailabilityRepository as SongAvailabilityRepositoryInterface;
 
-class SongTitleRepository implements SongTitleRepositoryInterface
+class SongAvailabilityRepository implements SongAvailabilityRepositoryInterface
 {
     public function titleIsAvailable(string $title): bool
     {
@@ -12,6 +12,11 @@ class SongTitleRepository implements SongTitleRepositoryInterface
     }
 
     public function titleIsUnique(string $title, string $uuid): bool
+    {
+        return true;
+    }
+
+    public function idIsAvailable(string $id): bool
     {
         return true;
     }

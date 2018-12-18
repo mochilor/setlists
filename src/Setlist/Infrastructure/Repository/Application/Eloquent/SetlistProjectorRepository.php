@@ -32,7 +32,7 @@ class SetlistProjectorRepository implements SetlistProjectorRepositoryInterface
         $data = $this->prepareData($event);
 
         $setlistProjection = new SetlistProjection();
-        $setlistProjection->id = $event->id()->value();
+        $setlistProjection->id = $event->id()->value()->value();
         $setlistProjection->data = $data;
         $setlistProjection->save();
     }
@@ -40,7 +40,7 @@ class SetlistProjectorRepository implements SetlistProjectorRepositoryInterface
     private function prepareData(SetlistWasCreated $event): string
     {
         $data = [
-            'id' => $event->id()->value(),
+            'id' => $event->id()->value()->value(),
             'name' => $event->name(),
             'description' => $event->description(),
             'date' => $event->formattedDate(),
@@ -57,7 +57,7 @@ class SetlistProjectorRepository implements SetlistProjectorRepositoryInterface
 
     public function changeName(SetlistChangedItsName $event)
     {
-        $setlistProjection = SetlistProjection::find($event->id());
+        $setlistProjection = SetlistProjection::find($event->id()->value());
 
         if (!$setlistProjection) {
             // Throw Exception?
@@ -72,7 +72,7 @@ class SetlistProjectorRepository implements SetlistProjectorRepositoryInterface
 
     public function changeDescription(SetlistChangedItsDescription $event)
     {
-        $setlistProjection = SetlistProjection::find($event->id());
+        $setlistProjection = SetlistProjection::find($event->id()->value());
 
         if (!$setlistProjection) {
             // Throw Exception?
@@ -87,7 +87,7 @@ class SetlistProjectorRepository implements SetlistProjectorRepositoryInterface
 
     public function changeDate(SetlistChangedItsDate $event)
     {
-        $setlistProjection = SetlistProjection::find($event->id());
+        $setlistProjection = SetlistProjection::find($event->id()->value());
 
         if (!$setlistProjection) {
             // Throw Exception?
@@ -102,7 +102,7 @@ class SetlistProjectorRepository implements SetlistProjectorRepositoryInterface
 
     public function changeActCollection(SetlistChangedItsActCollection $event)
     {
-        $setlistProjection = SetlistProjection::find($event->id());
+        $setlistProjection = SetlistProjection::find($event->id()->value());
 
         if (!$setlistProjection) {
             // Throw Exception?
@@ -118,7 +118,7 @@ class SetlistProjectorRepository implements SetlistProjectorRepositoryInterface
 
     public function delete(SetlistWasDeleted $event)
     {
-        SetlistProjection::destroy($event->id());
+        SetlistProjection::destroy($event->id()->value());
     }
 
     private function getActsArray(ActCollection $actCollection): array
@@ -145,22 +145,22 @@ class SetlistProjectorRepository implements SetlistProjectorRepositoryInterface
 
     public function hideSongInSetlists(SongWasHidden $event)
     {
-        $this->updateSongsInSetlist($event->id(), false, 'is_visible', $event->formattedUpdateDate(), 0);
+        $this->updateSongsInSetlist($event->id()->value(), false, 'is_visible', $event->formattedUpdateDate(), 0);
     }
 
     public function unhideSongInSetlists(SongWasUnhidden $event)
     {
-        $this->updateSongsInSetlist($event->id(), false, 'is_visible', $event->formattedUpdateDate(), 1);
+        $this->updateSongsInSetlist($event->id()->value(), false, 'is_visible', $event->formattedUpdateDate(), 1);
     }
 
     public function changeSongTitleInSetlists(SongChangedItsTitle $event)
     {
-        $this->updateSongsInSetlist($event->id(), false, 'title', $event->formattedUpdateDate(), $event->title());
+        $this->updateSongsInSetlist($event->id()->value(), false, 'title', $event->formattedUpdateDate(), $event->title());
     }
 
     public function deleteSongInSetlists(SongWasDeleted $event)
     {
-        $this->updateSongsInSetlist($event->id(), true);
+        $this->updateSongsInSetlist($event->id()->value(), true);
     }
 
     private function updateSongsInSetlist(

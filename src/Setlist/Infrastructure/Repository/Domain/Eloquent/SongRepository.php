@@ -59,7 +59,7 @@ class SongRepository implements SongRepositoryInterface
 
     public function get(Uuid $uuid): ?Song
     {
-        $songData = EloquentSong::find($uuid);
+        $songData = EloquentSong::find($uuid->value());
 
         if ($songData) {
             return $this->songFactory->restore(

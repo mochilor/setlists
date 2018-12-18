@@ -9,7 +9,7 @@ use Setlist\Application\Command\Setlist\Handler\Helper\SetlistHandlerHelper;
 use Setlist\Domain\Entity\Setlist\Act;
 use Setlist\Domain\Entity\Setlist\Setlist;
 use Setlist\Domain\Entity\Setlist\SetlistFactory;
-use Setlist\Domain\Entity\Setlist\SetlistNameRepository;
+use Setlist\Domain\Entity\Setlist\SetlistAvailabilityRepository;
 use Setlist\Domain\Entity\Setlist\SetlistRepository;
 
 class CreateSetlistHandlerTest extends TestCase
@@ -24,7 +24,7 @@ class CreateSetlistHandlerTest extends TestCase
 
     protected function setUp()
     {
-        $this->setlistNameRepository = $this->getMockBuilder(SetlistNameRepository::class)->getMock();
+        $this->setlistNameRepository = $this->getMockBuilder(SetlistAvailabilityRepository::class)->getMock();
         $this->setlistRepository = $this->getMockBuilder(SetlistRepository::class)->getMock();
         $this->setlistFactory = $this->getMockBuilder(SetlistFactory::class)
             ->disableOriginalConstructor()

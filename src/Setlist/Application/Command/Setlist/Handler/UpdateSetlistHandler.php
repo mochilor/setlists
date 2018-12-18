@@ -10,7 +10,7 @@ use Setlist\Application\Exception\SetlistDoesNotExistException;
 use Setlist\Application\Exception\SetlistNameNotUniqueException;
 use Setlist\Domain\Entity\Setlist\ActCollection;
 use Setlist\Domain\Entity\Setlist\Setlist;
-use Setlist\Domain\Entity\Setlist\SetlistNameRepository;
+use Setlist\Domain\Entity\Setlist\SetlistAvailabilityRepository;
 use Setlist\Domain\Entity\Setlist\SetlistRepository;
 use Setlist\Domain\Exception\Setlist\InvalidDateException;
 use Setlist\Domain\Value\UuidGenerator;
@@ -18,18 +18,18 @@ use Setlist\Domain\Value\UuidGenerator;
 class UpdateSetlistHandler
 {
     private $setlistRepository;
-    private $setlistNameRepository;
+    private $setlistAvailabilityRepository;
     private $setlistHandlerHelper;
     private $uuidGenerator;
 
     public function __construct(
         SetlistRepository $setlistRepository,
-        SetlistNameRepository $setlistNameRepository,
+        SetlistAvailabilityRepository $setlistAvailabilityRepository,
         SetlistHandlerHelper $setlistHandlerHelper,
         UuidGenerator $uuidGenerator
     ) {
         $this->setlistRepository = $setlistRepository;
-        $this->setlistNameRepository = $setlistNameRepository;
+        $this->setlistAvailabilityRepository = $setlistAvailabilityRepository;
         $this->setlistHandlerHelper = $setlistHandlerHelper;
         $this->uuidGenerator = $uuidGenerator;
     }
@@ -59,7 +59,7 @@ class UpdateSetlistHandler
             throw new SetlistDoesNotExistException('Setlist not found');
         }
 
-        if (!$this->setlistNameRepository->nameIsUnique($command->name(), $command->uuid())) {
+        if (!$this->setlistAvailabilityRepository->nameIsUnique($command->name(), $command->uuid())) {
             throw new SetlistNameNotUniqueException('Setlist name already exists');
         }
 

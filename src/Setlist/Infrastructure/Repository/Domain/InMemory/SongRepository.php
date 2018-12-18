@@ -32,7 +32,7 @@ class SongRepository implements SongRepositoryInterface
     public function get(Uuid $uuid): ?Song
     {
         foreach ($this->songs as $song) {
-            if ($song['uuid'] == $uuid) {
+            if ($song['uuid'] == $uuid->value()) {
                 return $song;
             }
         }

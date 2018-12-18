@@ -2,7 +2,7 @@
 
 namespace Setlist\Domain\Entity\Setlist;
 
-interface SetlistNameRepository
+interface SetlistAvailabilityRepository
 {
     public function nameIsAvailable(string $name): bool;
     public function nameIsUnique(string $name, string $uuid): bool;

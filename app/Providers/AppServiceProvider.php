@@ -63,8 +63,8 @@ class AppServiceProvider extends ServiceProvider
         );
 
         $this->app->bind(
-            \Setlist\Domain\Entity\Song\SongTitleRepository::class,
-            "\Setlist\Infrastructure\Repository\Domain\\$this->driver\SongTitleRepository"
+            \Setlist\Domain\Entity\Song\SongAvailabilityRepository::class,
+            "\Setlist\Infrastructure\Repository\Domain\\$this->driver\SongAvailabilityRepository"
         );
 
         $this->app->bind(
@@ -73,8 +73,8 @@ class AppServiceProvider extends ServiceProvider
         );
 
         $this->app->bind(
-            \Setlist\Domain\Entity\Setlist\SetlistNameRepository::class,
-            "\Setlist\Infrastructure\Repository\Domain\\$this->driver\SetlistNameRepository"
+            \Setlist\Domain\Entity\Setlist\SetlistAvailabilityRepository::class,
+            "\Setlist\Infrastructure\Repository\Domain\\$this->driver\SetlistAvailabilityRepository"
         );
     }
 

@@ -7,11 +7,11 @@ use Setlist\Application\Command\Song\Handler\CreateSongHandler;
 use PHPUnit\Framework\TestCase;
 use Setlist\Domain\Entity\Song\SongFactory;
 use Setlist\Domain\Entity\Song\SongRepository;
-use Setlist\Domain\Entity\Song\SongTitleRepository;
+use Setlist\Domain\Entity\Song\SongAvailabilityRepository;
 
 class CreateSongHandlerTest extends TestCase
 {
-    private $songTitleRepository;
+    private $songAvailabilityRepository;
     private $songRepository;
     private $commandHandler;
     private $songFactory;
@@ -20,12 +20,12 @@ class CreateSongHandlerTest extends TestCase
 
     protected function setUp()
     {
-        $this->songTitleRepository = $this->getMockBuilder(SongTitleRepository::class)->getMock();
+        $this->songAvailabilityRepository = $this->getMockBuilder(SongAvailabilityRepository::class)->getMock();
         $this->songRepository = $this->getMockBuilder(SongRepository::class)->getMock();
         $this->songFactory = $this->getMockBuilder(SongFactory::class)->disableOriginalConstructor()->getMock();
 
         $this->commandHandler = new CreateSongHandler(
-            $this->songTitleRepository,
+            $this->songAvailabilityRepository,
             $this->songRepository,
             $this->songFactory
         );
@@ -42,7 +42,13 @@ class CreateSongHandlerTest extends TestCase
         ];
         $command = new CreateSong($payload);
 
-        $this->songTitleRepository
+        $this->songAvailabilityRepository
+            ->expects($this->once())
+            ->method('idIsAvailable')
+            ->with($command->uuid())
+            ->willReturn(true);
+
+        $this->songAvailabilityRepository
             ->expects($this->once())
             ->method('titleIsAvailable')
             ->with($command->title())
@@ -72,10 +78,37 @@ class CreateSongHandlerTest extends TestCase
         ];
         $command = new CreateSong($payload);
 
-        $this->songTitleRepository
+        $this->songAvailabilityRepository
+            ->expects($this->once())
+            ->method('idIsAvailable')
+            ->with($command->uuid())
+            ->willReturn(true);
+
+        $this->songAvailabilityRepository
             ->expects($this->once())
             ->method('titleIsAvailable')
             ->with($command->title())
+            ->willReturn(false);
+
+        ($this->commandHandler)($command);
+    }
+
+    /**
+     * @test
+     * @expectedException \Setlist\Application\Exception\SongIdNotUniqueException
+     */
+    public function repeatedIdThrowsException()
+    {
+        $payload = [
+            'uuid' => self::UUID_VALUE,
+            'title' => 'New Title',
+        ];
+        $command = new CreateSong($payload);
+
+        $this->songAvailabilityRepository
+            ->expects($this->once())
+            ->method('idIsAvailable')
+            ->with($command->uuid())
             ->willReturn(false);
 
         ($this->commandHandler)($command);

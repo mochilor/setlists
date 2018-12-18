@@ -7,23 +7,23 @@ use Setlist\Application\Command\Setlist\Handler\Helper\SetlistHandlerHelper;
 use Setlist\Application\Exception\InvalidSetlistException;
 use Setlist\Application\Exception\SetlistNameNotUniqueException;
 use Setlist\Domain\Entity\Setlist\SetlistFactory;
-use Setlist\Domain\Entity\Setlist\SetlistNameRepository;
+use Setlist\Domain\Entity\Setlist\SetlistAvailabilityRepository;
 use Setlist\Domain\Entity\Setlist\SetlistRepository;
 
 class CreateSetlistHandler
 {
-    private $setlistNameRepository;
+    private $setlistAvailabilityRepository;
     private $setlistRepository;
     private $setlistFactory;
     private $setlistHandlerHelper;
 
     public function __construct(
-        SetlistNameRepository $setlistNameRepository,
+        SetlistAvailabilityRepository $setlistAvailabilityRepository,
         SetlistRepository $setlistRepository,
         SetlistFactory $setlistFactory,
         SetlistHandlerHelper $setlistHandlerHelper
     ) {
-        $this->setlistNameRepository = $setlistNameRepository;
+        $this->setlistAvailabilityRepository = $setlistAvailabilityRepository;
         $this->setlistRepository = $setlistRepository;
         $this->setlistFactory = $setlistFactory;
         $this->setlistHandlerHelper = $setlistHandlerHelper;
@@ -48,7 +48,7 @@ class CreateSetlistHandler
 
     private function guard(CreateSetlist $command)
     {
-        if (!$this->setlistNameRepository->nameIsAvailable($command->name())) {
+        if (!$this->setlistAvailabilityRepository->nameIsAvailable($command->name())) {
             throw new SetlistNameNotUniqueException();
         }
 

@@ -7,7 +7,7 @@ use Setlist\Application\Command\Song\Handler\UpdateSongHandler;
 use Setlist\Application\Command\Song\UpdateSong;
 use Setlist\Domain\Entity\Song\Song;
 use Setlist\Domain\Entity\Song\SongRepository;
-use Setlist\Domain\Entity\Song\SongTitleRepository;
+use Setlist\Domain\Entity\Song\SongAvailabilityRepository;
 use Setlist\Domain\Value\Uuid;
 use Setlist\Domain\Value\UuidGenerator;
 
@@ -21,7 +21,7 @@ class UpdateSongHandlerTest extends TestCase
     protected function setUp()
     {
         $this->songRepository = $this->getMockBuilder(SongRepository::class)->getMock();
-        $this->songTitleRepository = $this->getMockBuilder(SongTitleRepository::class)->getMock();
+        $this->songTitleRepository = $this->getMockBuilder(SongAvailabilityRepository::class)->getMock();
         $this->uuidGenerator = $this->getMockBuilder(UuidGenerator::class)->getMock();
         $this->commandHandler = new UpdateSongHandler(
             $this->songRepository,

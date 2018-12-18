@@ -2,9 +2,9 @@
 
 namespace Setlist\Infrastructure\Repository\Domain\InMemory;
 
-use Setlist\Domain\Entity\Setlist\SetlistNameRepository as SetlistNameRepositoryInterface;
+use Setlist\Domain\Entity\Setlist\SetlistAvailabilityRepository as SetlistAvailabilityRepositoryInterface;
 
-class SetlistNameRepository implements SetlistNameRepositoryInterface
+class SetlistAvailabilityRepository implements SetlistAvailabilityRepositoryInterface
 {
     public function nameIsAvailable(string $name): bool
     {

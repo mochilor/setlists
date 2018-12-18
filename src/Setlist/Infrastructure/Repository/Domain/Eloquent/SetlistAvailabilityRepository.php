@@ -2,10 +2,10 @@
 
 namespace Setlist\Infrastructure\Repository\Domain\Eloquent;
 
-use Setlist\Domain\Entity\Setlist\SetlistNameRepository as SetlistNameRepositoryInterface;
+use Setlist\Domain\Entity\Setlist\SetlistAvailabilityRepository as SetlistAvailabilityRepositoryInterface;
 use Setlist\Infrastructure\Repository\Domain\Eloquent\Model\Setlist as EloquentSetlist;
 
-class SetlistNameRepository implements SetlistNameRepositoryInterface
+class SetlistAvailabilityRepository implements SetlistAvailabilityRepositoryInterface
 {
     public function nameIsAvailable(string $name): bool
     {

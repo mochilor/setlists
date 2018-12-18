@@ -12,12 +12,17 @@ use PHPUnit\Framework\Assert;
 /**
  * Defines application features from the specific context.
  */
-class FeatureContext extends MinkContext implements Context
+class HandleSongsContext extends MinkContext implements Context
 {
     /**
      * @var array
      */
     private $songs = [];
+
+    /**
+     * @var array
+     */
+    private $persistedSongs = [];
 
     /**
      * @var Client
@@ -68,30 +73,8 @@ class FeatureContext extends MinkContext implements Context
      */
     public function iWantToCreateSongsWithValues(TableNode $table)
     {
-        foreach ($table as $row) {
-            $song = [];
-            if (isset($row['id'])) {
-                $song['id'] = $row['id'];
-            }
-            if (isset($row['title'])) {
-                $song['title'] = $row['title'];
-            }
-
-            if (!isset($row['id']) || !isset($row['title'])) {
-                $this->expectedCode = 500;
-            } else {
-                $this->expectedCode = 201;
-            }
-
-            foreach ($this->songs as $key => $storedSong) {
-                if ($storedSong['id'] == $song['id'] || $storedSong['title'] == $song['title']) {
-                    $this->expectedCode = 409;
-                    unset($this->songs[$key]);
-                }
-            }
-
-            $this->songs[] = $song;
-        }
+        $this->setSongsFromTableNode($table);
+        $this->validateSongsToBePersisted($table);
     }
 
     /**
@@ -99,25 +82,7 @@ class FeatureContext extends MinkContext implements Context
      */
     public function iRequestTheApiServiceToCreateTheSongs()
     {
-        foreach ($this->songs as $song) {
-            $params = [];
-
-            if (isset($song['id'])) {
-                $params['id'] = $song['id'];
-            }
-            if (isset($song['title'])) {
-                $params['title'] = $song['title'];
-            }
-
-            $options = ['form_params' => $params];
-
-            $this->request(
-                'post',
-                $this->apiUrl . '/song',
-                $this->expectedCode,
-                $options
-            );
-        }
+        $this->requestSongCreation();
     }
 
     /**
@@ -125,31 +90,8 @@ class FeatureContext extends MinkContext implements Context
      */
     public function theApiMustShowMeAnyOfTheSongsIfIRequestThemByTheirId()
     {
-        foreach ($this->songs as $song) {
-            $result = $this->request(
-                'get',
-                $this->apiUrl . '/song/' . $song['id']
-            );
-
-            Assert::assertJson($result);
-
-            $responseSong = json_decode($result, true);
-
-            Assert::assertArrayHasKey('id', $responseSong);
-            Assert::assertArrayHasKey('title', $responseSong);
-            Assert::assertArrayHasKey('is_visible', $responseSong);
-            Assert::assertArrayHasKey('creation_date', $responseSong);
-            Assert::assertArrayHasKey('update_date', $responseSong);
-
-            Assert::assertEquals(
-                $responseSong['id'],
-                $song['id']
-            );
-
-            Assert::assertEquals(
-                $responseSong['title'],
-                $song['title']
-            );
+        foreach ($this->persistedSongs as $song) {
+            $this->checkSong($song);
         }
     }
 
@@ -158,12 +100,14 @@ class FeatureContext extends MinkContext implements Context
      */
     public function theApiMustShowMeAllTheSongsIfIRequestThem()
     {
+        $this->expectedCode = 200;
+
         $result = $this->request(
             'get',
             $this->apiUrl . '/songs'
         );
 
-        $this->checkMultipleSongs($result, count($this->songs));
+        $this->checkMultipleSongs($result, count($this->persistedSongs));
     }
 
     /**
@@ -171,6 +115,8 @@ class FeatureContext extends MinkContext implements Context
      */
     public function theApiMustBeAbleToShowMeAListWithSongsFromTo($arg1, $arg2)
     {
+        $this->expectedCode = 200;
+
         $result = $this->request(
             'get',
             $this->apiUrl . '/songs?interval=' . $arg1 . ',' . $arg2
@@ -184,23 +130,24 @@ class FeatureContext extends MinkContext implements Context
      */
     public function theApiMustBeAbleToShowMeAListWithSongsFromToTheEnd($arg1)
     {
+        $this->expectedCode = 200;
+
         $result = $this->request(
             'get',
             $this->apiUrl . '/songs?interval=' . $arg1 . ',999'
         );
 
-        $this->checkMultipleSongs($result, count($this->songs) - $arg1);
+        $this->checkMultipleSongs($result, count($this->persistedSongs) - $arg1);
     }
 
     /**
      * @param string $verb
      * @param string $url
-     * @param int $expectedCode
      * @param array $options
      * @return string
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    private function request(string $verb, string $url, int $expectedCode = 200, array $options = [])
+    private function request(string $verb, string $url, array $options = [])
     {
         try {
             $result = $this->client->request($verb, $url, $options);
@@ -212,11 +159,50 @@ class FeatureContext extends MinkContext implements Context
         }
 
         Assert::assertEquals(
-            $expectedCode,
+            $this->expectedCode,
             $this->responseCode
         );
 
         return $result;
+    }
+
+    /**
+     * @param array $song
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    private function checkSong(array $song): void
+    {
+        $this->expectedCode = 200;
+
+        $result = $this->request(
+            'get',
+            $this->apiUrl . '/song/' . $song['id']
+        );
+
+        Assert::assertJson($result);
+
+        $responseSong = json_decode($result, true);
+
+        Assert::assertArrayHasKey('id', $responseSong);
+        Assert::assertArrayHasKey('title', $responseSong);
+        Assert::assertArrayHasKey('is_visible', $responseSong);
+        Assert::assertArrayHasKey('creation_date', $responseSong);
+        Assert::assertArrayHasKey('update_date', $responseSong);
+
+        Assert::assertEquals(
+            $responseSong['id'],
+            $song['id']
+        );
+
+        Assert::assertEquals(
+            $responseSong['title'],
+            $song['title']
+        );
+
+        Assert::assertEquals(
+            $responseSong['is_visible'],
+            $song['visibility']
+        );
     }
 
     /**
@@ -243,7 +229,7 @@ class FeatureContext extends MinkContext implements Context
             Assert::assertArrayHasKey('creation_date', $responseSong);
             Assert::assertArrayHasKey('update_date', $responseSong);
 
-            foreach ($this->songs as $song) {
+            foreach ($this->persistedSongs as $song) {
                 if ($responseSong['id'] == $song['id']) {
                     Assert::assertEquals(
                         $responseSong['id'],
@@ -253,6 +239,11 @@ class FeatureContext extends MinkContext implements Context
                     Assert::assertEquals(
                         $responseSong['title'],
                         $song['title']
+                    );
+
+                    Assert::assertEquals(
+                        $responseSong['is_visible'],
+                        $song['visibility']
                     );
 
                     $count++;
@@ -282,6 +273,8 @@ class FeatureContext extends MinkContext implements Context
      */
     public function theApiMustNotReturnAnySongWhenIRequestAllTheStoredSongs()
     {
+        $this->expectedCode = 200;
+
         $result = $this->request(
             'get',
             $this->apiUrl . '/songs'
@@ -295,7 +288,125 @@ class FeatureContext extends MinkContext implements Context
      */
     public function theFollowingSongExists(TableNode $table)
     {
-        $this->iWantToCreateSongsWithValues($table);
-        $this->iRequestTheApiServiceToCreateTheSongs();
+        $this->setSongsFromTableNode($table);
+        $this->requestSongCreation();
+    }
+
+    /**
+     * @Given /^I want to change its data to the following values:$/
+     */
+    public function iWantToChangeItsDataToTheFollowingValues(TableNode $table)
+    {
+        $this->setSongsFromTableNode($table);
+    }
+
+    /**
+     * @When /^I request the api service to update the song$/
+     */
+    public function iRequestTheApiServiceToUpdateTheSong()
+    {
+        $this->expectedCode = 200;
+
+        $options = [
+            'form_params' => [
+                'title' => $this->songs[0]['title'],
+                'visibility' => $this->songs[0]['visibility'],
+            ]
+        ];
+
+        $this->request(
+            'patch',
+            $this->apiUrl . '/song/' . $this->songs[0]['id'],
+            $options
+        );
+
+        $this->persistedSongs = $this->songs;
+    }
+
+    /**
+     * @Then /^the song should be updated$/
+     */
+    public function theSongShouldBeUpdated()
+    {
+        $this->checkSong($this->persistedSongs[0]);
+    }
+
+    /**
+     * @param TableNode $table
+     */
+    private function setSongsFromTableNode(TableNode $table): void
+    {
+        $this->resetSongs();
+        $this->expectedCode = 201;
+
+        foreach ($table as $row) {
+            $song = [];
+            if (isset($row['id'])) {
+                $song['id'] = $row['id'];
+            }
+            if (isset($row['title'])) {
+                $song['title'] = $row['title'];
+            }
+
+            $song['visibility'] = isset($row['visibility']) ? $row['visibility'] : 1;
+
+            if (!isset($row['id']) || !isset($row['title'])) {
+                $this->expectedCode = 500;
+            }
+
+            $this->songs[] = $song;
+        }
+    }
+
+    private function requestSongCreation(): void
+    {
+        foreach ($this->songs as $song) {
+            $params = [];
+
+            if (isset($song['id'])) {
+                $params['id'] = $song['id'];
+            }
+            if (isset($song['title'])) {
+                $params['title'] = $song['title'];
+            }
+            if (isset($song['visibility'])) {
+                $params['visibility'] = $song['visibility'];
+            }
+
+            $options = ['form_params' => $params];
+
+            $this->request(
+                'post',
+                $this->apiUrl . '/song',
+                $options
+            );
+        }
+
+        $this->persistSongs();
+    }
+
+    private function resetSongs()
+    {
+        $this->songs = [];
+    }
+
+    /**
+     * @param TableNode $table
+     */
+    private function validateSongsToBePersisted(TableNode $table): void
+    {
+        foreach ($table as $row) {
+            foreach ($this->persistedSongs as $key => $persistedSong) {
+                if ($persistedSong['id'] == $row['id'] || $persistedSong['title'] == $row['title']) {
+                    $this->expectedCode = 409;
+                    break 2;
+                }
+            }
+        }
+    }
+
+    private function persistSongs(): void
+    {
+        $this->persistedSongs = array_merge($this->persistedSongs, $this->songs);
     }
 }

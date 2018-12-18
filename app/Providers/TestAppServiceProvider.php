@@ -35,13 +35,13 @@ class TestAppServiceProvider extends ServiceProvider
         );
 
         $this->app->bind(
-            \Setlist\Domain\Entity\Song\SongTitleRepository::class,
-            \Setlist\Infrastructure\Repository\Domain\InMemory\SongTitleRepository::class
+            \Setlist\Domain\Entity\Song\SongAvailabilityRepository::class,
+            \Setlist\Infrastructure\Repository\Domain\InMemory\SongAvailabilityRepository::class
         );
 
         $this->app->bind(
-            \Setlist\Domain\Entity\Setlist\SetlistNameRepository::class,
-            \Setlist\Infrastructure\Repository\Domain\InMemory\SetlistNameRepository::class
+            \Setlist\Domain\Entity\Setlist\SetlistAvailabilityRepository::class,
+            \Setlist\Infrastructure\Repository\Domain\InMemory\SetlistAvailabilityRepository::class
         );
     }
 }

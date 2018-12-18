@@ -3,9 +3,9 @@
 namespace Setlist\Infrastructure\Repository\Domain\PDO;
 
 use PDO;
-use Setlist\Domain\Entity\Song\SongTitleRepository as SongTitleRepositoryInterface;
+use Setlist\Domain\Entity\Song\SongAvailabilityRepository as SongAvailabilityRepositoryInterface;
 
-class SongTitleRepository implements SongTitleRepositoryInterface
+class SongAvailabilityRepository implements SongAvailabilityRepositoryInterface
 {
     private $PDO;
 
@@ -37,6 +37,21 @@ SQL;
         $query = $this->PDO->prepare($sql);
         $query->bindValue('title', $title);
         $query->bindValue('uuid', $uuid);
+        $query->execute();
+
+        $songsArray = $query->fetchAll(PDO::FETCH_ASSOC);
+
+        return empty($songsArray);
+    }
+
+    public function idIsAvailable(string $id): bool
+    {
+        $sql = <<<SQL
+SELECT * FROM `song` WHERE `id` = :uuid;
+SQL;
+
+        $query = $this->PDO->prepare($sql);
+        $query->bindValue('uuid', $id);
         $query->execute();
 
         $songsArray = $query->fetchAll(PDO::FETCH_ASSOC);

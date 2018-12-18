@@ -2,10 +2,10 @@
 
 namespace Setlist\Infrastructure\Repository\Domain\Eloquent;
 
-use Setlist\Domain\Entity\Song\SongTitleRepository as SongTitleRepositoryInterface;
+use Setlist\Domain\Entity\Song\SongAvailabilityRepository as SongAvailabilityRepositoryInterface;
 use Setlist\Infrastructure\Repository\Domain\Eloquent\Model\Song as EloquentSong;
 
-class SongTitleRepository implements SongTitleRepositoryInterface
+class SongAvailabilityRepository implements SongAvailabilityRepositoryInterface
 {
     public function titleIsAvailable(string $title): bool
     {
@@ -19,5 +19,10 @@ class SongTitleRepository implements SongTitleRepositoryInterface
             ->get();
 
         return $songsCollection->isEmpty();
+    }
+
+    public function idIsAvailable(string $id): bool
+    {
+        return empty(EloquentSong::find($id));
     }
 }

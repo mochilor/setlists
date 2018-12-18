@@ -52,7 +52,7 @@ SELECT * FROM `%s` WHERE id = :uuid;
 SQL;
         $sql = sprintf($sql, self::TABLE_NAME);
         $query = $this->PDO->prepare($sql);
-        $query->bindValue('uuid', $uuid);
+        $query->bindValue('uuid', $uuid->value());
         $query->execute();
         $songData = $query->fetch(PDO::FETCH_ASSOC);
 
