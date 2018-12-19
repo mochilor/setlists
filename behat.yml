@@ -11,4 +11,6 @@ default:
       paths: [ ./tests/functional/features ]
       filters:
       contexts:
-        - HandleSongsContext
+        - CommonContext
+        - CreateSongsContext
+        - UpdateSongsContext

@@ -1,6 +1,6 @@
-Feature: Handle songs
+Feature: Create songs
   As a user using the setlists api
-  I need to be able to create, retrieve, update and remove songs
+  I need to be able to create songs
 
 
   Scenario: Songs can be created and retrieved separately
@@ -98,16 +98,3 @@ Feature: Handle songs
 
     When I request the api service to create the songs
     Then the api must return an error response with code: 409
-
-
-    Scenario: Song can be updated
-      Given the following song exists:
-        | id                                   | title     | is_visible |
-        | d2efe5df-aaa1-4c06-9e6d-7215860a0a13 | Yesterday | 1          |
-
-      And I want to change its data to the following values:
-        | id                                   | title     | is_visible |
-        | d2efe5df-aaa1-4c06-9e6d-7215860a0a13 | Tomorrow  | 0          |
-
-      When I request the api service to update the song
-      Then the song should be updated
