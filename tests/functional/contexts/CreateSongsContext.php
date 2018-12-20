@@ -16,7 +16,6 @@ class CreateSongsContext extends BaseContext implements Context
     public function iWantToCreateSongsWithValues(TableNode $table)
     {
         $this->setSongsFromTableNode($table);
-        $this->validateSongsToBePersisted($table);
     }
 
     /**
@@ -32,8 +31,6 @@ class CreateSongsContext extends BaseContext implements Context
      */
     public function theApiMustShowMeAnyOfTheSongsIfIRequestThemByTheirId()
     {
-        self::$expectedCode = 200;
-
         foreach (self::$persistedSongs as $song) {
             $this->checkSong($song);
         }
@@ -44,8 +41,6 @@ class CreateSongsContext extends BaseContext implements Context
      */
     public function theApiMustShowMeAllTheSongsIfIRequestThem()
     {
-        self::$expectedCode = 200;
-
         $response = $this->request(
             'get',
             $this->apiUrl . '/songs'
@@ -59,8 +54,6 @@ class CreateSongsContext extends BaseContext implements Context
      */
     public function theApiMustBeAbleToShowMeAListWithSongsFromTo($arg1, $arg2)
     {
-        self::$expectedCode = 200;
-
         $response = $this->request(
             'get',
             $this->apiUrl . '/songs?interval=' . $arg1 . ',' . $arg2
@@ -74,8 +67,6 @@ class CreateSongsContext extends BaseContext implements Context
      */
     public function theApiMustBeAbleToShowMeAListWithSongsFromToTheEnd($arg1)
     {
-        self::$expectedCode = 200;
-
         $response = $this->request(
             'get',
             $this->apiUrl . '/songs?interval=' . $arg1 . ',999'
@@ -85,9 +76,9 @@ class CreateSongsContext extends BaseContext implements Context
     }
 
     /**
-     * @Then the api must return an error response with code: :arg1
+     * @Then /^the api must return a response with code: (\d+)$/
      */
-    public function theApiMustReturnAnErrorResponseWithCode($arg1)
+    public function theApiMustReturnAResponseWithCode($arg1)
     {
         Assert::assertEquals(
             $arg1,
@@ -100,8 +91,6 @@ class CreateSongsContext extends BaseContext implements Context
      */
     public function theApiMustNotReturnAnySongWhenIRequestAllTheStoredSongs()
     {
-        self::$expectedCode = 200;
-
         $response = $this->request(
             'get',
             $this->apiUrl . '/songs'
@@ -111,11 +100,30 @@ class CreateSongsContext extends BaseContext implements Context
     }
 
     /**
-     * @Given the following song exists:
+     * @Given /^the following songs? exists:$/
      */
     public function theFollowingSongExists(TableNode $table)
     {
         $this->setSongsFromTableNode($table);
         $this->requestSongCreation();
+    }
+
+    /**
+     * @Given no Song exist
+     */
+    public function noSongExist()
+    {
+        //
+    }
+
+    /**
+     * @When I request the api to show me the song with id: :arg1
+     */
+    public function iRequestTheApiToShowMeTheSongWithId($arg1)
+    {
+        $this->request(
+            'get',
+            $this->apiUrl . '/song/' . $arg1
+        );
     }
 }

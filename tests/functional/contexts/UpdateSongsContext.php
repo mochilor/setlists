@@ -22,16 +22,15 @@ class updateSongsContext extends BaseContext implements Context
      */
     public function iRequestTheApiServiceToUpdateTheSong()
     {
-        self::$expectedCode = 200;
+        $song = self::$songs[0];
 
         $formParams = [];
-        if (isset(self::$songs[0]['title'])) {
-            $formParams['title'] = self::$songs[0]['title'];
-        } else{
-            self::$expectedCode = 500;
+        if (isset($song['title'])) {
+            $formParams['title'] = $song['title'];
         }
-        if (isset(self::$songs[0]['visibility'])) {
-            $formParams['visibility'] = self::$songs[0]['visibility'];
+
+        if (isset($song['visibility'])) {
+            $formParams['visibility'] = $song['visibility'];
         }
 
         $options = [
@@ -40,7 +39,7 @@ class updateSongsContext extends BaseContext implements Context
 
         $this->request(
             'patch',
-            $this->apiUrl . '/song/' . self::$songs[0]['id'],
+            $this->apiUrl . '/song/' . $song['id'],
             $options
         );
 
@@ -68,5 +67,13 @@ class updateSongsContext extends BaseContext implements Context
             $songs,
             self::$persistedSongs
         );
+    }
+
+    /**
+     * @Given I want to update a song with the following values:
+     */
+    public function iWantToUpdateASongWithTheFollowingValues(TableNode $table)
+    {
+        $this->setSongsFromTableNode($table);
     }
 }

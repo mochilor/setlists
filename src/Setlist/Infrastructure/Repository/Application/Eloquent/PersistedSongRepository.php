@@ -16,6 +16,8 @@ class PersistedSongRepository implements ApplicationSongRepositoryInterface
         if ($eloquentSong instanceof EloquentSong) {
             return $this->getPersistedSong($eloquentSong);
         }
+
+        return null;
     }
 
     public function getAllSongs(int $start, int $length): PersistedSongCollection

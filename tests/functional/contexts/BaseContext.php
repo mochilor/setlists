@@ -30,11 +30,6 @@ class BaseContext extends RawMinkContext
     /**
      * @var int
      */
-    protected static $expectedCode = 200;
-
-    /**
-     * @var int
-     */
     protected static $responseCode = 200;
 
     /**
@@ -68,10 +63,10 @@ class BaseContext extends RawMinkContext
             $result = '';
         }
 
-        Assert::assertEquals(
-            self::$expectedCode,
-            self::$responseCode
-        );
+//        Assert::assertEquals(
+//            self::$expectedCode,
+//            self::$responseCode
+//        );
 
         return $result;
     }
@@ -170,7 +165,6 @@ class BaseContext extends RawMinkContext
      */
     protected function setSongsFromTableNode(TableNode $table): void
     {
-        self::$expectedCode = 201;
         self::$songs = $this->getSongsFromTableNode($table);
     }
 
@@ -192,10 +186,6 @@ class BaseContext extends RawMinkContext
             }
 
             $song['visibility'] = isset($row['visibility']) ? $row['visibility'] : 1;
-
-            if (!isset($row['id']) || !isset($row['title'])) {
-                self::$expectedCode = 500;
-            }
 
             $songs[] = $song;
         }
@@ -236,19 +226,20 @@ class BaseContext extends RawMinkContext
     }
 
     /**
-     * @param TableNode $table
+     * @param array $song
+     * @return bool
      */
-    protected function validateSongsToBePersisted(TableNode $table): void
+    protected function checkSongExistence(array $song)
     {
-        foreach ($table as $row) {
-            foreach (self::$persistedSongs as $key => $persistedSong) {
-                if ($persistedSong['id'] == $row['id'] || $persistedSong['title'] == $row['title']) {
-                    self::$expectedCode = 409;
-                    return;
-                }
+        foreach (self::$persistedSongs as $persistedSong) {
+            if ($song['id'] == $persistedSong['id']) {
+                return true;
             }
         }
+
+        return false;
     }
+
     protected function persistSongs(): void
     {
         self::$persistedSongs = array_merge(self::$persistedSongs, self::$songs);
@@ -266,7 +257,6 @@ class BaseContext extends RawMinkContext
 
     public static function resetCodes(): void
     {
-        self::$expectedCode = 200;
         self::$responseCode = 200;
     }
 }

@@ -18,6 +18,7 @@ class CommonContext extends RawMinkContext implements Context
 
     private static function resetDatabase()
     {
+
         echo "Preparing database...\n";
         Artisan::call('migrate:fresh');
     }

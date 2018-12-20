@@ -20,6 +20,6 @@ class PersistedSongRepository implements ApplicationSongRepositoryInterface
 
     public function getOneSongById(string $id): ?PersistedSong
     {
-
+        return null;
     }
 }
