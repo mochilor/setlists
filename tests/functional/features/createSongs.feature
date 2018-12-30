@@ -1,4 +1,4 @@
-Feature: Create and retrieving songs
+Feature: Create and retrieve songs
   As a user using the setlists api
   I need to be able to create and retrieve songs
 
@@ -127,7 +127,7 @@ Feature: Create and retrieving songs
   Scenario: Song with too long title can not be created
     Given I want to create songs with values:
       | id                                   | title     |
-      | d2efe5df-aaa1-4c06-9e6d-7215860a0a13 | Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.        |
+      | d2efe5df-aaa1-4c06-9e6d-7215860a0a13 | Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. |
 
     When I request the api service to create the songs
     Then the api must return a response with code: 500

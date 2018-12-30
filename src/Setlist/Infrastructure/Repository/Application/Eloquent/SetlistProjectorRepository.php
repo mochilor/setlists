@@ -32,7 +32,7 @@ class SetlistProjectorRepository implements SetlistProjectorRepositoryInterface
         $data = $this->prepareData($event);
 
         $setlistProjection = new SetlistProjection();
-        $setlistProjection->id = $event->id()->value()->value();
+        $setlistProjection->id = $event->id()->value();
         $setlistProjection->data = $data;
         $setlistProjection->save();
     }
@@ -40,7 +40,7 @@ class SetlistProjectorRepository implements SetlistProjectorRepositoryInterface
     private function prepareData(SetlistWasCreated $event): string
     {
         $data = [
-            'id' => $event->id()->value()->value(),
+            'id' => $event->id()->value(),
             'name' => $event->name(),
             'description' => $event->description(),
             'date' => $event->formattedDate(),

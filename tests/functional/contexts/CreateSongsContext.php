@@ -46,6 +46,11 @@ class CreateSongsContext extends BaseContext implements Context
             $this->apiUrl . '/songs'
         );
 
+        Assert::assertEquals(
+            200,
+            self::$responseCode
+        );
+
         $this->checkMultipleSongs($response, count(self::$persistedSongs));
     }
 
@@ -59,6 +64,11 @@ class CreateSongsContext extends BaseContext implements Context
             $this->apiUrl . '/songs?interval=' . $arg1 . ',' . $arg2
         );
 
+        Assert::assertEquals(
+            200,
+            self::$responseCode
+        );
+
         $this->checkMultipleSongs($response, $arg2 - $arg1);
     }
 
@@ -70,6 +80,11 @@ class CreateSongsContext extends BaseContext implements Context
         $response = $this->request(
             'get',
             $this->apiUrl . '/songs?interval=' . $arg1 . ',999'
+        );
+
+        Assert::assertEquals(
+            200,
+            self::$responseCode
         );
 
         $this->checkMultipleSongs($response, count(self::$persistedSongs) - $arg1);
@@ -124,6 +139,22 @@ class CreateSongsContext extends BaseContext implements Context
         $this->request(
             'get',
             $this->apiUrl . '/song/' . $arg1
+        );
+    }
+
+    /**
+     * @Then the api must return a response with code: :arg2 if I request the song with id: :arg1
+     */
+    public function theApiMustReturnAResponseWithCodeIfIRequestTheSongWithId($arg1, $arg2)
+    {
+        $this->request(
+            'get',
+            $this->apiUrl . '/song/' . $arg1
+        );
+
+        Assert::assertEquals(
+            $arg2,
+            self::$responseCode
         );
     }
 }

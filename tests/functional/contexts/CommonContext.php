@@ -28,6 +28,8 @@ class CommonContext extends RawMinkContext implements Context
         echo "Resetting Context attributes...\n";
         BaseContext::resetSongs();
         BaseContext::resetPersistedSongs();
+        BaseContext::resetSetlists();
+        BaseContext::resetPersistedSetlists();
         BaseContext::resetCodes();
     }
 }

@@ -106,7 +106,7 @@ class SetlistRepository implements SetlistRepositoryInterface
         switch (get_class($event)) {
             case SetlistWasCreated::class:
                 $this->insert(
-                    $event->id(),
+                    $event->id()->value(),
                     $event->name(),
                     $event->description(),
                     $event->actCollection(),

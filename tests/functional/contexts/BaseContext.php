@@ -18,6 +18,16 @@ class BaseContext extends RawMinkContext
     protected static $persistedSongs = [];
 
     /**
+     * @var array
+     */
+    protected static $setlists = [];
+
+    /**
+     * @var array
+     */
+    protected static $persistedSetlists = [];
+
+    /**
      * @var Client
      */
     protected $client;
@@ -80,6 +90,11 @@ class BaseContext extends RawMinkContext
         $result = $this->request(
             'get',
             $this->apiUrl . '/song/' . $song['id']
+        );
+
+        Assert::assertEquals(
+            200,
+            self::$responseCode
         );
 
         Assert::assertJson($result);
@@ -161,6 +176,148 @@ class BaseContext extends RawMinkContext
     }
 
     /**
+     * @param array $setlist
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    protected function checkSetlist(array $setlist): void
+    {
+        $result = $this->request(
+            'get',
+            $this->apiUrl . '/setlist/' . $setlist['id']
+        );
+
+        Assert::assertEquals(
+            200,
+            self::$responseCode
+        );
+
+        Assert::assertJson($result);
+
+        $responseSetlist = json_decode($result, true);
+
+        Assert::assertArrayHasKey('id', $responseSetlist);
+        Assert::assertArrayHasKey('name', $responseSetlist);
+        Assert::assertArrayHasKey('description', $responseSetlist);
+        Assert::assertArrayHasKey('date', $responseSetlist);
+        Assert::assertArrayHasKey('creation_date', $responseSetlist);
+        Assert::assertArrayHasKey('update_date', $responseSetlist);
+        Assert::assertArrayHasKey('acts', $responseSetlist);
+
+        Assert::assertEquals(
+            $responseSetlist['id'],
+            $setlist['id']
+        );
+
+        Assert::assertEquals(
+            $responseSetlist['name'],
+            $setlist['name']
+        );
+
+        Assert::assertEquals(
+            $responseSetlist['description'],
+            $setlist['description'] ?? ''
+        );
+
+        Assert::assertEquals(
+            $responseSetlist['date'],
+            $setlist['date']
+        );
+
+        $keyAct = 0;
+        foreach ($setlist['acts'] as $act) {
+            $keySong = 0;
+            foreach ($act as $song) {
+                Assert::assertEquals(
+                    $song['id'],
+                    $responseSetlist['acts'][$keyAct][$keySong]['id']
+                );
+                Assert::assertEquals(
+                    $song['title'],
+                    $responseSetlist['acts'][$keyAct][$keySong]['title']
+                );
+                $keySong++;
+            }
+            $keyAct++;
+        }
+    }
+
+    /**
+     * @param string $response
+     * @param int $setlistsCount
+     */
+    protected function checkMultipleSetlists(string $response, int $setlistsCount): void
+    {
+        Assert::assertJson($response);
+
+        $responseSetlists = json_decode($response, true);
+
+        Assert::assertEquals(
+            $setlistsCount,
+            count($responseSetlists)
+        );
+
+        $count = 0;
+        foreach ($responseSetlists as $responseSetlist) {
+
+            Assert::assertArrayHasKey('id', $responseSetlist);
+            Assert::assertArrayHasKey('name', $responseSetlist);
+            Assert::assertArrayHasKey('description', $responseSetlist);
+            Assert::assertArrayHasKey('date', $responseSetlist);
+            Assert::assertArrayHasKey('creation_date', $responseSetlist);
+            Assert::assertArrayHasKey('update_date', $responseSetlist);
+            Assert::assertArrayHasKey('acts', $responseSetlist);
+
+            foreach (self::$persistedSetlists as $setlist) {
+                if ($responseSetlist['id'] == $setlist['id']) {
+                    Assert::assertEquals(
+                        $responseSetlist['id'],
+                        $setlist['id']
+                    );
+
+                    Assert::assertEquals(
+                        $responseSetlist['name'],
+                        $setlist['name']
+                    );
+
+                    Assert::assertEquals(
+                        $responseSetlist['description'],
+                        $setlist['description'] ?? ''
+                    );
+
+                    Assert::assertEquals(
+                        $responseSetlist['date'],
+                        $setlist['date']
+                    );
+
+                    $keyAct = 0;
+                    foreach ($setlist['acts'] as $act) {
+                        $keySong = 0;
+                        foreach ($act as $song) {
+                            Assert::assertEquals(
+                                $song['id'],
+                                $responseSetlist['acts'][$keyAct][$keySong]['id']
+                            );
+                            Assert::assertEquals(
+                                $song['title'],
+                                $responseSetlist['acts'][$keyAct][$keySong]['title']
+                            );
+                            $keySong++;
+                        }
+                        $keyAct++;
+                    }
+
+                    $count++;
+                }
+            }
+        }
+
+        Assert::assertEquals(
+            $count,
+            count($responseSetlists)
+        );
+    }
+
+    /**
      * @param TableNode $table
      */
     protected function setSongsFromTableNode(TableNode $table): void
@@ -194,6 +351,53 @@ class BaseContext extends RawMinkContext
     }
 
     /**
+     * @param TableNode $table
+     */
+    protected function setSetlistsFromTableNode(TableNode $table): void
+    {
+        self::$setlists = $this->getSetlistsFromTableNode($table);
+    }
+
+    /**
+     * @param TableNode $table
+     * @return array
+     */
+    protected function getSetlistsFromTableNode(TableNode $table): array
+    {
+        $setlists = [];
+
+        foreach ($table as $row) {
+            $setlist = [];
+            if (isset($row['id'])) {
+                $setlist['id'] = $row['id'];
+            }
+            if (isset($row['name'])) {
+                $setlist['name'] = $row['name'];
+            }
+            if (isset($row['description'])) {
+                $setlist['description'] = $row['description'];
+            }
+            if (isset($row['date'])) {
+                $setlist['date'] = $row['date'];
+            }
+
+            $setlists[] = $setlist;
+        }
+
+        return $setlists;
+    }
+
+    /**
+     * @param int $setlistNumber
+     * @param int $actKey
+     * @param array $act
+     */
+    protected function addActToSetlist(int $setlistNumber, int $actKey, array $act)
+    {
+        self::$setlists[$setlistNumber]['acts'][$actKey] = $act;
+    }
+
+    /**
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
     protected function requestSongCreation(): void
@@ -218,10 +422,52 @@ class BaseContext extends RawMinkContext
                 $this->apiUrl . '/song',
                 $options
             );
-        }
 
-        if (self::$responseCode == 201) {
-            $this->persistSongs();
+            if (self::$responseCode == 201) {
+                $this->persistSong($song);
+            }
+        }
+    }
+
+    /**
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    protected function requestSetlistCreation(): void
+    {
+        foreach (self::$setlists as $setlist) {
+            $params = [];
+
+            if (isset($setlist['id'])) {
+                $params['id'] = $setlist['id'];
+            }
+            if (isset($setlist['name'])) {
+                $params['name'] = $setlist['name'];
+            }
+            if (isset($setlist['date'])) {
+                $params['date'] = $setlist['date'];
+            }
+            if (isset($setlist['description'])) {
+                $params['description'] = $setlist['description'];
+            }
+            if (isset($setlist['acts'])) {
+                foreach ($setlist['acts'] as $actKey => $act) {
+                    foreach ($act as $songKey => $song) {
+                        $params["acts[$actKey][$songKey]"] = $song['id'];
+                    }
+                }
+            }
+
+            $options = ['form_params' => $params];
+
+            $this->request(
+                'post',
+                $this->apiUrl . '/setlist',
+                $options
+            );
+
+            if (self::$responseCode == 201) {
+                $this->persistSetlist($setlist);
+            }
         }
     }
 
@@ -240,9 +486,25 @@ class BaseContext extends RawMinkContext
         return false;
     }
 
-    protected function persistSongs(): void
+    /**
+     * @param array $song
+     */
+    protected function persistSong(array $song): void
     {
-        self::$persistedSongs = array_merge(self::$persistedSongs, self::$songs);
+        self::$persistedSongs[] = $song;
+    }
+
+    /**
+     * @param array $setlist
+     */
+    protected function persistSetlist(array $setlist): void
+    {
+        self::$persistedSetlists[] = $setlist;
+    }
+
+    protected function persistSetlists(): void
+    {
+        self::$persistedSetlists = array_merge(self::$persistedSetlists, self::$setlists);
     }
 
     public static function resetSongs(): void
@@ -253,6 +515,16 @@ class BaseContext extends RawMinkContext
     public static function resetPersistedSongs(): void
     {
         self::$persistedSongs = [];
+    }
+
+    public static function resetSetlists(): void
+    {
+        self::$setlists = [];
+    }
+
+    public static function resetPersistedSetlists(): void
+    {
+        self::$persistedSetlists = [];
     }
 
     public static function resetCodes(): void
