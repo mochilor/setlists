@@ -53,7 +53,7 @@ class SetlistRepository implements SetlistRepositoryInterface
     public function get(Uuid $uuid): ?Setlist
     {
         $eloquentSetlist = $songData = EloquentSetlist::with('songs')
-            ->find($uuid);
+            ->find($uuid->value());
 
         if ($eloquentSetlist) {
             return $this->getSetlistFromData($eloquentSetlist);
@@ -115,19 +115,19 @@ class SetlistRepository implements SetlistRepositoryInterface
                 );
                 break;
             case SetlistChangedItsName::class:
-                $this->update($event->id(), $event->formattedUpdateDate(), $event->name());
+                $this->update($event->id()->value(), $event->formattedUpdateDate(), $event->name());
                 break;
             case SetlistChangedItsDescription::class:
-                $this->update($event->id(), $event->formattedUpdateDate(), null, $event->description());
+                $this->update($event->id()->value(), $event->formattedUpdateDate(), null, $event->description());
                 break;
             case SetlistChangedItsDate::class:
-                $this->update($event->id(), $event->formattedUpdateDate(), null, null, $event->formattedDate());
+                $this->update($event->id()->value(), $event->formattedUpdateDate(), null, null, $event->formattedDate());
                 break;
             case SetlistChangedItsActCollection::class:
-                $this->update($event->id(), $event->formattedUpdateDate(), null, null, null, $event->actCollection());
+                $this->update($event->id()->value(), $event->formattedUpdateDate(), null, null, null, $event->actCollection());
                 break;
             case SetlistWasDeleted::class:
-                $this->delete($event->id());
+                $this->delete($event->id()->value());
                 break;
         }
     }

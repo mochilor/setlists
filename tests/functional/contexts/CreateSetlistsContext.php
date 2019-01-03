@@ -10,14 +10,24 @@ use PHPUnit\Framework\Assert;
 class CreateSetlistsContext extends BaseContext implements Context
 {
     private $acts = [];
+    private $updatedSetlist = [];
 
     /**
      * @Given /^(I want to prepare some acts with the following data|The songs are sorted in the following acts):$/
      */
     public function iWantToPrepareSomeActsWithTheFollowingData(TableNode $table)
     {
+        $this->setActs($table);
+    }
+
+    /**
+     * @param TableNode $table
+     */
+    private function setActs(TableNode $table)
+    {
         $acts = [];
         foreach ($table as $row) {
+            $actSong = null;
             foreach (self::$songs as $song) {
                 if ($song['id'] == $row['song_id']) {
                     $actSong = $song;
@@ -25,9 +35,16 @@ class CreateSetlistsContext extends BaseContext implements Context
                 }
             }
 
-            if (isset($actSong)) {
-                $acts[$row['act_number']][$row['song_order']] = $actSong;
+            if (empty($actSong)) {
+                // Simulate a non existent song:
+                $actSong = [
+                    'id' => $row['song_id'],
+                    'title' => '',
+                    'visibility' => '',
+                ];
             }
+
+            $acts[$row['act_number']][$row['song_order']] = $actSong;
         }
 
         foreach ($acts as $actKey => $act) {
@@ -46,22 +63,24 @@ class CreateSetlistsContext extends BaseContext implements Context
     {
         $this->setSetlistsFromTableNode($table);
 
-        foreach (self::$setlists as $setlistKey => $setlist) {
+        foreach (self::$setlists as $setlist) {
             foreach ($this->acts as $actKey => $act) {
-                $this->addActToSetlist($setlistKey, $actKey, $act);
+                $this->addActToSetlist($setlist['id'], $actKey, $act);
             }
         }
     }
 
     /**
-     * @Given /^The acts belong to a setlist with the following data:$/
+     * @Given /^The acts belong to (a setlist|some setlists) with the following data:$/
      */
     public function theActsBelongToASetlistWithTheFollowingData(TableNode $table)
     {
         $this->setSetlistsFromTableNode($table);
 
-        foreach ($this->acts as $actKey => $act) {
-            $this->addActToSetlist(0, $actKey, $act);
+        foreach (self::$setlists as $setlist) {
+            foreach ($this->acts as $actKey => $act) {
+                $this->addActToSetlist($setlist['id'], $actKey, $act);
+            }
         }
 
         $this->requestSetlistCreation();
@@ -80,6 +99,8 @@ class CreateSetlistsContext extends BaseContext implements Context
      */
     public function theApiMustShowMeTheSetlistIfIRequestItByItsId()
     {
+        Assert::assertNotEmpty(self::$persistedSetlists);
+
         foreach (self::$persistedSetlists as $setlist) {
             $this->checkSetlist($setlist);
         }
@@ -177,5 +198,48 @@ class CreateSetlistsContext extends BaseContext implements Context
             'get',
             $this->apiUrl . '/setlist/' . $arg1
         );
+    }
+
+    /**
+     * @Given /^I want to update the setlist with the following data:$/
+     */
+    public function iWantToUpdateTheSetlistWithTheFollowingData(TableNode $table)
+    {
+        $this->updatedSetlist = $this->getSetlistsFromTableNode($table)[0];
+        $this->updatedSetlist['acts'] = $this->acts;
+    }
+
+    /**
+     * @When /^I request the api service to update the setlist$/
+     */
+    public function iRequestTheApiServiceToUpdateTheSetlist()
+    {
+        $this->requestSetlistUpdate($this->updatedSetlist);
+    }
+
+    /**
+     * @Given I want to update the acts for the first setlist with the following data:
+     */
+    public function iWantToUpdateTheActsForTheFirstSetlistWithTheFollowingData(TableNode $table)
+    {
+        $this->setActs($table);
+
+        unset(self::$setlists[0]['acts']);
+
+        foreach ($this->acts as $actKey => $act) {
+            $this->addActToSetlist(self::$setlists[0]['id'], $actKey, $act);
+        }
+
+        $this->updatedSetlist = self::$setlists[0];
+    }
+
+    /**
+     * @Given /^I want to update the acts for the first setlist with empty data$/
+     */
+    public function iWantToUpdateTheActsForTheFirstSetlistWithEmptyData()
+    {
+        unset(self::$setlists[0]['acts']);
+
+        $this->updatedSetlist = self::$setlists[0];
     }
 }

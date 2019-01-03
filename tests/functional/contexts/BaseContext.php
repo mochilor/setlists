@@ -69,6 +69,7 @@ class BaseContext extends RawMinkContext
             self::$responseCode = $result->getStatusCode();
             $result = (string) $result->getBody();
         } catch (RuntimeException $e) {
+            //throw new Exception($e->getMessage());
             self::$responseCode = $e->getResponse()->getStatusCode();
             $result = '';
         }
@@ -388,13 +389,17 @@ class BaseContext extends RawMinkContext
     }
 
     /**
-     * @param int $setlistNumber
+     * @param string $setlistId
      * @param int $actKey
      * @param array $act
      */
-    protected function addActToSetlist(int $setlistNumber, int $actKey, array $act)
+    protected function addActToSetlist(string $setlistId, int $actKey, array $act)
     {
-        self::$setlists[$setlistNumber]['acts'][$actKey] = $act;
+        foreach (self::$setlists as $setlistKey => $setlist) {
+            if ($setlist['id'] == $setlistId) {
+                self::$setlists[$setlistKey]['acts'][$actKey] = $act;
+            }
+        }
     }
 
     /**
@@ -472,6 +477,45 @@ class BaseContext extends RawMinkContext
     }
 
     /**
+     * @param array $setlist
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    protected function requestSetlistUpdate(array $setlist): void
+    {
+        $params = [];
+        $params['id'] = $setlist['id'];
+        if (isset($setlist['name'])) {
+            $params['name'] = $setlist['name'];
+        }
+        if (isset($setlist['date'])) {
+            $params['date'] = $setlist['date'];
+        }
+        if (isset($setlist['description'])) {
+            $params['description'] = $setlist['description'];
+        }
+        if (isset($setlist['acts'])) {
+            foreach ($setlist['acts'] as $actKey => $act) {
+                foreach ($act as $songKey => $song) {
+                    $params["acts[$actKey][$songKey]"] = $song['id'];
+                }
+            }
+        }
+
+        $options = ['form_params' => $params];
+
+
+        $this->request(
+            'patch',
+            $this->apiUrl . '/setlist/' . $setlist['id'],
+            $options
+        );
+
+        if (self::$responseCode == 200) {
+            $this->updateSetlist($setlist);
+        }
+    }
+
+    /**
      * @param array $song
      * @return bool
      */
@@ -500,6 +544,19 @@ class BaseContext extends RawMinkContext
     protected function persistSetlist(array $setlist): void
     {
         self::$persistedSetlists[] = $setlist;
+    }
+
+    /**
+     * @param array $setlist
+     */
+    protected function updateSetlist(array $setlist): void
+    {
+        foreach (self::$persistedSetlists as $persistedSetlistKey => $persistedSetlist) {
+            if ($persistedSetlist['id'] == $setlist['id']) {
+                self::$persistedSetlists[$persistedSetlistKey] = $setlist;
+                break;
+            }
+        }
     }
 
     protected function persistSetlists(): void

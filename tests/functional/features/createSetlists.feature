@@ -104,7 +104,7 @@ Feature: Create and retrieve setlists
     And the api must be able to show me a list with setlists from: 3 to the end
 
 
-  Scenario: Setlists with one act can be created and retrieved by its id
+  Scenario: Setlists with non existent song ids can not be created
     Given the following songs exists:
       | id                                   | title              | is_visible |
       | d2efe5df-aaa1-4c06-9e6d-7215860a0a13 | Yesterday          | 1          |
@@ -113,14 +113,14 @@ Feature: Create and retrieve setlists
     And I want to prepare some acts with the following data:
       | act_number | song_order | song_id                              |
       | 0          | 0          | d2efe5df-aaa1-4c06-9e6d-7215860a0a13 |
-      | 0          | 1          | 45bf5e28-da2f-4207-bf67-466baa7af86e |
+      | 0          | 1          | 13080dc1-63f2-4770-aa76-683bdf22c5a6 |
 
     And I want to add the acts to some setlists with the following data:
-      | id                                   | name          | description                  | date       |
-      | 9c5999a5-2468-45ba-ae77-3965fc385519 | Cool Setlist! | This Setlist is the best one | 2019-01-01 |
+      | id                                   | name          | description            | date       |
+      | 9c5999a5-2468-45ba-ae77-3965fc385519 | Wrong Setlist | This Setlist is wrong! | 2019-01-01 |
     When I request the api service to create the setlist
-    Then the api must return a response with code: 201
-    And the api must show me the setlist if I request it by its id
+    Then the api must return a response with code: 500
+    And the api must not return any setlist when I request all the stored setlists
 
 
   Scenario: Setlists with no description can be created
@@ -166,7 +166,6 @@ Feature: Create and retrieve setlists
       | 9c5999a5-2468-45ba-ae77-3965fc385519 | Cool Setlist! | This Setlist is the best one | 2019-01-01 |
     When I request the api service to create the setlist
     Then the api must return a response with code: 500
-    And the api must show me the setlist if I request it by its id
     And the api must not return any setlist when I request all the stored setlists
 
 
