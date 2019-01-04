@@ -12,8 +12,5 @@ default:
       filters:
       contexts:
         - CommonContext
-        - CreateSongsContext
-        - UpdateSongsContext
-        - DeleteSongsContext
-        - ForceDeleteSongsContext
-        - CreateSetlistsContext
+        - SongContext
+        - SetlistContext

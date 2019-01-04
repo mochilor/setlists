@@ -7,7 +7,7 @@ use PHPUnit\Framework\Assert;
 /**
  * Defines application features from the specific context.
  */
-class CreateSetlistsContext extends BaseContext implements Context
+class SetlistContext extends BaseContext implements Context
 {
     private $acts = [];
     private $updatedSetlist = [];
@@ -241,5 +241,13 @@ class CreateSetlistsContext extends BaseContext implements Context
         unset(self::$setlists[0]['acts']);
 
         $this->updatedSetlist = self::$setlists[0];
+    }
+
+    /**
+     * @When I request the api service to delete the Setlist with id: :arg1
+     */
+    public function iRequestTheApiServiceToDeleteTheSetlistWithId($arg1)
+    {
+        $this->requestSetlistDelete($arg1);
     }
 }

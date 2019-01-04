@@ -76,6 +76,30 @@ Feature: Update setlists
     And the api must show me the setlist if I request it by its id
 
 
+  Scenario: Setlist can not be updated when provided songs have invalid id
+    Given the following songs exists:
+      | id                                   | title              | is_visible |
+      | d2efe5df-aaa1-4c06-9e6d-7215860a0a13 | Yesterday          | 1          |
+      | 45bf5e28-da2f-4207-bf67-466baa7af86e | Stairway to Heaven | 1          |
+
+    And The songs are sorted in the following acts:
+      | act_number | song_order | song_id                              |
+      | 0          | 0          | d2efe5df-aaa1-4c06-9e6d-7215860a0a13 |
+      | 1          | 0          | 45bf5e28-da2f-4207-bf67-466baa7af86e |
+
+    And The acts belong to a setlist with the following data:
+      | id                                   | name          | description                  | date       |
+      | 9c5999a5-2468-45ba-ae77-3965fc385519 | Cool Setlist! | This Setlist is the best one | 2019-01-01 |
+
+    And I want to update the acts for the first setlist with the following data:
+      | act_number | song_order | song_id                              |
+      | 0          | 0          | 45bf5e28-da2f-4207-bf67-466baa7af86e |
+      | 1          | 0          | bc0bd9a8-0fe4-49a4-aee0-invalid!     |
+    When I request the api service to update the setlist
+    Then the api must return a response with code: 500
+    And the api must show me the setlist if I request it by its id
+
+
   Scenario: Acts from a Setlist can not be updated if they have repeated songs
     Given the following songs exists:
       | id                                   | title              | is_visible |

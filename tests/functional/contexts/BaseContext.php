@@ -516,6 +516,22 @@ class BaseContext extends RawMinkContext
     }
 
     /**
+     * @param string $setlistId
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    protected function requestSetlistDelete(string $setlistId): void
+    {
+        $this->request(
+            'delete',
+            $this->apiUrl . '/setlist/' . $setlistId
+        );
+
+        if (self::$responseCode == 200) {
+            $this->deleteSetlist($setlistId);
+        }
+    }
+
+    /**
      * @param array $song
      * @return bool
      */
@@ -554,6 +570,19 @@ class BaseContext extends RawMinkContext
         foreach (self::$persistedSetlists as $persistedSetlistKey => $persistedSetlist) {
             if ($persistedSetlist['id'] == $setlist['id']) {
                 self::$persistedSetlists[$persistedSetlistKey] = $setlist;
+                break;
+            }
+        }
+    }
+
+    /**
+     * @param string $setlistId
+     */
+    protected function deleteSetlist(string $setlistId): void
+    {
+        foreach (self::$persistedSetlists as $persistedSetlistKey => $persistedSetlist) {
+            if ($persistedSetlist['id'] == $setlistId) {
+                unset(self::$persistedSetlists[$persistedSetlistKey]);
                 break;
             }
         }
