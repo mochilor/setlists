@@ -10,6 +10,11 @@ use PHPUnit\Framework\Assert;
 class SongContext extends BaseContext implements Context
 {
     /**
+     * @var array
+     */
+    private $songList;
+
+    /**
      * @Given I want to create songs with values:
      * @param TableNode $table
      */
@@ -52,6 +57,8 @@ class SongContext extends BaseContext implements Context
         );
 
         $this->checkMultipleSongs($response, count(self::$persistedSongs));
+
+        $this->songList = json_decode($response, true);
     }
 
     /**
@@ -70,6 +77,8 @@ class SongContext extends BaseContext implements Context
         );
 
         $this->checkMultipleSongs($response, $arg2 - $arg1);
+
+        $this->songList = json_decode($response, true);
     }
 
     /**
@@ -88,6 +97,71 @@ class SongContext extends BaseContext implements Context
         );
 
         $this->checkMultipleSongs($response, count(self::$persistedSongs) - $arg1);
+
+        $this->songList = json_decode($response, true);
+    }
+
+    /**
+     * @Given the api must be able to show me a list with songs from: :arg1 to: :arg2 filtered by the word: :arg3
+     */
+    public function theApiMustBeAbleToShowMeAListWithSongsFromToFilteredByTheWord($arg1, $arg2, $arg3)
+    {
+        $response = $this->request(
+            'get',
+            $this->apiUrl . '/songs?interval=' . $arg1 . ',' . $arg2 . '&title=' . $arg3
+        );
+
+        Assert::assertEquals(
+            200,
+            self::$responseCode
+        );
+
+        $maxSong = $arg2 - $arg1;
+        $count = 0;
+
+        foreach (self::$persistedSongs as $keyPersistedSong => $persistedSong) {
+            if ($count == $maxSong) {
+                break;
+            }
+
+            $persistedTitle = strtolower($persistedSong['title']);
+            if (strstr($persistedTitle, strtolower($arg3))) {
+                $count++;
+            }
+        }
+
+        $this->checkMultipleSongs($response, $count);
+
+        $this->songList = json_decode($response, true);
+    }
+
+    /**
+     * @Given the api must be able to show me a list with songs filtered by the word: :arg1
+     */
+    public function theApiMustBeAbleToShowMeAListWithSongsFilteredByTheWord($arg1)
+    {
+        $response = $this->request(
+            'get',
+            $this->apiUrl . '/songs?title=' . $arg1
+        );
+
+        Assert::assertEquals(
+            200,
+            self::$responseCode
+        );
+        $count = 0;
+
+        foreach (self::$persistedSongs as $keyPersistedSong => $persistedSong) {
+
+            $persistedTitle = strtolower($persistedSong['title']);
+            if (strstr($persistedTitle, strtolower($arg1))) {
+                $count++;
+            }
+        }
+
+        $this->checkMultipleSongs($response, $count);
+
+        $this->songList = json_decode($response, true);
     }
 
     /**
@@ -288,5 +362,22 @@ class SongContext extends BaseContext implements Context
     public function iWantToUpdateASongWithTheFollowingValues(TableNode $table)
     {
         $this->setSongsFromTableNode($table);
+    }
+
+    /**
+     * @Given /^the songs in the list will be these ones:$/
+     */
+    public function theSongsInTheListWillBeTheseOnes(TableNode $table)
+    {
+        foreach ($table as $keyRow => $row) {
+            Assert::assertEquals(
+                $row['id'],
+                $this->songList[$keyRow]['id']
+            );
+            Assert::assertEquals(
+                $row['title'],
+                $this->songList[$keyRow]['title']
+            );
+        }
     }
 }

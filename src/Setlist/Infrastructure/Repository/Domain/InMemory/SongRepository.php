@@ -44,13 +44,13 @@ class SongRepository implements SongRepositoryInterface
     {
         switch (get_class($event)) {
             case SongWasCreated::class:
-                $this->insert($event->id(), $event->title());
+                $this->insert($event->id()->value(), $event->title());
                 break;
             case SongChangedItsTitle::class:
-                $this->update($event->id(), $event->title());
+                $this->update($event->id()->value(), $event->title());
                 break;
             case SongWasDeleted::class:
-                $this->delete($event->id());
+                $this->delete($event->id()->value());
                 break;
         }
     }

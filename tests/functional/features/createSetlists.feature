@@ -73,9 +73,13 @@ Feature: Create and retrieve setlists
     When I request the api service to create the setlists
     Then the api must return a response with code: 201
     And the api must show me all the setlists if I request them
+    And the setlists in the list will be these ones:
+      | id                                   | name          | description                   | date       |
+      | 9c5999a5-2468-45ba-ae77-3965fc385519 | First Setlist | This Setlist is the first one | 2019-01-01 |
+      | 30f1bab8-2eff-47be-b9ce-80c6d2f76d8c | Last Setlist  | This Setlist is the last one  | 2019-02-28 |
 
 
-  Scenario: Setlists with several acts can be created and retrieved paginated
+  Scenario: Setlists with several acts can be created and retrieved all together paginated
     Given the following songs exists:
       | id                                   | title              | is_visible |
       | d2efe5df-aaa1-4c06-9e6d-7215860a0a13 | Yesterday          | 1          |
@@ -101,7 +105,75 @@ Feature: Create and retrieve setlists
     When I request the api service to create the setlists
     Then the api must return a response with code: 201
     And the api must be able to show me a list with setlists from: 0 to: 2
-    And the api must be able to show me a list with setlists from: 3 to the end
+    And the setlists in the list will be these ones:
+      | id                                   | name          | description                   | date       |
+      | 9c5999a5-2468-45ba-ae77-3965fc385519 | First Setlist | This Setlist is the first one | 2019-01-01 |
+      | 30f1bab8-2eff-47be-b9ce-80c6d2f76d8c | Last Setlist  | This Setlist is the last one  | 2019-02-28 |
+    And the api must be able to show me a list with setlists from: 2 to the end
+    And the setlists in the list will be these ones:
+      | id                                   | name          | description                   | date       |
+      | c3a5a32f-0fbc-4642-99bf-e695832ab055 | Middle Setlist | This Setlist is the second one | 2019-09-05 |
+
+
+  Scenario: Setlists with several acts can be created and retrieved all together paginated and filtered by its name
+    Given the following songs exists:
+      | id                                   | title              | is_visible |
+      | d2efe5df-aaa1-4c06-9e6d-7215860a0a13 | Yesterday          | 1          |
+      | 13080dc1-63f2-4770-aa76-683bdf22c5a6 | Paint it black     | 1          |
+      | bc0bd9a8-0fe4-49a4-aee0-9f0114cd3163 | Wish you were here | 1          |
+      | 3f225b9b-a114-4b47-b1ae-64a4ac2888cb | Highway to Hell    | 1          |
+      | 45bf5e28-da2f-4207-bf67-466baa7af86e | Stairway to Heaven | 1          |
+
+    And I want to prepare some acts with the following data:
+      | act_number | song_order | song_id                              |
+      | 0          | 0          | d2efe5df-aaa1-4c06-9e6d-7215860a0a13 |
+      | 0          | 1          | 13080dc1-63f2-4770-aa76-683bdf22c5a6 |
+      | 1          | 0          | bc0bd9a8-0fe4-49a4-aee0-9f0114cd3163 |
+      | 1          | 1          | 3f225b9b-a114-4b47-b1ae-64a4ac2888cb |
+      | 2          | 0          | 45bf5e28-da2f-4207-bf67-466baa7af86e |
+
+    And I want to add the acts to some setlists with the following data:
+      | id                                   | name                   | description                    | date       |
+      | 9c5999a5-2468-45ba-ae77-3965fc385519 | Voodoo Setlist         | This Setlist is the first one  | 2019-01-01 |
+      | c3a5a32f-0fbc-4642-99bf-e695832ab055 | Another Voodoo Setlist | This Setlist is the second one | 2019-09-05 |
+      | 30f1bab8-2eff-47be-b9ce-80c6d2f76d8c | Last Setlist!          | This Setlist is the last one   | 2019-02-28 |
+
+    When I request the api service to create the setlists
+    Then the api must return a response with code: 201
+    And the api must be able to show me a list with setlists from: 0 to: 1 filtered by the word: "Voodoo"
+    And the setlists in the list will be these ones:
+      | id                                   | name                   | description                    | date       |
+      | c3a5a32f-0fbc-4642-99bf-e695832ab055 | Another Voodoo Setlist | This Setlist is the second one | 2019-09-05 |
+
+
+  Scenario: Setlists with several acts can be created and retrieved all together filtered by its name
+    Given the following songs exists:
+      | id                                   | title              | is_visible |
+      | d2efe5df-aaa1-4c06-9e6d-7215860a0a13 | Yesterday          | 1          |
+      | 13080dc1-63f2-4770-aa76-683bdf22c5a6 | Paint it black     | 1          |
+      | bc0bd9a8-0fe4-49a4-aee0-9f0114cd3163 | Wish you were here | 1          |
+      | 3f225b9b-a114-4b47-b1ae-64a4ac2888cb | Highway to Hell    | 1          |
+      | 45bf5e28-da2f-4207-bf67-466baa7af86e | Stairway to Heaven | 1          |
+
+    And I want to prepare some acts with the following data:
+      | act_number | song_order | song_id                              |
+      | 0          | 0          | d2efe5df-aaa1-4c06-9e6d-7215860a0a13 |
+      | 0          | 1          | 13080dc1-63f2-4770-aa76-683bdf22c5a6 |
+      | 1          | 0          | bc0bd9a8-0fe4-49a4-aee0-9f0114cd3163 |
+      | 1          | 1          | 3f225b9b-a114-4b47-b1ae-64a4ac2888cb |
+      | 2          | 0          | 45bf5e28-da2f-4207-bf67-466baa7af86e |
+
+    And I want to add the acts to some setlists with the following data:
+      | id                                   | name          | description                   | date       |
+      | 9c5999a5-2468-45ba-ae77-3965fc385519 | First Setlist | This Setlist is the first one | 2019-01-01 |
+      | 30f1bab8-2eff-47be-b9ce-80c6d2f76d8c | Last Setlist  | This Setlist is the last one  | 2019-02-28 |
+
+    When I request the api service to create the setlists
+    Then the api must return a response with code: 201
+    And the api must be able to show me a list with setlists filtered by the word: "Last"
+    And the setlists in the list will be these ones:
+      | id                                   | name          | description                   | date       |
+      | 30f1bab8-2eff-47be-b9ce-80c6d2f76d8c | Last Setlist  | This Setlist is the last one  | 2019-02-28 |
 
 
   Scenario: Setlists with non existent song ids can not be created

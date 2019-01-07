@@ -15,4 +15,9 @@ class GetSetlists extends Query
     {
         return $this->payload()['length'];
     }
+
+    public function name(): string
+    {
+        return $this->payload()['name'];
+    }
 }

@@ -45,13 +45,15 @@ SQL;
         return null;
     }
 
-    public function getAllSetlists(int $start, int $length): PersistedSetlistCollection
+    public function getAllSetlists(int $start, int $length, string $name): PersistedSetlistCollection
     {
         $sql = <<<SQL
-SELECT * FROM `setlist` ORDER BY `creation_date` ASC%s;
+SELECT * FROM `setlist` %s ORDER BY `creation_date` ASC%s;
 SQL;
+
+        $filterByNameString = $this->getFilterByNameString($name);
         $limitString = $this->getLimitString($start, $length);
-        $sql = sprintf($sql, $limitString);
+        $sql = sprintf($sql, $filterByNameString, $limitString);
 
         $query = $this->PDO->prepare($sql);
         $query->execute();

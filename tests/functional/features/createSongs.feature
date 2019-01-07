@@ -27,6 +27,13 @@ Feature: Create and retrieve songs
     When I request the api service to create the songs
     Then the api must return a response with code: 201
     And the api must show me all the songs if I request them
+    And the songs in the list will be these ones:
+      | id                                   | title     |
+      | 3f225b9b-a114-4b47-b1ae-64a4ac2888cb | Highway to Hell |
+      | 13080dc1-63f2-4770-aa76-683bdf22c5a6 | Paint it black |
+      | 45bf5e28-da2f-4207-bf67-466baa7af86e | Stairway to Heaven |
+      | bc0bd9a8-0fe4-49a4-aee0-9f0114cd3163 | Wish you were here |
+      | d2efe5df-aaa1-4c06-9e6d-7215860a0a13 | Yesterday |
 
 
   Scenario: Songs can be created and retrieved all together paginated
@@ -40,8 +47,56 @@ Feature: Create and retrieve songs
 
     When I request the api service to create the songs
     Then the api must return a response with code: 201
-    Then the api must be able to show me a list with songs from: 0 to: 2
+    And the api must be able to show me a list with songs from: 0 to: 3
+    And the songs in the list will be these ones:
+      | id                                   | title     |
+      | 3f225b9b-a114-4b47-b1ae-64a4ac2888cb | Highway to Hell |
+      | 13080dc1-63f2-4770-aa76-683bdf22c5a6 | Paint it black |
+      | 45bf5e28-da2f-4207-bf67-466baa7af86e | Stairway to Heaven |
     And the api must be able to show me a list with songs from: 3 to the end
+    And the songs in the list will be these ones:
+      | id                                   | title     |
+      | bc0bd9a8-0fe4-49a4-aee0-9f0114cd3163 | Wish you were here |
+      | d2efe5df-aaa1-4c06-9e6d-7215860a0a13 | Yesterday |
+
+
+  Scenario: Songs can be created and retrieved all together paginated and filtered by title
+    Given I want to create songs with values:
+      | id                                   | title     |
+      | d2efe5df-aaa1-4c06-9e6d-7215860a0a13 | Yesterday |
+      | 3f225b9b-a114-4b47-b1ae-64a4ac2888cb | Highway to Hell |
+      | 13080dc1-63f2-4770-aa76-683bdf22c5a6 | Paint it black |
+      | bc0bd9a8-0fe4-49a4-aee0-9f0114cd3163 | Wish you were here |
+      | 45bf5e28-da2f-4207-bf67-466baa7af86e | Stairway to Heaven |
+      | 87fd2aa5-41f1-4dac-8974-b1bbab8970ec | My way |
+
+    When I request the api service to create the songs
+    Then the api must return a response with code: 201
+    And the api must be able to show me a list with songs from: 0 to: 2 filtered by the word: "way"
+    And the songs in the list will be these ones:
+      | id                                   | title     |
+      | 3f225b9b-a114-4b47-b1ae-64a4ac2888cb | Highway to Hell |
+      | 87fd2aa5-41f1-4dac-8974-b1bbab8970ec | My way |
+
+
+  Scenario: Songs can be created and retrieved all together filtered by title
+    Given I want to create songs with values:
+      | id                                   | title     |
+      | d2efe5df-aaa1-4c06-9e6d-7215860a0a13 | Yesterday |
+      | 3f225b9b-a114-4b47-b1ae-64a4ac2888cb | Highway to Hell |
+      | 13080dc1-63f2-4770-aa76-683bdf22c5a6 | Paint it black |
+      | bc0bd9a8-0fe4-49a4-aee0-9f0114cd3163 | Wish you were here |
+      | 45bf5e28-da2f-4207-bf67-466baa7af86e | Stairway to Heaven |
+      | 87fd2aa5-41f1-4dac-8974-b1bbab8970ec | My way |
+
+    When I request the api service to create the songs
+    Then the api must return a response with code: 201
+    And the api must be able to show me a list with songs filtered by the word: "way"
+    And the songs in the list will be these ones:
+      | id                                   | title     |
+      | 3f225b9b-a114-4b47-b1ae-64a4ac2888cb | Highway to Hell |
+      | 87fd2aa5-41f1-4dac-8974-b1bbab8970ec | My way |
+      | 45bf5e28-da2f-4207-bf67-466baa7af86e | Stairway to Heaven |
 
 
   Scenario: Song without id can not be created

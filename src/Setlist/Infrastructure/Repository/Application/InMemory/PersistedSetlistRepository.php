@@ -8,7 +8,7 @@ use Setlist\Application\Persistence\Setlist\PersistedSetlistRepository as Applic
 
 class PersistedSetlistRepository implements ApplicationSetlistRepositoryInterface
 {
-    public function getAllSetlists(int $start, int $length): PersistedSetlistCollection
+    public function getAllSetlists(int $start, int $length, string $name): PersistedSetlistCollection
     {
         return new PersistedSetlistCollection();
     }
