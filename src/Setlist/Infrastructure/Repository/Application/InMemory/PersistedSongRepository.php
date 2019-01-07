@@ -8,7 +8,7 @@ use Setlist\Application\Persistence\Song\PersistedSongRepository as ApplicationS
 
 class PersistedSongRepository implements ApplicationSongRepositoryInterface
 {
-    public function getAllSongs(int $start, int $length): PersistedSongCollection
+    public function getAllSongs(int $start, int $length, string $title): PersistedSongCollection
     {
         return new PersistedSongCollection();
     }

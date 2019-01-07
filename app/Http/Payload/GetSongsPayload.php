@@ -8,6 +8,7 @@ class GetSongsPayload
 {
     private $start;
     private $length;
+    private $title;
 
     public function __construct(Request $request)
     {
@@ -16,6 +17,7 @@ class GetSongsPayload
             $this->start = explode(',', $parameters['interval'])[0];
             $this->length = explode(',', $parameters['interval'])[1];
         }
+        $this->title = $parameters['title'] ?? '';
     }
 
     public function __invoke()
@@ -23,6 +25,7 @@ class GetSongsPayload
         return [
             'start' => (int) $this->start,
             'length' => (int) $this->length,
+            'title' => (string) $this->title,
         ];
     }
 }

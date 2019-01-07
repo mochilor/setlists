@@ -15,4 +15,9 @@ class GetSongs extends Query
     {
         return $this->payload()['length'];
     }
+
+    public function title(): string
+    {
+        return $this->payload()['title'];
+    }
 }

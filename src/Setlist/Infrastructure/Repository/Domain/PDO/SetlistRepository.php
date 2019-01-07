@@ -69,7 +69,7 @@ SELECT * FROM `%s` WHERE id = :uuid;
 SQL;
         $sql = sprintf($sql, self::TABLE_NAME);
         $query = $this->PDO->prepare($sql);
-        $query->bindValue('uuid', $uuid);
+        $query->bindValue('uuid', $uuid->value());
         $query->execute();
         $setlistData = $query->fetch(PDO::FETCH_ASSOC);
 
@@ -85,7 +85,7 @@ SQL;
         switch (get_class($event)) {
             case SetlistWasCreated::class:
                 $this->insert(
-                    $event->id(),
+                    $event->id()->value(),
                     $event->name(),
                     $event->description(),
                     $event->actCollection(),
@@ -94,19 +94,24 @@ SQL;
                 );
                 break;
             case SetlistChangedItsName::class:
-                $this->update($event->id(), 'name', $event->name(), $event->formattedUpdateDate());
+                $this->update($event->id()->value(), 'name', $event->name(), $event->formattedUpdateDate());
                 break;
             case SetlistChangedItsDescription::class:
-                $this->update($event->id(), 'description', $event->description(), $event->formattedUpdateDate());
+                $this->update(
+                    $event->id()->value(),
+                    'description',
+                    $event->description(),
+                    $event->formattedUpdateDate()
+                );
                 break;
             case SetlistChangedItsDate::class:
-                $this->update($event->id(), 'date', $event->formattedDate(), $event->formattedUpdateDate());
+                $this->update($event->id()->value(), 'date', $event->formattedDate(), $event->formattedUpdateDate());
                 break;
             case SetlistChangedItsActCollection::class:
-                $this->updateActCollection($event->id(), $event->actCollection(), $event->formattedUpdateDate());
+                $this->updateActCollection($event->id()->value(), $event->actCollection(), $event->formattedUpdateDate());
                 break;
             case SetlistWasDeleted::class:
-                $this->delete($event->id());
+                $this->delete($event->id()->value());
                 break;
         }
     }
@@ -176,7 +181,7 @@ SQL;
 
         foreach ($actCollection as $keyAct => $act) {
             foreach ($act->songCollection() as $keySong => $song) {
-                $songSql .= sprintf("('%s', '%s', %d, %d),", $uuid, $song->id(), $keyAct, $keySong);
+                $songSql .= sprintf("('%s', '%s', %d, %d),", $uuid, $song->id()->value(), $keyAct, $keySong);
             }
         }
 

@@ -29,7 +29,7 @@ $router->group(['prefix' => 'api'], function () use ($router) {
             $router->get('{id}',  ['uses' => 'SongController@getSong']);
         });
         $router->get('songs',  ['uses' => 'SongController@getSongs']);
-        $router->get('songs/title/{title}',  ['uses' => 'SongController@getSongsByTitle']);
+        //$router->get('songs/title/{title}',  ['uses' => 'SongController@getSongsByTitle']);
 
         // Setlist routes
         $router->group(['prefix' => 'setlist'], function () use ($router) {

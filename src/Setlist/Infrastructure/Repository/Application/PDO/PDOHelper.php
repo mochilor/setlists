@@ -21,6 +21,24 @@ trait PDOHelper
         return $limitString;
     }
 
+    public function getFilterByTitleString(string $title): string
+    {
+        if (!empty($title)) {
+            return " WHERE `title` LIKE '%$title%'";
+        }
+
+        return '';
+    }
+
+    public function getFilterByNameString(string $name): string
+    {
+        if (!empty($name)) {
+            return " WHERE `name` LIKE '%$name%'";
+        }
+
+        return '';
+    }
+
     public function getSetlistFromData($setlistData): PersistedSetlist
     {
         $sql = <<<SQL
