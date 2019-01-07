@@ -15,6 +15,17 @@ use Setlist\Infrastructure\Messaging\QueryBus;
 
 class Controller extends BaseController
 {
+    /**
+     * @OA\Info(
+     *   title="Setlists API",
+     *   version="1.0",
+     *   @OA\Contact(
+     *     email="support@example.com",
+     *     name="Support Team"
+     *   )
+     * )
+     */
+
     protected $messageFactory;
     private $commandBus;
     private $queryBus;

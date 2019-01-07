@@ -1,0 +1,91 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Setlists API",
+        "contact": {
+            "name": "Support Team",
+            "email": "support@example.com"
+        },
+        "version": "1.0"
+    },
+    "paths": {
+        "/api/song/{song}": {
+            "get": {
+                "tags": [
+                    "Songs"
+                ],
+                "description": "Returns a song",
+                "operationId": "App\\Http\\Controllers\\SongController::getSong",
+                "parameters": [
+                    {
+                        "name": "song",
+                        "in": "path",
+                        "description": "The uuid of the song",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "A song with all its attributes",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error: invalid identifier"
+                    },
+                    "404": {
+                        "description": "Error: requested song does not exist."
+                    }
+                }
+            }
+        },
+        "/api/songs": {
+            "get": {
+                "tags": [
+                    "Songs"
+                ],
+                "description": "Returns all stored songs or a range of them, if the optional parameter 'interval' was provided",
+                "operationId": "App\\Http\\Controllers\\SongController::getSongs",
+                "parameters": [
+                    {
+                        "name": "interval",
+                        "in": "query",
+                        "description": "The offset and limit of the requested songs collection, separated with a comma",
+                        "style": "form",
+                        "explode": "false",
+                        "allowReserved": "true",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "examples": [
+                            {
+                                "summary": "Getting only the first song",
+                                "value": "0,1"
+                            },
+                            {
+                                "summary": "A list of songs, starting in the 11th song and with a length of 50 songs",
+                                "value": "10,50"
+                            }
+                        ]
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "A collection of songs with all their attributes, according to the 'interval' parameter, if provided",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
