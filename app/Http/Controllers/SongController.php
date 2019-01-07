@@ -63,11 +63,4 @@ class SongController extends Controller
             $this->getQuery($getSongsPayload, GetSongs::class)
         );
     }
-
-    public function getSongsByTitle(GetSongsByTitlePayload $getSongsByTitlePayload)
-    {
-        return $this->dispatchQuery(
-            $this->getQuery($getSongsByTitlePayload, GetSongsByTitle::class)
-        );
-    }
 }

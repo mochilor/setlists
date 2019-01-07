@@ -28,9 +28,10 @@ class PersistedSetlistRepository implements ApplicationSetlistRepositoryInterfac
         }
     }
 
-    public function getAllSetlists(int $start, int $length): PersistedSetlistCollection
+    public function getAllSetlists(int $start, int $length, string $name): PersistedSetlistCollection
     {
-        $eloquentSetlists = EloquentSetlist::orderBy('creation_date', 'asc')
+        $eloquentSetlists = EloquentSetlist::orderBy('name', 'asc')
+            ->orderBy('creation_date', 'asc')
             ->when($start > 0, function ($query) use ($start) {
                 return $query->skip($start);
             })

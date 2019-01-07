@@ -46,8 +46,8 @@ Feature: Update songs
     Then the api must return a response with code: 409
     And the existent songs should be exactly like:
       | id                                   | title              | is_visible |
-      | d2efe5df-aaa1-4c06-9e6d-7215860a0a13 | Yesterday          | 1          |
       | 45bf5e28-da2f-4207-bf67-466baa7af86e | Stairway to Heaven | 0          |
+      | d2efe5df-aaa1-4c06-9e6d-7215860a0a13 | Yesterday          | 1          |
 
 
   Scenario: Updating a non existing Song returns an error

@@ -31,14 +31,12 @@ class SetlistProjectionRepository implements ApplicationSetlistRepositoryInterfa
         return $this->getSetlistFromData($data);
     }
 
-    public function getAllSetlists(int $start, int $length): PersistedSetlistCollection
+    public function getAllSetlists(int $start, int $length, string $name): PersistedSetlistCollection
     {
         $setlists = SetlistProjection::orderBy('created_at', 'asc')
-            ->when($start > 0, function ($query) use ($start) {
-                return $query->skip($start);
-            })
-            ->when($length > 0, function ($query) use($length) {
-                return $query->take($length);
+            ->when(!empty($name), function ($query) use ($name) {
+                $whereString = sprintf('data REGEXP \'"name":"[^"]*%s\'', $name);
+                return $query->whereRaw($whereString);
             })
             ->get();
 
@@ -46,6 +44,14 @@ class SetlistProjectionRepository implements ApplicationSetlistRepositoryInterfa
 
         foreach ($setlists as $setlist) {
             $setlistsArray[] = $this->getSetlistFromData(json_decode($setlist->data));
+        }
+
+        usort($setlistsArray, function($a, $b) {
+            return strcasecmp($a->name(), $b->name());
+        });
+
+        if ($length > 0) {
+            $setlistsArray = array_slice($setlistsArray, $start, $length);
         }
 
         return PersistedSetlistCollection::create(...$setlistsArray);

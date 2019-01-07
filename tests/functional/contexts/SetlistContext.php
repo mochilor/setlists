@@ -11,6 +11,7 @@ class SetlistContext extends BaseContext implements Context
 {
     private $acts = [];
     private $updatedSetlist = [];
+    private $setlistList;
 
     /**
      * @Given /^(I want to prepare some acts with the following data|The songs are sorted in the following acts):$/
@@ -122,6 +123,8 @@ class SetlistContext extends BaseContext implements Context
         );
 
         $this->checkMultipleSetlists($response, count(self::$persistedSetlists));
+
+        $this->setlistList = json_decode($response, true);
     }
 
     /**
@@ -140,6 +143,8 @@ class SetlistContext extends BaseContext implements Context
         );
 
         $this->checkMultipleSetlists($response, $arg2 - $arg1);
+
+        $this->setlistList = json_decode($response, true);
     }
 
     /**
@@ -158,6 +163,71 @@ class SetlistContext extends BaseContext implements Context
         );
 
         $this->checkMultipleSetlists($response, count(self::$persistedSetlists) - $arg1);
+
+        $this->setlistList = json_decode($response, true);
+    }
+
+    /**
+     * @Given the api must be able to show me a list with setlists from: :arg1 to: :arg2 filtered by the word: :arg3
+     */
+    public function theApiMustBeAbleToShowMeAListWithSetlistsFromToFilteredByTheWord($arg1, $arg2, $arg3)
+    {
+        $response = $this->request(
+            'get',
+            $this->apiUrl . '/setlists?interval=' . $arg1 . ',' . $arg2 . '&name=' . $arg3
+        );
+
+        Assert::assertEquals(
+            200,
+            self::$responseCode
+        );
+
+        $maxSetlist = $arg2 - $arg1;
+        $count = 0;
+
+        foreach (self::$persistedSetlists as $keyPersistedSetlist => $persistedSetlist) {
+            if ($count == $maxSetlist) {
+                break;
+            }
+
+            $persistedName = strtolower($persistedSetlist['name']);
+            if (strstr($persistedName, strtolower($arg3))) {
+                $count++;
+            }
+        }
+
+        $this->checkMultipleSetlists($response, $count);
+
+        $this->setlistList = json_decode($response, true);
+    }
+
+    /**
+     * @Given the api must be able to show me a list with setlists filtered by the word: :arg1
+     */
+    public function theApiMustBeAbleToShowMeAListWithSetlistsFilteredByTheWord($arg1)
+    {
+        $response = $this->request(
+            'get',
+            $this->apiUrl . '/setlists?name=' . $arg1
+        );
+
+        Assert::assertEquals(
+            200,
+            self::$responseCode
+        );
+
+        $count = 0;
+
+        foreach (self::$persistedSetlists as $keyPersistedSetlist => $persistedSetlist) {
+            $persistedName = strtolower($persistedSetlist['name']);
+            if (strstr($persistedName, strtolower($arg1))) {
+                $count++;
+            }
+        }
+
+        $this->checkMultipleSetlists($response, $count);
+
+        $this->setlistList = json_decode($response, true);
     }
 
     /**
@@ -249,5 +319,30 @@ class SetlistContext extends BaseContext implements Context
     public function iRequestTheApiServiceToDeleteTheSetlistWithId($arg1)
     {
         $this->requestSetlistDelete($arg1);
+    }
+
+    /**
+     * @Given /^the setlists in the list will be these ones:$/
+     */
+    public function theSetlistsInTheListWillBeTheseOnes(TableNode $table)
+    {
+        foreach ($table as $keyRow => $row) {
+            Assert::assertEquals(
+                $row['id'],
+                $this->setlistList[$keyRow]['id']
+            );
+            Assert::assertEquals(
+                $row['name'],
+                $this->setlistList[$keyRow]['name']
+            );
+            Assert::assertEquals(
+                $row['description'],
+                $this->setlistList[$keyRow]['description']
+            );
+            Assert::assertEquals(
+                $row['date'],
+                $this->setlistList[$keyRow]['date']
+            );
+        }
     }
 }

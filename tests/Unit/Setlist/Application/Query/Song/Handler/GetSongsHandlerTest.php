@@ -31,6 +31,7 @@ class GetSongsHandlerTest extends TestCase
         $payload = [
             'start' => '1',
             'length' => '9',
+            'title' => 'Song Title',
         ];
         $query = new GetSongs($payload);
 
@@ -40,7 +41,7 @@ class GetSongsHandlerTest extends TestCase
         $this->applicationSongRepository
             ->expects($this->once())
             ->method('getAllSongs')
-            ->with($payload['start'], $payload['length'])
+            ->with($payload['start'], $payload['length'], $payload['title'])
             ->willReturn($songCollection);
 
         $this->songDataTransformer

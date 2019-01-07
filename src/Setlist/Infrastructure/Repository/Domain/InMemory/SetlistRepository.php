@@ -42,7 +42,7 @@ class SetlistRepository implements SetlistRepositoryInterface
     {
         switch (get_class($event)) {
             case SetlistWasCreated::class:
-                $this->insert($event->id(), $event->title());
+                $this->insert($event->id()->value(), $event->title());
                 break;
         }
     }

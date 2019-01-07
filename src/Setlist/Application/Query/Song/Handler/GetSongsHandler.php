@@ -19,7 +19,7 @@ class GetSongsHandler
 
     public function __invoke(GetSongs $query)
     {
-        $songs = $this->applicationSongRepository->getAllSongs($query->start(), $query->length());
+        $songs = $this->applicationSongRepository->getAllSongs($query->start(), $query->length(), $query->title());
 
         $transformedSongs = [];
         foreach ($songs as $song) {

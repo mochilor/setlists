@@ -20,14 +20,18 @@ class PersistedSongRepository implements ApplicationSongRepositoryInterface
         return null;
     }
 
-    public function getAllSongs(int $start, int $length): PersistedSongCollection
+    public function getAllSongs(int $start, int $length, string $title): PersistedSongCollection
     {
-        $eloquentSongs = EloquentSong::orderBy('creation_date', 'asc')
+        $eloquentSongs = EloquentSong::orderBy('title', 'asc')
+            ->orderBy('creation_date', 'asc')
             ->when($start > 0, function ($query) use ($start) {
                 return $query->skip($start);
             })
             ->when($length > 0, function ($query) use($length) {
                 return $query->take($length);
+            })
+            ->when(!empty($title), function ($query) use($title) {
+                return $query->where('title', 'like', "%$title%");
             })
             ->get();
 

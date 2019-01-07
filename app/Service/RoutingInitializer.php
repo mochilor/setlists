@@ -93,14 +93,12 @@ class RoutingInitializer
         $this->eventBus->addHandler(SongWasDeleted::class, app(SongWasDeletedHandler::class));
 
         // Setlist
-        //if (env('PROJECTIONS')) {
-            $this->eventBus->addHandler(SetlistWasCreated::class, app(SetlistWasCreatedHandler::class));
-            $this->eventBus->addHandler(SetlistChangedItsName::class, app(SetlistChangedItsNameHandler::class));
-            $this->eventBus->addHandler(SetlistChangedItsDescription::class, app(SetlistChangedItsDescriptionHandler::class));
-            $this->eventBus->addHandler(SetlistChangedItsDate::class, app(SetlistChangedItsDateHandler::class));
-            $this->eventBus->addHandler(SetlistChangedItsActCollection::class, app(SetlistChangedItsActCollectionHandler::class));
-            $this->eventBus->addHandler(SetlistWasDeleted::class, app(SetlistWasDeletedHandler::class));
-        //}
+        $this->eventBus->addHandler(SetlistWasCreated::class, app(SetlistWasCreatedHandler::class));
+        $this->eventBus->addHandler(SetlistChangedItsName::class, app(SetlistChangedItsNameHandler::class));
+        $this->eventBus->addHandler(SetlistChangedItsDescription::class, app(SetlistChangedItsDescriptionHandler::class));
+        $this->eventBus->addHandler(SetlistChangedItsDate::class, app(SetlistChangedItsDateHandler::class));
+        $this->eventBus->addHandler(SetlistChangedItsActCollection::class, app(SetlistChangedItsActCollectionHandler::class));
+        $this->eventBus->addHandler(SetlistWasDeleted::class, app(SetlistWasDeletedHandler::class));
     }
 
     private function initQueries()
@@ -108,7 +106,6 @@ class RoutingInitializer
         // Song
         $this->queryBus->addHandler(GetSong::class, app(GetSongHandler::class));
         $this->queryBus->addHandler(GetSongs::class, app(GetSongsHandler::class));
-        $this->queryBus->addHandler(GetSongsByTitle::class, app(GetSongsByTitleHandler::class));
 
         // Setlit
         $this->queryBus->addHandler(GetSetlist::class, app(GetSetlistHandler::class));

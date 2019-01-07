@@ -33,6 +33,7 @@ class GetSetlistsHandlerTest extends TestCase
         $payload = [
             'start' => '1',
             'length' => '9',
+            'name' => 'Setlist Name',
         ];
         $query = new GetSetlists($payload);
 
@@ -42,7 +43,7 @@ class GetSetlistsHandlerTest extends TestCase
         $this->applicationSetlistRepository
             ->expects($this->once())
             ->method('getAllSetlists')
-            ->with($payload['start'], $payload['length'])
+            ->with($payload['start'], $payload['length'], $payload['name'])
             ->willReturn($setlistCollection);
 
         $this->setlistDataTransformer

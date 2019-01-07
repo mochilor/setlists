@@ -36,13 +36,14 @@ SQL;
         return null;
     }
 
-    public function getAllSongs(int $start, int $length): PersistedSongCollection
+    public function getAllSongs(int $start, int $length, string $title): PersistedSongCollection
     {
         $sql = <<<SQL
-SELECT * FROM `song` ORDER BY `creation_date` ASC%s;
+SELECT * FROM `song` %s ORDER BY `title` ASC,`creation_date` ASC%s;
 SQL;
+        $filterByTitleString = $this->getFilterByTitleString($title);
         $limitString = $this->getLimitString($start, $length);
-        $sql = sprintf($sql, $limitString);
+        $sql = sprintf($sql, $filterByTitleString, $limitString);
 
         $query = $this->PDO->prepare($sql);
         $query->execute();

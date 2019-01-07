@@ -9,6 +9,7 @@ class GetSetlistsPayload
     private $uuid;
     private $start;
     private $length;
+    private $name;
 
     public function __construct(Request $request)
     {
@@ -20,6 +21,7 @@ class GetSetlistsPayload
             $this->start = explode(',', $parameters['interval'])[0];
             $this->length = explode(',', $parameters['interval'])[1];
         }
+        $this->name = $parameters['name'] ?? '';
     }
 
     public function __invoke()
@@ -28,6 +30,7 @@ class GetSetlistsPayload
             'uuid' => $this->uuid,
             'start' => (int) $this->start,
             'length' => (int) $this->length,
+            'name' => (string) $this->name,
         ];
     }
 }

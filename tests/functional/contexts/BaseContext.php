@@ -552,6 +552,9 @@ class BaseContext extends RawMinkContext
     protected function persistSong(array $song): void
     {
         self::$persistedSongs[] = $song;
+        usort(self::$persistedSongs, function($a, $b) {
+            return strcasecmp($a["title"], $b["title"]);
+        });
     }
 
     /**
@@ -560,6 +563,9 @@ class BaseContext extends RawMinkContext
     protected function persistSetlist(array $setlist): void
     {
         self::$persistedSetlists[] = $setlist;
+        usort(self::$persistedSetlists, function($a, $b) {
+            return strcasecmp($a["name"], $b["name"]);
+        });
     }
 
     /**

@@ -21,7 +21,7 @@ class GetSetlistsHandler
 
     public function __invoke(GetSetlists $query)
     {
-        $setlists = $this->applicationSetlistRepository->getAllSetlists($query->start(), $query->length());
+        $setlists = $this->applicationSetlistRepository->getAllSetlists($query->start(), $query->length(), $query->name());
 
         $transformedSetlists = [];
         foreach ($setlists as $setlist) {
