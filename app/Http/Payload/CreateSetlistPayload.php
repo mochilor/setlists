@@ -11,13 +11,14 @@ class CreateSetlistPayload
     private $description;
     private $acts;
     private $date;
+    private $actsCleaner;
 
-    public function __construct(Request $request)
+    public function __construct(Request $request, ActsCleaner $actsCleaner)
     {
         $this->uuid = $request->input('id', '');
         $this->name = $request->input('name', '');
         $this->description = $request->input('description', '');
-        $this->acts = $request->input('acts', []);
+        $this->acts = $actsCleaner->cleanActs($request->input('acts', []));
         $this->date = $request->input('date', '');
     }
 

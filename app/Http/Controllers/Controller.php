@@ -15,6 +15,25 @@ use Setlist\Infrastructure\Messaging\QueryBus;
 
 class Controller extends BaseController
 {
+    /**
+     * @OA\Info(
+     *   title="Setlists API",
+     *   version="1.0",
+     *     @OA\Contact(
+     *         email="support@example.com",
+     *         name="Support Team"
+     *     ),
+     * ),
+     * @OA\Tag(
+     *     name="Songs",
+     *     description="Operations with songs",
+     * ),
+     * @OA\Tag(
+     *     name="Setlists",
+     *     description="Operations with setlists",
+     * )
+     */
+
     protected $messageFactory;
     private $commandBus;
     private $queryBus;

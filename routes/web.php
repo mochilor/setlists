@@ -12,7 +12,7 @@
 */
 
 $router->get('/', function () use ($router) {
-    return $router->app->version();
+    //return $router->app->version();
 });
 
 $router->group(['prefix' => 'api'], function () use ($router) {
@@ -29,7 +29,6 @@ $router->group(['prefix' => 'api'], function () use ($router) {
             $router->get('{id}',  ['uses' => 'SongController@getSong']);
         });
         $router->get('songs',  ['uses' => 'SongController@getSongs']);
-        //$router->get('songs/title/{title}',  ['uses' => 'SongController@getSongsByTitle']);
 
         // Setlist routes
         $router->group(['prefix' => 'setlist'], function () use ($router) {
