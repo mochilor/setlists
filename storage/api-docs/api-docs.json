@@ -9,18 +9,91 @@
         "version": "1.0"
     },
     "paths": {
-        "/api/song/{song}": {
+        "/api/setlist": {
+            "post": {
+                "tags": [
+                    "Setlists"
+                ],
+                "description": "Creates a setlist with existing songs.",
+                "operationId": "App\\Http\\Controllers\\SetlistController::createSetlist",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "properties": {
+                                    "id": {
+                                        "description": "A valid Version 4 Uuid",
+                                        "type": "string"
+                                    },
+                                    "name": {
+                                        "description": "The name of the setlist",
+                                        "type": "string"
+                                    },
+                                    "description": {
+                                        "description": "An optional description of the setlist",
+                                        "type": "string"
+                                    },
+                                    "date": {
+                                        "description": "A date in format yyyy-mm-dd in wich is supposed to be the show.",
+                                        "type": "string"
+                                    },
+                                    "acts[0][0]": {
+                                        "description": "This will add the first song for the first act. You must provide existing song uuids for the acts.",
+                                        "type": "string"
+                                    },
+                                    "acts[0][1]": {
+                                        "description": "Same here. In a real use case, any number of acts and songs can be provided.",
+                                        "type": "string"
+                                    },
+                                    "acts[1][0]": {
+                                        "description": "The first song of the second act.",
+                                        "type": "string"
+                                    },
+                                    "acts[1][1]": {
+                                        "description": "The second song of the second act.",
+                                        "type": "string"
+                                    },
+                                    "acts[1][2]": {
+                                        "description": "The third song of the second act. Please note that it's not mandatory to send all songs and acts in the exact order. 'Gaps' in the list are alllowed.",
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "The setlist has been succesfully created.",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Error: id or name already exists."
+                    },
+                    "500": {
+                        "description": "Error: invalid identifier, invalid name, invalid id of a song, non existing song, repeated song in setlist."
+                    }
+                }
+            }
+        },
+        "/api/setlist/{uuid}": {
             "get": {
                 "tags": [
-                    "Songs"
+                    "Setlists"
                 ],
-                "description": "Returns a song",
-                "operationId": "App\\Http\\Controllers\\SongController::getSong",
+                "description": "Returns an existing setlist with all its acts and songs.",
+                "operationId": "App\\Http\\Controllers\\SetlistController::getSetlist",
                 "parameters": [
                     {
-                        "name": "song",
+                        "name": "uuid",
                         "in": "path",
-                        "description": "The uuid of the song",
+                        "description": "The uuid of the setlist.",
                         "required": true,
                         "schema": {
                             "type": "string"
@@ -29,7 +102,266 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "A song with all its attributes",
+                        "description": "A setlist with all its attributes.",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Error: the requested setlist does not exist."
+                    },
+                    "500": {
+                        "description": "Error: invalid identifier."
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Setlists"
+                ],
+                "description": "Deletes an existing setlist. The related songs remains.",
+                "operationId": "App\\Http\\Controllers\\SetlistController::deleteSetlist",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "description": "The uuid of the setlist.",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The setlist has been succesfully deleted.",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Error: the requested setlist does not exist."
+                    },
+                    "500": {
+                        "description": "Error: invalid identifier."
+                    }
+                }
+            },
+            "patch": {
+                "tags": [
+                    "Setlists"
+                ],
+                "description": "Updates an existing setlist.",
+                "operationId": "App\\Http\\Controllers\\SetlistController::updateSetlist",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "description": "The uuid of the setlist.",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "description": "The name of the setlist",
+                                        "type": "string"
+                                    },
+                                    "description": {
+                                        "description": "An optional description of the setlist",
+                                        "type": "string"
+                                    },
+                                    "date": {
+                                        "description": "A date in format yyyy-mm-dd in wich is supposed to be the show.",
+                                        "type": "string"
+                                    },
+                                    "acts[0][0]": {
+                                        "description": "This will add the first song for the first act. You must provide existing song uuids for the acts.",
+                                        "type": "string"
+                                    },
+                                    "acts[0][1]": {
+                                        "description": "Same here. In a real use case, any number of acts and songs can be provided.",
+                                        "type": "string"
+                                    },
+                                    "acts[1][0]": {
+                                        "description": "The first song of the second act.",
+                                        "type": "string"
+                                    },
+                                    "acts[1][1]": {
+                                        "description": "The second song of the second act.",
+                                        "type": "string"
+                                    },
+                                    "acts[1][2]": {
+                                        "description": "The third song of the second act. Please note that it's not mandatory to send all songs and acts in the exact order. 'Gaps' in the list are alllowed.",
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "The setlist has been succesfully updated.",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Error: name already exists in another stored setlist."
+                    },
+                    "404": {
+                        "description": "Error: the requested setlist does not exist."
+                    },
+                    "500": {
+                        "description": "Error: invalid identifier, invalid name, invalid id of a song, non existing song, repeated song in setlist."
+                    }
+                }
+            }
+        },
+        "/api/setlists": {
+            "get": {
+                "tags": [
+                    "Setlists"
+                ],
+                "description": "Returns all stored setlists (with all its acts and songs) or a range of them, if the optional parameter 'interval' was provided. Filtering by setlist name is also possible.",
+                "operationId": "App\\Http\\Controllers\\SetlistController::getSetlists",
+                "parameters": [
+                    {
+                        "name": "interval",
+                        "in": "query",
+                        "description": "The offset and limit of the requested setlist collection, separated with a comma.",
+                        "style": "form",
+                        "explode": "false",
+                        "allowReserved": "true",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "examples": [
+                            {
+                                "summary": "Getting only the first setlist",
+                                "value": "0,1"
+                            },
+                            {
+                                "summary": "A list of setlists, starting in the 11th and with a length of 50 setlists.",
+                                "value": "10,50"
+                            }
+                        ]
+                    },
+                    {
+                        "name": "name",
+                        "in": "query",
+                        "description": "A string to filter the name of the setlists in the collection. The comparison is case insensitive.",
+                        "style": "form",
+                        "explode": "false",
+                        "allowReserved": "true",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "examples": [
+                            {
+                                "summary": "Getting only those setlists with the string 'example' in their names.",
+                                "value": "example"
+                            }
+                        ]
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "A collection of setlists with all their attributes, according to the 'interval' and 'name' parameters, if provided.",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/song": {
+            "post": {
+                "tags": [
+                    "Songs"
+                ],
+                "description": "Creates a song.",
+                "operationId": "App\\Http\\Controllers\\SongController::createSong",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "properties": {
+                                    "id": {
+                                        "description": "A valid Version 4 Uuid",
+                                        "type": "string"
+                                    },
+                                    "title": {
+                                        "description": "The title of the song",
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object",
+                                "example": {
+                                    "id": 10,
+                                    "title": "Example Song"
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "The song has been succesfully created.",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Error: id or title already exists."
+                    },
+                    "500": {
+                        "description": "Error: invalid identifier or invalid title."
+                    }
+                }
+            }
+        },
+        "/api/song/{uuid}": {
+            "get": {
+                "tags": [
+                    "Songs"
+                ],
+                "description": "Returns a song.",
+                "operationId": "App\\Http\\Controllers\\SongController::getSong",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "description": "The uuid of the song.",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "A song with all its attributes.",
                         "content": {
                             "application/json": {
                                 "schema": {}
@@ -37,10 +369,138 @@
                         }
                     },
                     "500": {
-                        "description": "Error: invalid identifier"
+                        "description": "Error: invalid identifier."
                     },
                     "404": {
-                        "description": "Error: requested song does not exist."
+                        "description": "Error: the requested song does not exist."
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Songs"
+                ],
+                "description": "Deletes a song.",
+                "operationId": "App\\Http\\Controllers\\SongController::deleteSong",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "description": "The uuid of the song.",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The song has been succesfully deleted.",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Error: the requested song does not exist."
+                    },
+                    "500": {
+                        "description": "Error: invalid identifier or the song is present in one or more setlists."
+                    }
+                }
+            },
+            "patch": {
+                "tags": [
+                    "Songs"
+                ],
+                "description": "Updates the fields 'title' and 'visibility' from a song.",
+                "operationId": "App\\Http\\Controllers\\SongController::updateSong",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "description": "The uuid of the song.",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "properties": {
+                                    "title": {
+                                        "description": "The title of the song",
+                                        "type": "string"
+                                    },
+                                    "visibility": {
+                                        "description": "Hide or unhide the song.",
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object",
+                                "example": {
+                                    "title": "Example Song",
+                                    "visibility": 0
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "The song has been succesfully updated.",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Error: the requested song does not exist."
+                    },
+                    "500": {
+                        "description": "Error: invalid identifier or invalid title."
+                    }
+                }
+            }
+        },
+        "/api/song/{uuid}/force": {
+            "delete": {
+                "tags": [
+                    "Songs"
+                ],
+                "description": "Deletes a song even if it belongs to one or more setlists.",
+                "operationId": "App\\Http\\Controllers\\SongController::forceDeleteSong",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "description": "The uuid of the song.",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The song has been succesfully deleted.",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Error: the requested song does not exist."
+                    },
+                    "500": {
+                        "description": "Error: invalid identifier."
                     }
                 }
             }
@@ -50,13 +510,13 @@
                 "tags": [
                     "Songs"
                 ],
-                "description": "Returns all stored songs or a range of them, if the optional parameter 'interval' was provided",
+                "description": "Returns all stored songs or a range of them, if the optional parameter 'interval' was provided. Filtering by song title is also possible.",
                 "operationId": "App\\Http\\Controllers\\SongController::getSongs",
                 "parameters": [
                     {
                         "name": "interval",
                         "in": "query",
-                        "description": "The offset and limit of the requested songs collection, separated with a comma",
+                        "description": "The offset and limit of the requested songs collection, separated with a comma.",
                         "style": "form",
                         "explode": "false",
                         "allowReserved": "true",
@@ -69,15 +529,32 @@
                                 "value": "0,1"
                             },
                             {
-                                "summary": "A list of songs, starting in the 11th song and with a length of 50 songs",
+                                "summary": "A list of songs, starting in the 11th song and with a length of 50 songs.",
                                 "value": "10,50"
+                            }
+                        ]
+                    },
+                    {
+                        "name": "title",
+                        "in": "query",
+                        "description": "A string to filter the title of the songs in the collection. The comparison is case insensitive.",
+                        "style": "form",
+                        "explode": "false",
+                        "allowReserved": "true",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "examples": [
+                            {
+                                "summary": "Getting only those songs with the string 'example' in their titles.",
+                                "value": "example"
                             }
                         ]
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "A collection of songs with all their attributes, according to the 'interval' parameter, if provided",
+                        "description": "A collection of songs with all their attributes, according to the 'interval' and 'name' parameters, if provided.",
                         "content": {
                             "application/json": {
                                 "schema": {}
@@ -87,5 +564,15 @@
                 }
             }
         }
-    }
+    },
+    "tags": [
+        {
+            "name": "Songs",
+            "description": "Operations with songs"
+        },
+        {
+            "name": "Setlists",
+            "description": "Operations with setlists"
+        }
+    ]
 }
