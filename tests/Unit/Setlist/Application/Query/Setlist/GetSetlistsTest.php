@@ -1,17 +1,17 @@
 <?php
 
-namespace Tests\Unit\Setlist\Application\Query\Song;
+namespace Tests\Unit\Setlist\Application\Query\Setlist;
 
 use Setlist\Application\Query\Query;
 use PHPUnit\Framework\TestCase;
-use Setlist\Application\Query\Song\GetSongs;
+use Setlist\Application\Query\Setlist\GetSetlists;
 
-class GetSongsTest extends TestCase
+class GetSetlistsTest extends TestCase
 {
     const PAYLOAD = [
         'start' => '1',
         'length' => '9',
-        'title' => 'Hello!',
+        'name' => 'Hello!',
     ];
 
     /**
@@ -22,14 +22,14 @@ class GetSongsTest extends TestCase
         $query = $this->getQuery();
 
         $this->assertInstanceOf(
-            GetSongs::class,
+            GetSetlists::class,
             $query
         );
     }
 
     private function getQuery(): Query
     {
-        return new GetSongs(self::PAYLOAD);
+        return new GetSetlists(self::PAYLOAD);
     }
 
     /**
@@ -61,13 +61,13 @@ class GetSongsTest extends TestCase
     /**
      * @test
      */
-    public function queryHasTitle()
+    public function queryHasName()
     {
         $query = $this->getQuery();
 
         $this->assertEquals(
-            self::PAYLOAD['title'],
-            $query->title()
+            self::PAYLOAD['name'],
+            $query->name()
         );
     }
 }
