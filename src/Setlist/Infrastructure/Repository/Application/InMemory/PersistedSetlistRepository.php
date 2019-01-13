@@ -17,4 +17,9 @@ class PersistedSetlistRepository implements ApplicationSetlistRepositoryInterfac
     {
         // TODO: Implement getOneSetlistById() method.
     }
+
+    public function getSetlistsInfoBySongId(string $id): PersistedSetlistCollection
+    {
+        // TODO: Implement getSetlistsInfoBySongId() method.
+    }
 }

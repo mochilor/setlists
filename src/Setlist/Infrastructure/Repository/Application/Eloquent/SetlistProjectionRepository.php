@@ -28,7 +28,7 @@ class SetlistProjectionRepository implements ApplicationSetlistRepositoryInterfa
 
         $data = json_decode($setlist->data);
 
-        return $this->getSetlistFromData($data);
+        return $this->getSetlistFromData($data, true);
     }
 
     public function getAllSetlists(int $start, int $length, string $name): PersistedSetlistCollection
@@ -43,7 +43,7 @@ class SetlistProjectionRepository implements ApplicationSetlistRepositoryInterfa
         $setlistsArray = [];
 
         foreach ($setlists as $setlist) {
-            $setlistsArray[] = $this->getSetlistFromData(json_decode($setlist->data));
+            $setlistsArray[] = $this->getSetlistFromData(json_decode($setlist->data), true);
         }
 
         usort($setlistsArray, function($a, $b) {
@@ -57,18 +57,20 @@ class SetlistProjectionRepository implements ApplicationSetlistRepositoryInterfa
         return PersistedSetlistCollection::create(...$setlistsArray);
     }
 
-    private function getSetlistFromData($data): PersistedSetlist
+    private function getSetlistFromData(\stdClass $data, bool $withActs): PersistedSetlist
     {
-        $acts = [];
-        foreach ($data->acts as $currentAct => $act) {
-            foreach ($act as $song) {
-                $acts[$currentAct][] = $this->getPersistedSong($song);
-            }
-        }
-
         $persistedSongCollections = [];
-        foreach ($acts as $act) {
-            $persistedSongCollections[] = $this->persistedSongCollectionFactory->make($act);
+        if ($withActs) {
+            $acts = [];
+            foreach ($data->acts as $currentAct => $act) {
+                foreach ($act as $song) {
+                    $acts[$currentAct][] = $this->getPersistedSong($song);
+                }
+            }
+
+            foreach ($acts as $act) {
+                $persistedSongCollections[] = $this->persistedSongCollectionFactory->make($act);
+            }
         }
 
         return new PersistedSetlist(
@@ -91,5 +93,24 @@ class SetlistProjectionRepository implements ApplicationSetlistRepositoryInterfa
             $song->creation_date,
             $song->update_date
         );
+    }
+
+    public function getSetlistsInfoBySongId(string $id): PersistedSetlistCollection
+    {
+        $setlists = SetlistProjection::orderBy('created_at', 'asc')
+            ->where('data', 'like', '%' . $id . '%')
+            ->get();
+
+        $setlistsArray = [];
+
+        foreach ($setlists as $setlist) {
+            $setlistsArray[] = $this->getSetlistFromData(json_decode($setlist->data), false);
+        }
+
+        usort($setlistsArray, function($a, $b) {
+            return strcasecmp($a->name(), $b->name());
+        });
+
+        return PersistedSetlistCollection::create(...$setlistsArray);
     }
 }

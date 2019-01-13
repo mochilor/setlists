@@ -194,3 +194,12 @@ Feature: Create and retrieve songs
     When I request the api to show me the song with id: "d2efe5df-aaa1-4c06-9e6d-7215860a0a13"
     Then the api must return a response with code: 404
     And the api must not return any song when I request all the stored songs
+
+
+  Scenario: Requesting a Song with an invalid id returns an error
+    Given the following song exists:
+      | id                                | title     |
+      | d2efe5df-aaa1-4c06-9e6d-non-valid | Yesterday |
+
+    When I request the api to show me the song with id: "d2efe5df-aaa1-4c06-9e6d-invalid"
+    Then the api must return a response with code: 500

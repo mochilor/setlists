@@ -8,6 +8,7 @@ use Setlist\Application\Persistence\Setlist\PersistedSetlistRepository as Applic
 use Setlist\Application\Persistence\Song\PersistedSong;
 use Setlist\Application\Persistence\Song\PersistedSongCollectionFactory;
 use Setlist\Infrastructure\Repository\Domain\Eloquent\Model\Setlist as EloquentSetlist;
+use Setlist\Infrastructure\Repository\Domain\Eloquent\Model\Setlist;
 use Setlist\Infrastructure\Repository\Domain\Eloquent\Model\Song as EloquentSong;
 
 class PersistedSetlistRepository implements ApplicationSetlistRepositoryInterface
@@ -24,8 +25,10 @@ class PersistedSetlistRepository implements ApplicationSetlistRepositoryInterfac
         $eloquentSetlist = EloquentSetlist::find($id);
 
         if ($eloquentSetlist instanceof EloquentSetlist) {
-            return $this->getSetlistFromData($eloquentSetlist);
+            return $this->getSetlistFromData($eloquentSetlist, true);
         }
+
+        return null;
     }
 
     public function getAllSetlists(int $start, int $length, string $name): PersistedSetlistCollection
@@ -38,31 +41,37 @@ class PersistedSetlistRepository implements ApplicationSetlistRepositoryInterfac
             ->when($length > 0, function ($query) use($length) {
                 return $query->take($length);
             })
+            ->when(!empty($name), function ($query) use($name) {
+                return $query->where('name', 'like', '%' .$name . '%');
+            })
             ->get();
 
         $setlistsForCollection = [];
         foreach ($eloquentSetlists as $eloquentSetlist) {
-            $setlistsForCollection[] = $this->getSetlistFromData($eloquentSetlist);
+            $setlistsForCollection[] = $this->getSetlistFromData($eloquentSetlist, true);
         }
 
         return PersistedSetlistCollection::create(...$setlistsForCollection);
     }
 
-    private function getSetlistFromData($eloquentSetlist): PersistedSetlist
+    private function getSetlistFromData(Setlist $eloquentSetlist, bool $withSongs): PersistedSetlist
     {
-        $currentAct = 0;
-        $acts = [];
-        foreach ($eloquentSetlist->songs as $eloquentSong) {
-            if ($eloquentSong->pivot->act != $currentAct) {
-                $currentAct = $eloquentSong->pivot->act;
+        $persistedSongCollections = [];
+        if ($withSongs) {
+            $currentAct = 0;
+            $acts = [];
+            foreach ($eloquentSetlist->songs as $eloquentSong) {
+                if ($eloquentSong->pivot->act != $currentAct) {
+                    $currentAct = $eloquentSong->pivot->act;
+                }
+
+                $acts[$currentAct][$eloquentSong->pivot->order] = $this->getPersistedSong($eloquentSong);
             }
 
-            $acts[$currentAct][$eloquentSong->pivot->order] = $this->getPersistedSong($eloquentSong);
-        }
-
-        $persistedSongCollections = [];
-        foreach ($acts as $act) {
-            $persistedSongCollections[] = $this->persistedSongCollectionFactory->make($act);
+            ksort($acts);
+            foreach ($acts as $act) {
+                $persistedSongCollections[] = $this->persistedSongCollectionFactory->make($act);
+            }
         }
 
         return new PersistedSetlist(
@@ -85,5 +94,21 @@ class PersistedSetlistRepository implements ApplicationSetlistRepositoryInterfac
             $eloquentSong->creation_date,
             $eloquentSong->update_date
         );
+    }
+
+    public function getSetlistsInfoBySongId(string $id): PersistedSetlistCollection
+    {
+        $eloquentSetlists = EloquentSetlist::orderBy('name', 'asc')
+            ->orderBy('creation_date', 'asc')
+            ->join('setlist_song', 'setlist.id', '=', 'setlist_song.setlist_id')
+            ->where('setlist_song.song_id', $id)
+            ->get();
+
+        $setlistsForCollection = [];
+        foreach ($eloquentSetlists as $eloquentSetlist) {
+            $setlistsForCollection[] = $this->getSetlistFromData($eloquentSetlist, false);
+        }
+
+        return PersistedSetlistCollection::create(...$setlistsForCollection);
     }
 }

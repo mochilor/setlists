@@ -26,12 +26,10 @@ and after that add it to one or more set lists. Full list of features:
 - Get a collection of set list, filtered by name and a range.
 - Update a set list.
 - Delete a set list.
+- Statistics for each song (the setlists to which it belongs).
 - Basic login system.
 
-More features are planned:
-
-- Statistics for each song or set list.
-- Sort collections of entities by any column.
+More features are planned...
 
 ## Internals
 

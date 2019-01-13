@@ -71,7 +71,7 @@ class BaseContext extends RawMinkContext
         } catch (RuntimeException $e) {
             //throw new Exception($e->getMessage());
             self::$responseCode = $e->getResponse()->getStatusCode();
-            $result = '';
+            $result = (string) $e->getResponse()->getBody();
         }
 
 //        Assert::assertEquals(
@@ -245,19 +245,27 @@ class BaseContext extends RawMinkContext
     /**
      * @param string $response
      * @param int $setlistsCount
+     * @param bool $withActs
      */
-    protected function checkMultipleSetlists(string $response, int $setlistsCount): void
+    protected function checkMultipleSetlists(string $response, int $setlistsCount, bool $withActs = false): void
     {
         Assert::assertJson($response);
 
         $responseSetlists = json_decode($response, true);
+
+        $count = 0;
+
+        // An associative array is symptom of server error:
+        $isError = count(array_filter(array_keys($responseSetlists), 'is_string')) > 0;
+        if ($isError) {
+            return;
+        }
 
         Assert::assertEquals(
             $setlistsCount,
             count($responseSetlists)
         );
 
-        $count = 0;
         foreach ($responseSetlists as $responseSetlist) {
 
             Assert::assertArrayHasKey('id', $responseSetlist);
@@ -291,27 +299,28 @@ class BaseContext extends RawMinkContext
                     );
 
                     $keyAct = 0;
-                    foreach ($setlist['acts'] as $act) {
-                        $keySong = 0;
-                        foreach ($act as $song) {
-                            Assert::assertEquals(
-                                $song['id'],
-                                $responseSetlist['acts'][$keyAct][$keySong]['id']
-                            );
-                            Assert::assertEquals(
-                                $song['title'],
-                                $responseSetlist['acts'][$keyAct][$keySong]['title']
-                            );
-                            $keySong++;
+                    if ($withActs) {
+                        foreach ($setlist['acts'] as $act) {
+                            $keySong = 0;
+                            foreach ($act as $song) {
+                                Assert::assertEquals(
+                                    $song['id'],
+                                    $responseSetlist['acts'][$keyAct][$keySong]['id']
+                                );
+                                Assert::assertEquals(
+                                    $song['title'],
+                                    $responseSetlist['acts'][$keyAct][$keySong]['title']
+                                );
+                                $keySong++;
+                            }
+                            $keyAct++;
                         }
-                        $keyAct++;
                     }
 
                     $count++;
                 }
             }
         }
-
         Assert::assertEquals(
             $count,
             count($responseSetlists)

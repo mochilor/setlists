@@ -13,6 +13,7 @@ use Setlist\Application\Command\Song\ForceDeleteSong;
 use Setlist\Application\Command\Song\UpdateSong;
 use Setlist\Application\Query\Song\GetSong;
 use Setlist\Application\Query\Song\GetSongs;
+use Setlist\Application\Query\Song\GetSongStats;
 
 class SongController extends Controller
 {
@@ -267,6 +268,40 @@ class SongController extends Controller
     {
         return $this->dispatchQuery(
             $this->getQuery($getSongsPayload, GetSongs::class)
+        );
+    }
+
+    /**
+     * @OA\Get(
+     *     path="/api/song/stats/{uuid}",
+     *     tags={"Songs"},
+     *     description="Returns the setlist to which this song belongs.",
+     *     @OA\Parameter(
+     *         name="uuid",
+     *         in="path",
+     *         description="The uuid of the song.",
+     *         required=true,
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Response(
+     *         response="200",
+     *         description="A collection of setlists, without acts.",
+     *         @OA\JsonContent()
+     *     ),
+     *     @OA\Response(
+     *         response="500",
+     *         description="Error: invalid identifier.",
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="Error: the requested song does not exist.",
+     *     ),
+     * )
+     */
+    public function getSongStats(GetSongPayload $getSongStatsPayload)
+    {
+        return $this->dispatchQuery(
+            $this->getQuery($getSongStatsPayload, GetSongStats::class)
         );
     }
 }

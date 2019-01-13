@@ -15,6 +15,11 @@ class SongContext extends BaseContext implements Context
     private $songList;
 
     /**
+     * @var array
+     */
+    private $songStats;
+
+    /**
      * @Given I want to create songs with values:
      * @param TableNode $table
      */
@@ -377,6 +382,60 @@ class SongContext extends BaseContext implements Context
             Assert::assertEquals(
                 $row['title'],
                 $this->songList[$keyRow]['title']
+            );
+        }
+    }
+
+    /**
+     * @When I request the api service to show me the setlists to which the song with id: :arg1 belongs
+     */
+    public function iRequestTheApiServiceToShowMeTheSetlistsToWhichTheSongWithIdBelongs($arg1)
+    {
+        $response = $this->request(
+            'get',
+            $this->apiUrl . '/song/stats/' . $arg1
+        );
+
+        $count = 0;
+
+        foreach (self::$persistedSetlists as $persistedSetlist) {
+            foreach ($persistedSetlist['acts'] as $act) {
+                foreach ($act as $song) {
+                    if ($song['id'] == $arg1) {
+                        $count++;
+                    }
+                }
+            }
+        }
+
+        $this->checkMultipleSetlists($response, $count, false);
+
+        $this->songStats = json_decode($response, true);
+    }
+
+    /**
+     * @Then the api must return the following setlists:
+     */
+    public function theApiMustReturnTheFollowingSetlists(TableNode $table)
+    {
+        $setlists = $this->getSetlistsFromTableNode($table);
+
+        foreach ($setlists as $setlistKey => $setlist) {
+            Assert::assertEquals(
+                $setlist['id'],
+                $this->songStats[$setlistKey]['id']
+            );
+            Assert::assertEquals(
+                $setlist['name'],
+                $this->songStats[$setlistKey]['name']
+            );
+            Assert::assertEquals(
+                $setlist['description'],
+                $this->songStats[$setlistKey]['description']
+            );
+            Assert::assertEquals(
+                $setlist['date'],
+                $this->songStats[$setlistKey]['date']
             );
         }
     }

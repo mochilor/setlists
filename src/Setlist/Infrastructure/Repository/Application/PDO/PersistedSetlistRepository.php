@@ -39,7 +39,7 @@ SQL;
         $returnedSetlist = $query->fetch(PDO::FETCH_ASSOC);
 
         if ($returnedSetlist) {
-            return $this->getSetlistFromData($returnedSetlist);
+            return $this->getSetlistFromData($returnedSetlist, true);
         }
 
         return null;
@@ -48,7 +48,7 @@ SQL;
     public function getAllSetlists(int $start, int $length, string $name): PersistedSetlistCollection
     {
         $sql = <<<SQL
-SELECT * FROM `setlist` %s ORDER BY `creation_date` ASC%s;
+SELECT * FROM `setlist` %s ORDER BY `name` ASC, `creation_date` ASC%s;
 SQL;
 
         $filterByNameString = $this->getFilterByNameString($name);
@@ -61,7 +61,30 @@ SQL;
 
         $setlistsForCollection = [];
         foreach ($returnedSetlists as $returnedSetlist) {
-            $setlistsForCollection[] = $this->getSetlistFromData($returnedSetlist);
+            $setlistsForCollection[] = $this->getSetlistFromData($returnedSetlist, true);
+        }
+
+        return PersistedSetlistCollection::create(...$setlistsForCollection);
+    }
+
+    public function getSetlistsInfoBySongId(string $id): PersistedSetlistCollection
+    {
+        $sql = <<<SQL
+SELECT `id`, `name`, `description`, `date`, `creation_date`, `update_date` FROM `setlist` 
+INNER JOIN `setlist_song` ON `setlist`.`id` = `setlist_song`.`setlist_id`
+WHERE `setlist_song`.`song_id` = :uuid
+ORDER BY `name` ASC, `creation_date` ASC;
+SQL;
+
+        $query = $this->PDO->prepare($sql);
+        $query->bindValue('uuid', $id);
+        $query->execute();
+
+        $returnedSetlists = $query->fetchAll(PDO::FETCH_ASSOC);
+
+        $setlistsForCollection = [];
+        foreach ($returnedSetlists as $returnedSetlist) {
+            $setlistsForCollection[] = $this->getSetlistFromData($returnedSetlist, false);
         }
 
         return PersistedSetlistCollection::create(...$setlistsForCollection);

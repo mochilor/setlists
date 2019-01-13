@@ -93,6 +93,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(
             \Setlist\Application\Persistence\Setlist\PersistedSetlistRepository::class,
             env('PROJECTIONS') ?
+                // Only Eloquent is available for projections:
                 \Setlist\Infrastructure\Repository\Application\Eloquent\SetlistProjectionRepository::class :
                 "\Setlist\Infrastructure\Repository\Application\\$this->driver\PersistedSetlistRepository"
         );

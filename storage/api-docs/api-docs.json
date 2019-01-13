@@ -563,6 +563,42 @@
                     }
                 }
             }
+        },
+        "/api/song/stats/{uuid}": {
+            "get": {
+                "tags": [
+                    "Songs"
+                ],
+                "description": "Returns the setlist to which this song belongs.",
+                "operationId": "App\\Http\\Controllers\\SongController::getSongStats",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "description": "The uuid of the song.",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "A collection of setlists, without acts.",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error: invalid identifier."
+                    },
+                    "404": {
+                        "description": "Error: the requested song does not exist."
+                    }
+                }
+            }
         }
     },
     "tags": [

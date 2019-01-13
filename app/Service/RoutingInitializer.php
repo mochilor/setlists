@@ -22,10 +22,10 @@ use Setlist\Application\Query\Setlist\Handler\GetSetlistHandler;
 use Setlist\Application\Query\Setlist\Handler\GetSetlistsHandler;
 use Setlist\Application\Query\Song\GetSong;
 use Setlist\Application\Query\Song\GetSongs;
-use Setlist\Application\Query\Song\GetSongsByTitle;
+use Setlist\Application\Query\Song\GetSongStats;
 use Setlist\Application\Query\Song\Handler\GetSongHandler;
-use Setlist\Application\Query\Song\Handler\GetSongsByTitleHandler;
 use Setlist\Application\Query\Song\Handler\GetSongsHandler;
+use Setlist\Application\Query\Song\Handler\GetSongStatsHandler;
 use Setlist\Domain\Entity\EventBus;
 use Setlist\Domain\Entity\Setlist\Event\SetlistChangedItsActCollection;
 use Setlist\Domain\Entity\Setlist\Event\SetlistChangedItsDate;
@@ -105,6 +105,7 @@ class RoutingInitializer
     {
         // Song
         $this->queryBus->addHandler(GetSong::class, app(GetSongHandler::class));
+        $this->queryBus->addHandler(GetSongStats::class, app(GetSongStatsHandler::class));
         $this->queryBus->addHandler(GetSongs::class, app(GetSongsHandler::class));
 
         // Setlit

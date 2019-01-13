@@ -39,29 +39,31 @@ trait PDOHelper
         return '';
     }
 
-    public function getSetlistFromData($setlistData): PersistedSetlist
+    public function getSetlistFromData(array $setlistData, bool $withSongs): PersistedSetlist
     {
-        $sql = <<<SQL
+        $persistedSongCollections = [];
+        if ($withSongs) {
+            $sql = <<<SQL
 SELECT * FROM `setlist_song` WHERE setlist_id = :uuid ORDER BY act, `order`;
 SQL;
-        $query = $this->PDO->prepare($sql);
-        $query->bindValue('uuid', $setlistData['id']);
-        $query->execute();
-        $setlistSongs = $query->fetchAll(PDO::FETCH_ASSOC);
+            $query = $this->PDO->prepare($sql);
+            $query->bindValue('uuid', $setlistData['id']);
+            $query->execute();
+            $setlistSongs = $query->fetchAll(PDO::FETCH_ASSOC);
 
-        $currentAct = 0;
-        $acts = [];
-        foreach ($setlistSongs as $song) {
-            if ($song['act'] != $currentAct) {
-                $currentAct = $song['act'];
+            $currentAct = 0;
+            $acts = [];
+            foreach ($setlistSongs as $song) {
+                if ($song['act'] != $currentAct) {
+                    $currentAct = $song['act'];
+                }
+
+                $acts[$currentAct][$song['order']] = $this->songRepository->getOneSongById($song['song_id']);
             }
 
-            $acts[$currentAct][$song['order']] = $this->songRepository->getOneSongById($song['song_id']);
-        }
-
-        $persistedSongCollections = [];
-        foreach ($acts as $act) {
-            $persistedSongCollections[] = $this->persistedSongCollectionFactory->make($act);
+            foreach ($acts as $act) {
+                $persistedSongCollections[] = $this->persistedSongCollectionFactory->make($act);
+            }
         }
 
         return new PersistedSetlist(
