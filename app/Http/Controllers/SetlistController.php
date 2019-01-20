@@ -20,6 +20,13 @@ class SetlistController extends Controller
      *     path="/api/setlist",
      *     tags={"Setlists"},
      *     description="Creates a setlist with existing songs.",
+     *     @OA\Parameter(
+     *         name="token",
+     *         in="query",
+     *         description="A valid and recent token.",
+     *         required=false,
+     *         @OA\Schema(type="string")
+     *     ),
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\MediaType(
@@ -86,6 +93,14 @@ class SetlistController extends Controller
      *         response="500",
      *         description="Error: invalid identifier, invalid name, invalid id of a song, non existing song, repeated song in setlist.",
      *     ),
+     *     @OA\Response(
+     *          response="400",
+     *          ref="#/components/responses/expired"
+     *     ),
+     *     @OA\Response(
+     *          response="401",
+     *          ref="#/components/responses/unauthorized"
+     *     ),
      * )
      */
     public function createSetlist(CreateSetlistPayload $createSetlistPayload)
@@ -101,6 +116,13 @@ class SetlistController extends Controller
      *     path="/api/setlist/{uuid}",
      *     tags={"Setlists"},
      *     description="Updates an existing setlist.",
+     *     @OA\Parameter(
+     *         name="token",
+     *         in="query",
+     *         description="A valid and recent token.",
+     *         required=false,
+     *         @OA\Schema(type="string")
+     *     ),
      *     @OA\Parameter(
      *         name="uuid",
      *         in="path",
@@ -173,6 +195,14 @@ class SetlistController extends Controller
      *         response="500",
      *         description="Error: invalid identifier, invalid name, invalid id of a song, non existing song, repeated song in setlist.",
      *     ),
+     *     @OA\Response(
+     *          response="400",
+     *          ref="#/components/responses/expired"
+     *     ),
+     *     @OA\Response(
+     *          response="401",
+     *          ref="#/components/responses/unauthorized"
+     *     ),
      * )
      */
     public function updateSetlist(UpdateSetlistPayload $updateSetlistPayload)
@@ -188,6 +218,13 @@ class SetlistController extends Controller
      *     path="/api/setlist/{uuid}",
      *     tags={"Setlists"},
      *     description="Deletes an existing setlist. The related songs remains.",
+     *     @OA\Parameter(
+     *         name="token",
+     *         in="query",
+     *         description="A valid and recent token.",
+     *         required=false,
+     *         @OA\Schema(type="string")
+     *     ),
      *     @OA\Parameter(
      *         name="uuid",
      *         in="path",
@@ -208,6 +245,14 @@ class SetlistController extends Controller
      *         response="500",
      *         description="Error: invalid identifier.",
      *     ),
+     *     @OA\Response(
+     *          response="400",
+     *          ref="#/components/responses/expired"
+     *     ),
+     *     @OA\Response(
+     *          response="401",
+     *          ref="#/components/responses/unauthorized"
+     *     ),
      * )
      */
     public function deleteSetlist(DeleteSetlistPayload $deleteSetlistPayload)
@@ -223,6 +268,13 @@ class SetlistController extends Controller
      *     path="/api/setlist/{uuid}",
      *     tags={"Setlists"},
      *     description="Returns an existing setlist with all its acts and songs.",
+     *     @OA\Parameter(
+     *         name="token",
+     *         in="query",
+     *         description="A valid and recent token.",
+     *         required=false,
+     *         @OA\Schema(type="string")
+     *     ),
      *     @OA\Parameter(
      *         name="uuid",
      *         in="path",
@@ -243,6 +295,14 @@ class SetlistController extends Controller
      *         response="500",
      *         description="Error: invalid identifier.",
      *     ),
+     *     @OA\Response(
+     *          response="400",
+     *          ref="#/components/responses/expired"
+     *     ),
+     *     @OA\Response(
+     *          response="401",
+     *          ref="#/components/responses/unauthorized"
+     *     ),
      * )
      */
     public function getSetlist(GetSetlistPayload $getSetlistPayload)
@@ -257,6 +317,13 @@ class SetlistController extends Controller
      *     path="/api/setlists",
      *     tags={"Setlists"},
      *     description="Returns all stored setlists (with all its acts and songs) or a range of them, if the optional parameter 'interval' was provided. Filtering by setlist name is also possible.",
+     *     @OA\Parameter(
+     *         name="token",
+     *         in="query",
+     *         description="A valid and recent token.",
+     *         required=false,
+     *         @OA\Schema(type="string")
+     *     ),
      *     @OA\Parameter(
      *         name="interval",
      *         in="query",
@@ -291,7 +358,15 @@ class SetlistController extends Controller
      *         response="200",
      *         description="A collection of setlists with all their attributes, according to the 'interval' and 'name' parameters, if provided.",
      *         @OA\JsonContent()
-     *     )
+     *     ),
+     *     @OA\Response(
+     *          response="400",
+     *          ref="#/components/responses/expired"
+     *     ),
+     *     @OA\Response(
+     *          response="401",
+     *          ref="#/components/responses/unauthorized"
+     *     ),
      * )
      */
     public function getSetlists(GetSetlistsPayload $getSetlistPayload)

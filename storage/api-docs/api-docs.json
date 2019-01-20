@@ -9,6 +9,87 @@
         "version": "1.0"
     },
     "paths": {
+        "/api/auth/login": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "description": "Attempts to validate the user with a password. If so, sends back the user name and a personal token.",
+                "operationId": "App\\Http\\Controllers\\AuthController::login",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "properties": {
+                                    "email": {
+                                        "description": "The email of the user that wants to use the API.",
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "description": "The password of the user that wants to use the API.",
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "A json containing the name of the user and a token. This token must be appended to the url of every request in this form: http://example.com/api/songs?token=[token].\n     * The token is every time this request is done and it will last for 1 hour.",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Error: invalid username or password."
+                    },
+                    "400": {
+                        "description": "Error: invalid request."
+                    }
+                }
+            }
+        },
+        "/api/auth/logout": {
+            "get": {
+                "tags": [
+                    "Auth"
+                ],
+                "description": "Removes the token for the current user. This route requires a valid token in the url",
+                "operationId": "App\\Http\\Controllers\\AuthController::logout",
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "query",
+                        "description": "A valid and recent token.",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "A success message indicating that the token has been removed from the system, thus forcing the user to create a new one in order to kkep using the API.",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/expired"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/unauthorized"
+                    }
+                }
+            }
+        },
         "/api/setlist": {
             "post": {
                 "tags": [
@@ -16,6 +97,17 @@
                 ],
                 "description": "Creates a setlist with existing songs.",
                 "operationId": "App\\Http\\Controllers\\SetlistController::createSetlist",
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "query",
+                        "description": "A valid and recent token.",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -78,6 +170,12 @@
                     },
                     "500": {
                         "description": "Error: invalid identifier, invalid name, invalid id of a song, non existing song, repeated song in setlist."
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/expired"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/unauthorized"
                     }
                 }
             }
@@ -90,6 +188,15 @@
                 "description": "Returns an existing setlist with all its acts and songs.",
                 "operationId": "App\\Http\\Controllers\\SetlistController::getSetlist",
                 "parameters": [
+                    {
+                        "name": "token",
+                        "in": "query",
+                        "description": "A valid and recent token.",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
                     {
                         "name": "uuid",
                         "in": "path",
@@ -114,6 +221,12 @@
                     },
                     "500": {
                         "description": "Error: invalid identifier."
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/expired"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/unauthorized"
                     }
                 }
             },
@@ -124,6 +237,15 @@
                 "description": "Deletes an existing setlist. The related songs remains.",
                 "operationId": "App\\Http\\Controllers\\SetlistController::deleteSetlist",
                 "parameters": [
+                    {
+                        "name": "token",
+                        "in": "query",
+                        "description": "A valid and recent token.",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
                     {
                         "name": "uuid",
                         "in": "path",
@@ -148,6 +270,12 @@
                     },
                     "500": {
                         "description": "Error: invalid identifier."
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/expired"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/unauthorized"
                     }
                 }
             },
@@ -158,6 +286,15 @@
                 "description": "Updates an existing setlist.",
                 "operationId": "App\\Http\\Controllers\\SetlistController::updateSetlist",
                 "parameters": [
+                    {
+                        "name": "token",
+                        "in": "query",
+                        "description": "A valid and recent token.",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
                     {
                         "name": "uuid",
                         "in": "path",
@@ -229,6 +366,12 @@
                     },
                     "500": {
                         "description": "Error: invalid identifier, invalid name, invalid id of a song, non existing song, repeated song in setlist."
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/expired"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/unauthorized"
                     }
                 }
             }
@@ -241,6 +384,15 @@
                 "description": "Returns all stored setlists (with all its acts and songs) or a range of them, if the optional parameter 'interval' was provided. Filtering by setlist name is also possible.",
                 "operationId": "App\\Http\\Controllers\\SetlistController::getSetlists",
                 "parameters": [
+                    {
+                        "name": "token",
+                        "in": "query",
+                        "description": "A valid and recent token.",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
                     {
                         "name": "interval",
                         "in": "query",
@@ -288,6 +440,12 @@
                                 "schema": {}
                             }
                         }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/expired"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/unauthorized"
                     }
                 }
             }
@@ -299,6 +457,17 @@
                 ],
                 "description": "Creates a song.",
                 "operationId": "App\\Http\\Controllers\\SongController::createSong",
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "query",
+                        "description": "A valid and recent token.",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -337,6 +506,12 @@
                     },
                     "500": {
                         "description": "Error: invalid identifier or invalid title."
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/expired"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/unauthorized"
                     }
                 }
             }
@@ -349,6 +524,15 @@
                 "description": "Returns a song.",
                 "operationId": "App\\Http\\Controllers\\SongController::getSong",
                 "parameters": [
+                    {
+                        "name": "token",
+                        "in": "query",
+                        "description": "A valid and recent token.",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
                     {
                         "name": "uuid",
                         "in": "path",
@@ -373,6 +557,12 @@
                     },
                     "404": {
                         "description": "Error: the requested song does not exist."
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/expired"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/unauthorized"
                     }
                 }
             },
@@ -383,6 +573,15 @@
                 "description": "Deletes a song.",
                 "operationId": "App\\Http\\Controllers\\SongController::deleteSong",
                 "parameters": [
+                    {
+                        "name": "token",
+                        "in": "query",
+                        "description": "A valid and recent token.",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
                     {
                         "name": "uuid",
                         "in": "path",
@@ -407,6 +606,12 @@
                     },
                     "500": {
                         "description": "Error: invalid identifier or the song is present in one or more setlists."
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/expired"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/unauthorized"
                     }
                 }
             },
@@ -417,6 +622,15 @@
                 "description": "Updates the fields 'title' and 'visibility' from a song.",
                 "operationId": "App\\Http\\Controllers\\SongController::updateSong",
                 "parameters": [
+                    {
+                        "name": "token",
+                        "in": "query",
+                        "description": "A valid and recent token.",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
                     {
                         "name": "uuid",
                         "in": "path",
@@ -465,6 +679,12 @@
                     },
                     "500": {
                         "description": "Error: invalid identifier or invalid title."
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/expired"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/unauthorized"
                     }
                 }
             }
@@ -477,6 +697,15 @@
                 "description": "Deletes a song even if it belongs to one or more setlists.",
                 "operationId": "App\\Http\\Controllers\\SongController::forceDeleteSong",
                 "parameters": [
+                    {
+                        "name": "token",
+                        "in": "query",
+                        "description": "A valid and recent token.",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
                     {
                         "name": "uuid",
                         "in": "path",
@@ -501,6 +730,12 @@
                     },
                     "500": {
                         "description": "Error: invalid identifier."
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/expired"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/unauthorized"
                     }
                 }
             }
@@ -513,6 +748,15 @@
                 "description": "Returns all stored songs or a range of them, if the optional parameter 'interval' was provided. Filtering by song title is also possible.",
                 "operationId": "App\\Http\\Controllers\\SongController::getSongs",
                 "parameters": [
+                    {
+                        "name": "token",
+                        "in": "query",
+                        "description": "A valid and recent token.",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
                     {
                         "name": "interval",
                         "in": "query",
@@ -560,6 +804,12 @@
                                 "schema": {}
                             }
                         }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/expired"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/unauthorized"
                     }
                 }
             }
@@ -572,6 +822,15 @@
                 "description": "Returns the setlist to which this song belongs.",
                 "operationId": "App\\Http\\Controllers\\SongController::getSongStats",
                 "parameters": [
+                    {
+                        "name": "token",
+                        "in": "query",
+                        "description": "A valid and recent token.",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
                     {
                         "name": "uuid",
                         "in": "path",
@@ -596,19 +855,42 @@
                     },
                     "404": {
                         "description": "Error: the requested song does not exist."
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/expired"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/unauthorized"
                     }
                 }
+            }
+        }
+    },
+    "components": {
+        "responses": {
+            "expired": {
+                "description": "Error: the provided token has expired, or is invalid or is obsolete."
+            },
+            "unauthorized": {
+                "description": "Error: unauthorized request (no token present)"
+            },
+            "decoding_error": {
+                "description": "Error: an error ocurred while decoding the token."
             }
         }
     },
     "tags": [
         {
             "name": "Songs",
-            "description": "Operations with songs"
+            "description": "Operations with songs. If 'AUTH' env variable is enabled, a token must be appended to the url in every request."
         },
         {
             "name": "Setlists",
-            "description": "Operations with setlists"
+            "description": "Operations with setlists. If 'AUTH' env variable is enabled, a token must be appended to the url in every request."
+        },
+        {
+            "name": "Auth",
+            "description": "Authentification operations. Needed if 'AUTH' is enabled."
         }
     ]
 }

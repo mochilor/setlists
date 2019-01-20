@@ -26,12 +26,28 @@ class Controller extends BaseController
      * ),
      * @OA\Tag(
      *     name="Songs",
-     *     description="Operations with songs",
+     *     description="Operations with songs. If 'AUTH' env variable is enabled, a token must be appended to the url in every request.",
      * ),
      * @OA\Tag(
      *     name="Setlists",
-     *     description="Operations with setlists",
-     * )
+     *     description="Operations with setlists. If 'AUTH' env variable is enabled, a token must be appended to the url in every request.",
+     * ),
+     * @OA\Tag(
+     *     name="Auth",
+     *     description="Authentification operations. Needed if 'AUTH' is enabled.",
+     * ),
+     * @OA\Response(
+     *     response="expired",
+     *     description="Error: the provided token has expired, or is invalid or is obsolete.",
+     * ),
+     * @OA\Response(
+     *     response="unauthorized",
+     *     description="Error: unauthorized request (no token present)"
+     * ),
+     * @OA\Response(
+     *     response="decoding_error",
+     *     description="Error: an error ocurred while decoding the token.",
+     * ),
      */
 
     protected $messageFactory;

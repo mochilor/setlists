@@ -39,5 +39,8 @@ $router->group(['prefix' => 'api'], function () use ($router) {
             $router->get('{id}',  ['uses' => 'SetlistController@getSetlist']);
         });
         $router->get('setlists',  ['uses' => 'SetlistController@getSetlists']);
+
+        // Logout
+        $router->get('auth/logout',  ['uses' => 'AuthController@logout']);
     });
 });

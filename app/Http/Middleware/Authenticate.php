@@ -46,6 +46,8 @@ class Authenticate
         }
 
         $token = $request->get('token');
+        $path = $request->path();
+
         if(!$token) {
             return $this->response(['error' => 'Unauthorized'], 401);
         }
@@ -53,20 +55,27 @@ class Authenticate
         try {
             $credentials = JWT::decode($token, env('API_KEY'), ['HS256']);
         } catch(ExpiredException $e) {
-            return $this->response(['error' => 'Provided token is expired'], 400);
+            return $this->response(['error' => 'Provided token has expired'], 400);
         } catch(UnexpectedValueException $e) {
             return $this->response(['error' => 'Invalid token provided'], 400);
         } catch(Exception $e) {
             return $this->response(['error' => 'An error occurred while decoding token'], 500);
         }
 
-        $user = User::find($credentials->sub); // Mejor habria que guardar en sub el email
+        $user = User::where('email', $credentials->sub)->first();
         if (!$user) {
             return $this->response(['error' => 'Unauthorized'], 401);
         }
 
-        if (!empty($user->token) && $user->token != $token) {
+        if ($user->token != $token) {
             return $this->response(['error' => 'Provided token is obsolete'], 400);
+        }
+
+        if (strstr($path, 'logout') !== false) {
+            $user->token = null;
+            $user->save();
+
+            return $this->response(['result' => 'Token was reset'], 200);
         }
 
         return $next($request);

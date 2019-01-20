@@ -22,6 +22,13 @@ class SongController extends Controller
      *     path="/api/song",
      *     tags={"Songs"},
      *     description="Creates a song.",
+     *     @OA\Parameter(
+     *         name="token",
+     *         in="query",
+     *         description="A valid and recent token.",
+     *         required=false,
+     *         @OA\Schema(type="string")
+     *     ),
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\MediaType(
@@ -54,6 +61,14 @@ class SongController extends Controller
      *         response="500",
      *         description="Error: invalid identifier or invalid title.",
      *     ),
+     *     @OA\Response(
+     *          response="400",
+     *          ref="#/components/responses/expired"
+     *     ),
+     *     @OA\Response(
+     *          response="401",
+     *          ref="#/components/responses/unauthorized"
+     *     ),
      * )
      */
     public function createSong(CreateSongPayload $createSongPayload)
@@ -69,6 +84,13 @@ class SongController extends Controller
      *     path="/api/song/{uuid}",
      *     tags={"Songs"},
      *     description="Updates the fields 'title' and 'visibility' from a song.",
+     *     @OA\Parameter(
+     *         name="token",
+     *         in="query",
+     *         description="A valid and recent token.",
+     *         required=false,
+     *         @OA\Schema(type="string")
+     *     ),
      *     @OA\Parameter(
      *         name="uuid",
      *         in="path",
@@ -108,6 +130,14 @@ class SongController extends Controller
      *         response="500",
      *         description="Error: invalid identifier or invalid title.",
      *     ),
+     *     @OA\Response(
+     *          response="400",
+     *          ref="#/components/responses/expired"
+     *     ),
+     *     @OA\Response(
+     *          response="401",
+     *          ref="#/components/responses/unauthorized"
+     *     ),
      * )
      */
     public function updateSong(UpdateSongPayload $updateSongPayload)
@@ -123,6 +153,13 @@ class SongController extends Controller
      *     path="/api/song/{uuid}",
      *     tags={"Songs"},
      *     description="Deletes a song.",
+     *     @OA\Parameter(
+     *         name="token",
+     *         in="query",
+     *         description="A valid and recent token.",
+     *         required=false,
+     *         @OA\Schema(type="string")
+     *     ),
      *     @OA\Parameter(
      *         name="uuid",
      *         in="path",
@@ -143,6 +180,14 @@ class SongController extends Controller
      *         response="500",
      *         description="Error: invalid identifier or the song is present in one or more setlists.",
      *     ),
+     *     @OA\Response(
+     *          response="400",
+     *          ref="#/components/responses/expired"
+     *     ),
+     *     @OA\Response(
+     *          response="401",
+     *          ref="#/components/responses/unauthorized"
+     *     ),
      * )
      */
     public function deleteSong(DeleteSongPayload $deleteSongPayload)
@@ -158,6 +203,13 @@ class SongController extends Controller
      *     path="/api/song/{uuid}/force",
      *     tags={"Songs"},
      *     description="Deletes a song even if it belongs to one or more setlists.",
+     *     @OA\Parameter(
+     *         name="token",
+     *         in="query",
+     *         description="A valid and recent token.",
+     *         required=false,
+     *         @OA\Schema(type="string")
+     *     ),
      *     @OA\Parameter(
      *         name="uuid",
      *         in="path",
@@ -178,6 +230,14 @@ class SongController extends Controller
      *         response="500",
      *         description="Error: invalid identifier.",
      *     ),
+     *     @OA\Response(
+     *          response="400",
+     *          ref="#/components/responses/expired"
+     *     ),
+     *     @OA\Response(
+     *          response="401",
+     *          ref="#/components/responses/unauthorized"
+     *     ),
      * )
      */
     public function forceDeleteSong(DeleteSongPayload $deleteSongPayload)
@@ -193,6 +253,13 @@ class SongController extends Controller
      *     path="/api/song/{uuid}",
      *     tags={"Songs"},
      *     description="Returns a song.",
+     *     @OA\Parameter(
+     *         name="token",
+     *         in="query",
+     *         description="A valid and recent token.",
+     *         required=false,
+     *         @OA\Schema(type="string")
+     *     ),
      *     @OA\Parameter(
      *         name="uuid",
      *         in="path",
@@ -213,6 +280,14 @@ class SongController extends Controller
      *         response="404",
      *         description="Error: the requested song does not exist.",
      *     ),
+     *     @OA\Response(
+     *          response="400",
+     *          ref="#/components/responses/expired"
+     *     ),
+     *     @OA\Response(
+     *          response="401",
+     *          ref="#/components/responses/unauthorized"
+     *     ),
      * )
      */
     public function getSong(GetSongPayload $getSongPayload)
@@ -227,6 +302,13 @@ class SongController extends Controller
      *     path="/api/songs",
      *     tags={"Songs"},
      *     description="Returns all stored songs or a range of them, if the optional parameter 'interval' was provided. Filtering by song title is also possible.",
+     *     @OA\Parameter(
+     *         name="token",
+     *         in="query",
+     *         description="A valid and recent token.",
+     *         required=false,
+     *         @OA\Schema(type="string")
+     *     ),
      *     @OA\Parameter(
      *         name="interval",
      *         in="query",
@@ -261,7 +343,15 @@ class SongController extends Controller
      *         response="200",
      *         description="A collection of songs with all their attributes, according to the 'interval' and 'name' parameters, if provided.",
      *         @OA\JsonContent()
-     *     )
+     *     ),
+     *     @OA\Response(
+     *          response="400",
+     *          ref="#/components/responses/expired"
+     *     ),
+     *     @OA\Response(
+     *          response="401",
+     *          ref="#/components/responses/unauthorized"
+     *     ),
      * )
      */
     public function getSongs(GetSongsPayload $getSongsPayload)
@@ -276,6 +366,13 @@ class SongController extends Controller
      *     path="/api/song/stats/{uuid}",
      *     tags={"Songs"},
      *     description="Returns the setlist to which this song belongs.",
+     *     @OA\Parameter(
+     *         name="token",
+     *         in="query",
+     *         description="A valid and recent token.",
+     *         required=false,
+     *         @OA\Schema(type="string")
+     *     ),
      *     @OA\Parameter(
      *         name="uuid",
      *         in="path",
@@ -295,6 +392,14 @@ class SongController extends Controller
      *     @OA\Response(
      *         response="404",
      *         description="Error: the requested song does not exist.",
+     *     ),
+     *     @OA\Response(
+     *          response="400",
+     *          ref="#/components/responses/expired"
+     *     ),
+     *     @OA\Response(
+     *          response="401",
+     *          ref="#/components/responses/unauthorized"
      *     ),
      * )
      */
