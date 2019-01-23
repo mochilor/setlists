@@ -11,7 +11,6 @@ class CreateSetlistPayload
     private $description;
     private $acts;
     private $date;
-    private $actsCleaner;
 
     public function __construct(Request $request, ActsCleaner $actsCleaner)
     {
