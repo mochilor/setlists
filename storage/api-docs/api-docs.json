@@ -794,6 +794,23 @@
                                 "value": "example"
                             }
                         ]
+                    },
+                    {
+                        "name": "not-in",
+                        "in": "query",
+                        "description": "A uuid from a Setlist whose Songs must be excluded from this request.",
+                        "style": "form",
+                        "explode": "false",
+                        "allowReserved": "true",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "examples": [
+                            {
+                                "summary": "Getting all the songs that do not belong to the Setlist with the given id.",
+                                "value": "775ace6f-0740-4105-af34-5d86571eb7d6"
+                            }
+                        ]
                     }
                 ],
                 "responses": {

@@ -20,4 +20,9 @@ class GetSongs extends Query
     {
         return $this->payload()['title'];
     }
+
+    public function notIn(): string
+    {
+        return $this->payload()['notIn'];
+    }
 }

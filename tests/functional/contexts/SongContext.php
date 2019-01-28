@@ -194,7 +194,7 @@ class SongContext extends BaseContext implements Context
     }
 
     /**
-     * @Given /^the following songs? exists:$/
+     * @Given /^the following songs? (also )?exists:$/
      */
     public function theFollowingSongExists(TableNode $table)
     {
@@ -362,6 +362,19 @@ class SongContext extends BaseContext implements Context
     }
 
     /**
+     * @Given /^the retrieved songs should be exactly like:$/
+     */
+    public function theRetrievedSongsShouldBeExactlyLike(TableNode $table)
+    {
+        $songs = $this->getSongsFromTableNode($table);
+
+        Assert::assertEquals(
+            $songs,
+            self::$songs
+        );
+    }
+
+    /**
      * @Given I want to update a song with the following values:
      */
     public function iWantToUpdateASongWithTheFollowingValues(TableNode $table)
@@ -438,5 +451,18 @@ class SongContext extends BaseContext implements Context
                 $this->songStats[$setlistKey]['date']
             );
         }
+    }
+
+    /**
+     * @When I request the api to show me all the songs except those that belong to the setlist with id: :arg1
+     */
+    public function iRequestTheApiToShowMeAllTheSongsExceptThoseThatBelongToTheSetlistWithId($arg1)
+    {
+        $response = $this->request(
+            'get',
+            $this->apiUrl . '/songs?not-in=' . $arg1
+        );
+
+        $this->checkMultipleSongs($response, count(self::$songs));
     }
 }

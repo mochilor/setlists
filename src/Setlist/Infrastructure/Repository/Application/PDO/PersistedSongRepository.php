@@ -36,14 +36,15 @@ SQL;
         return null;
     }
 
-    public function getAllSongs(int $start, int $length, string $title): PersistedSongCollection
+    public function getAllSongs(int $start, int $length, string $title, string $notIn): PersistedSongCollection
     {
         $sql = <<<SQL
-SELECT * FROM `song` %s ORDER BY `title` ASC,`creation_date` ASC%s;
+SELECT `song`.* FROM `song` %s%s ORDER BY `title` ASC,`creation_date` ASC%s;
 SQL;
-        $filterByTitleString = $this->getFilterByTitleString($title);
+        $whereNotInString = $this->getWhereNotInString($notIn);
+        $filterByTitleString = $this->getFilterByTitleString($title, $whereNotInString);
         $limitString = $this->getLimitString($start, $length);
-        $sql = sprintf($sql, $filterByTitleString, $limitString);
+        $sql = sprintf($sql, $whereNotInString, $filterByTitleString, $limitString);
 
         $query = $this->PDO->prepare($sql);
         $query->execute();

@@ -333,6 +333,9 @@ class BaseContext extends RawMinkContext
     protected function setSongsFromTableNode(TableNode $table): void
     {
         self::$songs = $this->getSongsFromTableNode($table);
+        usort(self::$songs, function($a, $b) {
+            return strcasecmp($a["title"], $b["title"]);
+        });
     }
 
     /**

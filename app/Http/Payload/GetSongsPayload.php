@@ -9,6 +9,7 @@ class GetSongsPayload
     private $start;
     private $length;
     private $title;
+    private $notIn;
 
     public function __construct(Request $request)
     {
@@ -18,6 +19,7 @@ class GetSongsPayload
             $this->length = explode(',', $parameters['interval'])[1];
         }
         $this->title = $parameters['title'] ?? '';
+        $this->notIn = $parameters['not-in'] ?? '';
     }
 
     public function __invoke()
@@ -26,6 +28,7 @@ class GetSongsPayload
             'start' => (int) $this->start,
             'length' => (int) $this->length,
             'title' => (string) $this->title,
+            'notIn' => (string) $this->notIn,
         ];
     }
 }

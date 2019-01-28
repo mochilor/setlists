@@ -12,6 +12,7 @@ class GetSongsTest extends TestCase
         'start' => '1',
         'length' => '9',
         'title' => 'Hello!',
+        'notIn' => '8ffd680a-ff57-41f3-ac5e-bf1d877f6950',
     ];
 
     /**
@@ -68,6 +69,19 @@ class GetSongsTest extends TestCase
         $this->assertEquals(
             self::PAYLOAD['title'],
             $query->title()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function queryHasNotIn()
+    {
+        $query = $this->getQuery();
+
+        $this->assertEquals(
+            self::PAYLOAD['notIn'],
+            $query->notIn()
         );
     }
 }

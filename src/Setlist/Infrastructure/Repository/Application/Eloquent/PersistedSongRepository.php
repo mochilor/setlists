@@ -20,7 +20,7 @@ class PersistedSongRepository implements ApplicationSongRepositoryInterface
         return null;
     }
 
-    public function getAllSongs(int $start, int $length, string $title): PersistedSongCollection
+    public function getAllSongs(int $start, int $length, string $title, string $notIn): PersistedSongCollection
     {
         $eloquentSongs = EloquentSong::orderBy('title', 'asc')
             ->orderBy('creation_date', 'asc')
@@ -32,6 +32,13 @@ class PersistedSongRepository implements ApplicationSongRepositoryInterface
             })
             ->when(!empty($title), function ($query) use($title) {
                 return $query->where('title', 'like', "%$title%");
+            })
+            ->when(!empty($notIn), function ($query) use($notIn) {
+                return $query->leftJoin('setlist_song', 'song.id', '=', 'setlist_song.song_id')
+                    ->where(function ($query) use ($notIn){
+                        $query->where('setlist_song.setlist_id', '!=', $notIn)
+                            ->orWhereNull('setlist_song.setlist_id');
+                    });
             })
             ->get();
 

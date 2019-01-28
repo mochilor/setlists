@@ -21,10 +21,11 @@ trait PDOHelper
         return $limitString;
     }
 
-    public function getFilterByTitleString(string $title): string
+    public function getFilterByTitleString(string $title, string $whereNotInString): string
     {
         if (!empty($title)) {
-            return " WHERE `title` LIKE '%$title%'";
+            $whereString = $whereNotInString ? 'AND' : 'WHERE';
+            return " $whereString `title` LIKE '%$title%'";
         }
 
         return '';
@@ -34,6 +35,20 @@ trait PDOHelper
     {
         if (!empty($name)) {
             return " WHERE `name` LIKE '%$name%'";
+        }
+
+        return '';
+    }
+
+    public function getWhereNotInString(string $notIn)
+    {
+        if (!empty($notIn)) {
+            $string = <<<SQL
+ LEFT JOIN `setlist_song` ON `song`.id = `setlist_song`.song_id 
+WHERE (`setlist_song`.setlist_id != '%s'
+OR `setlist_song`.setlist_id is null)
+SQL;
+            return sprintf($string, $notIn);
         }
 
         return '';

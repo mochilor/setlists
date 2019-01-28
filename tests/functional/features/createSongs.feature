@@ -203,3 +203,33 @@ Feature: Create and retrieve songs
 
     When I request the api to show me the song with id: "d2efe5df-aaa1-4c06-9e6d-invalid"
     Then the api must return a response with code: 500
+
+
+  Scenario: Setlist id can be used to prevent its songs to be listed
+    Given the following songs exists:
+      | id                                   | title              | is_visible |
+      | d2efe5df-aaa1-4c06-9e6d-7215860a0a13 | Yesterday          | 1          |
+      | 45bf5e28-da2f-4207-bf67-466baa7af86e | Stairway to Heaven | 1          |
+
+    And The songs are sorted in the following acts:
+      | act_number | song_order | song_id                              |
+      | 0          | 0          | d2efe5df-aaa1-4c06-9e6d-7215860a0a13 |
+      | 1          | 0          | 45bf5e28-da2f-4207-bf67-466baa7af86e |
+
+    And The acts belong to a setlist with the following data:
+      | id                                   | name          | description                  | date       |
+      | 9c5999a5-2468-45ba-ae77-3965fc385519 | Cool Setlist! | This Setlist is the best one | 2019-01-01 |
+
+    And the following songs also exists:
+      | id                                   | title              | is_visible |
+      | bc0bd9a8-0fe4-49a4-aee0-9f0114cd3163 | Wish you were here | 1          |
+      | 13080dc1-63f2-4770-aa76-683bdf22c5a6 | Paint it black     | 1          |
+      | 87fd2aa5-41f1-4dac-8974-b1bbab8970ec | My way             | 1          |
+
+    When I request the api to show me all the songs except those that belong to the setlist with id: "9c5999a5-2468-45ba-ae77-3965fc385519"
+    Then the api must return a response with code: 200
+    And the retrieved songs should be exactly like:
+      | id                                   | title              | is_visible |
+      | 87fd2aa5-41f1-4dac-8974-b1bbab8970ec | My way             | 1          |
+      | 13080dc1-63f2-4770-aa76-683bdf22c5a6 | Paint it black     | 1          |
+      | bc0bd9a8-0fe4-49a4-aee0-9f0114cd3163 | Wish you were here | 1          |

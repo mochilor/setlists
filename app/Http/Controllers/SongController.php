@@ -339,6 +339,19 @@ class SongController extends Controller
      *         ),
      *         @OA\Schema(type="string")
      *     ),
+     *     @OA\Parameter(
+     *         name="not-in",
+     *         in="query",
+     *         style="form",
+     *         explode="false",
+     *         description="A uuid from a Setlist whose Songs must be excluded from this request.",
+     *         allowReserved="true",
+     *         @OA\Examples(
+     *              value="775ace6f-0740-4105-af34-5d86571eb7d6",
+     *              summary="Getting all the songs that do not belong to the Setlist with the given id.",
+     *         ),
+     *         @OA\Schema(type="string")
+     *     ),
      *     @OA\Response(
      *         response="200",
      *         description="A collection of songs with all their attributes, according to the 'interval' and 'name' parameters, if provided.",
